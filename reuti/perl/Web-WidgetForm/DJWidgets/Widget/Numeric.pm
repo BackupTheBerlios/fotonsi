@@ -62,7 +62,7 @@ TAL
 
 sub widget_data_transform {
     my ($self, $form_values) = @_;
-    my $name = $self->get_name;
+    my $name = $self->get_html_name;
     $form_values->{$name} = $self->_fmt_human_to_mac($form_values->{$name});
 }
 
