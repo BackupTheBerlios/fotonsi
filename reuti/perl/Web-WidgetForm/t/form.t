@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 42;
+use Test::More tests => 43;
 use Test::Deep;
 use lib 't';
 
@@ -137,6 +137,10 @@ is($f->html_escape('"Hi", she said'), '&quot;Hi&quot;, she said',
                                                       " double quote");
 is($f->html_escape("Back\\slash"), "Back\\slash",     " backslash");
 eval { $f->define_widgets({ 'unknown_type' => { widget_type => 'NonExistent' } }); };
+ok ($@ ne "",                                    " define with nonexistent type");
+eval { $f->srender_widget('unknown_type') };
 ok ($@ ne "",                                    " render nonexistent widget");
-eval { is($f->srender_widget('unknown_type'), "",            "srender_widget/bad widget"); };
+# Try to trigger an error by calling define_form_widgets
+$f->define_form_values({});
+eval { $f->srender_widget('unknown_type') };
 ok ($@ ne "",                                    " render nonexistent widget");
