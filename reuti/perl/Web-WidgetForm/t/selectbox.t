@@ -1,10 +1,12 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 11;
+use Test::More tests => 12;
 use Test::Deep;
 
 use Web::DJWidgets;
+
+my $nonempty_msg = "You can't leave the select box non-empty, dumbhead";
 
 my $f = Web::DJWidgets->new('f');
 $f->define_widgets({'comp' => { focus => 1,
@@ -12,6 +14,7 @@ $f->define_widgets({'comp' => { focus => 1,
                                 size     => 40,
                                 readonly => 1,
                                 nonempty => 1,
+                                nonempty_msg => $nonempty_msg,
                                 options  => [ one     => 'One',
                                               another => 'Another one',
                                               third   => 'Third eye',
@@ -77,7 +80,9 @@ is($actual_rendering, $expected_rendering,            " selected items (scalar)"
 $f->define_form_values({ comp => '' });
 is($f->validate_widget('comp'), 1,                    "validate");
 $f->define_form_values({ another_comp => '' });
-ok(ref $f->validate_widget('comp'),                   " nonempty");
+my $error = $f->validate_widget('comp');
+is(scalar @$error, 1,                                 " # errors");
+is($error->[0], $nonempty_msg,                        " nonempty");
 $f->define_form_values({ comp => ['', 'third'] });
 is($f->validate_widget('comp'), 1,                    " several values");
 # {min,max}_selected_items
