@@ -2,7 +2,7 @@ package Cb34;
 
 use strict;
 
-# $Id: Cb34.pm,v 1.3 2003/10/31 21:23:12 zoso Exp $
+# $Id: Cb34.pm,v 1.4 2003/11/01 13:51:32 zoso Exp $
 
 use vars qw(@EXPORT_OK);
 require Exporter;
@@ -45,8 +45,8 @@ Por ahora, la función C<cb34> sólo imprime registro de transferencias, no de
 cheques. En principio, debería ser bastante fácil modificarlo para imprimir
 también cheques.
 
-Los importes siempre se truncan, no se redondean. Para redondearlos, hay que
-modificar la función C<importe_cb34>.
+Los importes se redondean con la función C<sprintf> de Perl. En los casos en
+los que las milésimas valen C<5>, se redondea por I<debajo>.
 
 =head1 DERECHOS
 
@@ -76,6 +76,7 @@ sub cb34 {
 
    # Datos generales
    my $ordenante = uc($datos->{ordenante});
+   my $libre = ".";         # Siete caracteres libres al final de cada línea
 
    # Cabecera 1 --------------------------------------------------------------
    my ($envio, $emis,
@@ -140,54 +141,91 @@ sub cb34 {
       $fh->format_name("REGISTRO1");
       write $fh;
       $ntotal++;
-      # ----------------------------------------------------------------------
+      # Registro 2 -----------------------------------------------------------
       ($n, $informacion) = ('011', $reg->{nombre_beneficiario});
       $fh->format_name("REGISTRO28");
       write $fh;
       $ntotal++;
-      # ----------------------------------------------------------------------
+      # Registro 3------------------------------------------------------------
+      if (defined $reg->{domicilio_beneficiario1}) {
+         ($n, $informacion) = ('012', $reg->{domicilio_beneficiario1});
+         write $fh;
+         $ntotal++;
+      }
+      if (defined $reg->{domicilio_beneficiario2}) {
+         ($n, $informacion) = ('013', $reg->{domicilio_beneficiario2});
+         write $fh;
+         $ntotal++;
+      }
+      if (defined $reg->{plaza_beneficiario}) {
+         ($n, $informacion) = ('014', $reg->{plaza_beneficiario});
+         write $fh;
+         $ntotal++;
+      }
+      if (defined $reg->{provincia_beneficiario}) {
+         ($n, $informacion) = ('015', $reg->{provincia_beneficiario});
+         write $fh;
+         $ntotal++;
+      }
+      if (defined $reg->{concepto1}) {
+         ($n, $informacion) = ('016', $reg->{concepto1});
+         write $fh;
+         $ntotal++;
+      }
+      if (defined $reg->{concepto2}) {
+         ($n, $informacion) = ('017', $reg->{concepto2});
+         write $fh;
+         $ntotal++;
+      }
+      if (defined $reg->{dni}) {
+         ($n, $dni, $nib) = ('018', $reg->{dni}, $reg->{nib});
+         $fh->format_name("REGISTRO9");
+         write $fh;
+         $ntotal++;
+      }
    }
 
    # Línea de totales --------------------------------------------------------
    $fh->format_name("TOTALES");
    $suma = importe_cb34($suma);
+   $ntotal++;     # Se cuenta también el de totales
    write $fh;
 
    # Definiciones de formatos ================================================
 format CABECERA1 =
-0356@>>>>>>>>>            001@|||||@|||||@>>>@>>>@0########@   @>@||||||
-    $ordenante,            $envio,$emis,$ent,$ofi,$cuenta,$det,$dc,""
+0356@>>>>>>>>>            001@|||||@|||||@>>>@>>>@0########@   @>@>>>>>>
+    $ordenante,            $envio,$emis,$ent,$ofi,$cuenta,$det,$dc,$libre
 .
 format CABECERA234 =
-0356@>>>>>>>>>            @>>@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<@||||||
-    $ordenante,           $n,$informacion,                       ""
+0356@>>>>>>>>>            @>>@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<@>>>>>>
+    $ordenante,           $n,$informacion,                       $libre
 .
 format CABECERA56 =
-0356@>>>>>>>>>            @>>@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<@||||||
-    $ordenante,           $n,$informacion,                       ""
+0356@>>>>>>>>>            @>>@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<@>>>>>>
+    $ordenante,           $n,$informacion,                       $libre
 .
 format REGISTRO1 =
-06@>@>>>>>>>>>@>>>>>>>>>>>010@<<<<<<<<<<<@<<<@<<<@0########@@  @<@||||||
-  $o,$ordenante,$ref_bene,   $importe,  $ent,$ofi,$cuenta,$g,$c,$dc,""
+06@>@>>>>>>>>>@<<<<<<<<<<<010@0##########@0##@0##@0########@@  @<@>>>>>>
+  $o,$ordenante,$ref_bene,   $importe,  $ent,$ofi,$cuenta,$g,$c,$dc,$libre
 .
 format REGISTRO28 =
-06@>@>>>>>>>>>@>>>>>>>>>>>@>>@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<@||||||
-  $o,$ordenante,$ref_bene,$n,$informacion,                       ""
+06@>@>>>>>>>>>@<<<<<<<<<<<@>>@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<@>>>>>>
+  $o,$ordenante,$ref_bene,$n,$informacion,                       $libre
 .
 format REGISTRO9 =
-06@>@>>>>>>>>>@>>>>>>>>>>>018@<<<<<<<<<<<<<<<<<@<<<<<<<<<<<<<<<<<@||||||
-  $o,$ordenante,$ref_bene,   $dni,             $nib,             ""
+06@>@>>>>>>>>>@>>>>>>>>>>>018@0################@>>>>>>>>>>>>>>>>>@>>>>>>
+  $o,$ordenante,$ref_bene,   $dni,             $nib,             $libre
 .
 format TOTALES =
-0856@>>>>>>>>>               @<<<<<<<<<<<@<<<<<<<@<<<<<<<<<      @||||||
-    $ordenante,              $suma,      $n010,  $ntotal,        ""
+0856@>>>>>>>>>               @0##########@0######@0########      @>>>>>>
+    $ordenante,              $suma,      $n010,  $ntotal,        $libre
 .
 }
 
 sub importe_cb34 {
    my $importe = shift ;
 
-   $importe = int($importe) * 100;
+   $importe = sprintf("%.2f", $importe) * 100;
 }
 
 1;
