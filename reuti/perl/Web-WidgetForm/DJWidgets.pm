@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.12 2005/01/24 16:48:48 zoso Exp $
+# $Id: DJWidgets.pm,v 1.13 2005/01/27 22:26:57 zoso Exp $
 
 =head1 NAME
 
@@ -312,7 +312,10 @@ sub define_widgets {
       ref $widgets->{$w} eq 'HASH' || die "Attributes for widget '$w' is not a hashref";
       $self->{WIDGETS}->{$w} = $widgets->{$w};
       my $object = $self->get_widget_object($w);
-      defined $object || die "Can't define widget '$w' (is widget type '$widgets->{$w}->{widget_type}' defined?)";
+      defined $object || do {
+          delete $self->{WIDGETS}->{$w};    # Delete, just in case
+          die "Can't define widget '$w' (is widget type '$widgets->{$w}->{widget_type}' defined?)";
+      };
       my $class = $object->arg('widget_type');
       if (not defined $self->{WIDGET_CLASSES}->{$class}) {
          $self->{WIDGET_CLASSES}->{$class} = 1;
@@ -364,6 +367,8 @@ sub get_widget_object {
    # Cached object
    return $self->{CACHED_WIDGET_OBJECTS}->{$widgetname}
          if defined $self->{CACHED_WIDGET_OBJECTS}->{$widgetname};
+   return undef
+         if !defined $self->{WIDGETS}->{$widgetname};
 
    $self->{WIDGETS}->{$widgetname}->{widget_type} ||= "TextBox";
    my $class = $self->{WIDGETS}->{$widgetname}->{widget_type};
