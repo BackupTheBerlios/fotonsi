@@ -13,15 +13,25 @@ use UNIVERSAL qw(isa);
 use CGI::FastTemplate;
 
 
+#use base qw(CGI::FastTemplate);  # Queda pendiente derivar la clase
 
 
-my $_variable_base = 'CONTENT';
-my $_variable_no_strict = 0;
-#my $_debug = 1;
+sub new
+{
+  my $proto = shift;
+  my $class = ref $proto || $proto;
+  my $self = {};
+  $self->{VARIABLE_BASE} = 'CONTENT';
+  # $self->{DEBUG} = 1;
+  bless ($self, $class);
+  return $self;
+}
+
 
 
 sub out 
 {
+  my $self = shift;
   my ($datos_ref) = @_;
 
   if (defined $datos_ref) {
@@ -32,16 +42,16 @@ sub out
 
       my $tpl = new CGI::FastTemplate;
 
-      $tpl->no_strict if $_variable_no_strict;
+      $tpl->no_strict if $self->{VARIABLE_NO_STRICT};
 
       foreach (values %templates) {
-        my $template_temp = _template_define($_);
+        my $template_temp = $self->out($datos_ref);
         $tpl->define($template_temp => $_);
       }
 
-      _valores($tpl, $templates_ref, $_variable_base, $valores_ref);
+      _valores($tpl, $templates_ref, $self->{VARIABLE_BASE}, $valores_ref);
 
-      my $contenido_ref = $tpl->fetch($_variable_base);
+      my $contenido_ref = $tpl->fetch($self->{VARIABLE_BASE});
 
       if (defined $contenido_ref) {
         return ${$contenido_ref};
@@ -52,6 +62,7 @@ sub out
 
 sub _valores
 {
+  my $self = shift;
   my ($tpl, $templates_ref, $variable_final, $valores_array_ref) = @_;
 
 #print STDERR "_valores de: $variable_final\n" if ($_debug);
@@ -78,7 +89,7 @@ sub _valores
           _valores($tpl, $templates_ref, $variable_tpl, $valores{$variable_tpl});
         }
       }
-      my $template_temp = _template_define(${$templates_ref}{$variable_final}); 
+      my $template_temp = $self->_template_define(${$templates_ref}{$variable_final}); 
 #print STDERR qq(_valores de: $variable_final => ".$template_temp"\n) if ($_debug);
       $tpl->parse($variable_final => ".$template_temp");  
     }
@@ -86,6 +97,7 @@ sub _valores
 }
 
 sub _template_define {
+  my $self = shift;
   my ($cadena) = @_;
 
 #print STDERR " Convierto: $cadena\n" if ($_debug);
@@ -97,13 +109,15 @@ sub _template_define {
 
 sub strict
 {
-  $_variable_no_strict = 0;
+  my $self = shift ;
+  $self->{VARIABLE_NO_STRICT} = 0;
 }
 
 
 sub no_strict
 {
-  $_variable_no_strict = 1;
+  my $self = shift ;
+  $self->{VARIABLE_NO_STRICT} = 1;
 }
 
 1;
@@ -119,6 +133,8 @@ CGI::FastTemplate::Foton - Módulo de facilitación de uso de CGI::FastTemplate
 
  use CGI::FastTemplate::Foton;
 
+ my $cft = CGI::FastTemplate::Foton->new;
+
  my $datos_ref = [{CONTENT    => 'simple.tpl'},
 
                   {TITLE      => 'Ejemplo simple',
@@ -126,14 +142,14 @@ CGI::FastTemplate::Foton - Módulo de facilitación de uso de CGI::FastTemplate
 		   BIG_NUMBER => '10'}
 		 ];
 
- print CGI::FastTemplate::Foton::out($datos_ref);
+ print $cft->out($datos_ref);
 
 =head1 DESCRIPCIÓN
 
 Este paquete es una clase derivada de CGI::FastTemplate que facilita su uso.
 
 
-=head1 FUNCIONES
+head1 FUNCIONES
 
 =over 4
 
