@@ -1,14 +1,19 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 32;
+use Test::More tests => 35;
 use Test::Deep;
 use lib 't';
 
 use Web::WidgetForm;
 use WWW::FieldValidator;
 
-my $v = WWW::FieldValidator->new(WWW::FieldValidator::WELL_FORMED_EMAIL, 'Please make sure you enter a well formed email address');
+my $validation_message = 'Please make sure you enter a well formed email address';
+my $validation_message2 = 'Please make sure you enter *ander address';
+my $v = WWW::FieldValidator->new(WWW::FieldValidator::WELL_FORMED_EMAIL,
+                                 $validation_message);
+my $regex_v = WWW::FieldValidator->new(WWW::FieldValidator::REGEX_MATCH,
+                                       $validation_message2, 'ander');
 
 my $f = Web::WidgetForm->new;
 is ($f, undef,                                   "Form without name");
@@ -17,6 +22,7 @@ my $widget_list = { 'testwidget' => { widget_type => 'TextBox',
                                       focus => 1,
                                       nonempty => 1 },
                     't2'         => { validators => $v },
+                    't3'         => { validators => [ $v, $regex_v ] },
                     'trans'      => { widget_type => 'Test' } };
 
 # Data definition
@@ -30,7 +36,8 @@ is ($f->define_widgets($widget_list), scalar keys %$widget_list,
                                                  "define_widgets");
 cmp_deeply($widget_list, $f->get_widgets,        "get_widgets");
 my $form_values = { testwidget => 'a',
-                    t2         => 'jander@mander.fander' };
+                    t2         => 'jander@mander.fander',
+                    t3         => 'jander@test.com' };
 $f->define_form_values($form_values);
 
 # Data transform
@@ -44,7 +51,8 @@ is ($f->arg('class', 'bar'), 'bar',              "argument (set)");
 is ($f->arg('class'), 'bar',                     " get the set value");
 
 # Base widget arguments
-ok(grep { $_ eq 'readonly' } keys %{$f->get_widget_object('t2')->{ARGS}},
+ok(scalar(grep { $_ eq 'readonly' }
+               keys %{$f->get_widget_object('t2')->{ARGS}}),
                                                  "widget base args");
 
 # Properties
@@ -60,15 +68,28 @@ is ($got_form_values{'t2'}, 'jander@mander.fander',
                                                  "get_form_values");
 
 # Validation
-is ($f->validate_widget('testwidget', ''),  0,   "validate_widget (nonempty)");
-is ($f->validate_widget('testwidget', ' '), 0,   " with a space");
-is ($f->validate_widget('testwidget', 'a'), 1,   " with content");
+is (ref($f->validate_widget('testwidget', {testwidget => ''})), 'ARRAY',
+                                                 "validate_widget (nonempty)");
+is (ref($f->validate_widget('testwidget', {testwidget => ' '})), 'ARRAY',
+                                                 " with a space");
+is ($f->validate_widget('testwidget', {testwidget => 'a'}), 1,
+                                                 " with content");
 is ($f->validate_widget('testwidget'), 1,        " with implicit content");
-is ($f->validate_widget('t2', 'jander'),    0,   " with WWW::FieldValidator");
-is ($f->validate_widget('t2', 'jander@'),   0,   "  another one");
-is ($f->validate_widget('t2', 'jander@mander.com'), 1,
+is (ref($f->validate_widget('t2', {t2 => 'jander'})), 'ARRAY',
+                                                 " with WWW::FieldValidator");
+is (ref($f->validate_widget('t2', {t2 => 'jander@'})), 'ARRAY',
+                                                 "  another one");
+is ($f->validate_widget('t2', {t2 => 'jander@mander.com'}), 1,
                                                  "  a valid one");
 is ($f->validate_widget('t2'), 1,                "  an implicit valid one");
+
+is (scalar $f->validate_form, 0,                 "validate_form");
+my %complete_validation = $f->validate_form({ t2 => 'notvalid@emailaddress',
+                                              testwidget => '' });
+is ($complete_validation{t2}->[0], $validation_message,
+                                                 " not valid (t2)");
+is ($complete_validation{t3}->[1], $validation_message2,
+                                                 " not valid (t3)");
 
 
 # State variables
