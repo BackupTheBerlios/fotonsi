@@ -4,7 +4,7 @@ use strict;
 use Config::Tiny;
 use Cb34 qw(cb34);
 
-my $datos = Config::Tiny->read('prueba-cb34.ini');
+my $datos = Config::Tiny->read('ejemplo-cb34.ini');
 
 $datos->{general}->{registros} = [ { beneficiario => '1',
                                      importe      => 123.45,
