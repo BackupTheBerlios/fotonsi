@@ -1,0 +1,43 @@
+BODY {
+ color: #000000;
+ background-color: #FFFFFF;
+ font-size: 8pt;
+ font-family: Tahoma;
+}
+
+TD {
+ color: #000000;
+ background-color: #F0F0F0;
+ font-size: 8pt;
+ font-family: Tahoma;
+}
+
+
+INPUT {
+ color: #000000;
+ font-size: 8pt;
+ font-family: Tahoma;
+}
+
+
+SELECT {
+ color: #000000;
+ font-size: 8pt;
+ font-family: Tahoma;
+}
+
+
+.cabecera_tabla {
+ color: #FFFFFF;
+ background-color: #3366FF;
+ font-size: 8pt;
+ font-family: Tahoma;
+}
+
+.grande_cabecera_tabla {
+ color: #FFFFFF;
+ background-color: #3366FF;
+ font-size: 12pt;
+ font-family: Tahoma;
+}
+
