@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.10 2005/01/20 13:52:14 zoso Exp $
+# $Id: DJWidgets.pm,v 1.11 2005/01/24 16:32:41 zoso Exp $
 
 =head1 NAME
 
@@ -32,12 +32,16 @@ Web::DJWidgets - Web Component System
  # Mason style
  $f->define_form_values(\%ARGS);
  if ($f->validate_form(\%ARGS) == 0) { ... }
+
  # Both styles, if define_form_values is used first
  if ($f->validate_form == 0) { ... }
  # Or.... one by one
  if ($f->validate_widget('textbox', $vars)) { ... }
  # Only if define_form_values is called first
  if ($f->validate_widget('textbox')) { ... }
+
+ %args = $f->get_form_values;       # Already transformed by the widgets
+ $arg  = $f->get_form_value('some_var');
 
  $f->render_widget('textbox', $extra_args);
  print $f->srender_widget('textbox', $extra_args);
