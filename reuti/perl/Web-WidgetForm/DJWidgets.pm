@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.8 2004/11/18 11:00:51 zoso Exp $
+# $Id: DJWidgets.pm,v 1.9 2005/01/18 13:00:41 zoso Exp $
 
 =head1 NAME
 
@@ -14,11 +14,11 @@ Web::DJWidgets - Web Component System
 
  # Form creation
  $f = Web::DJWidgets->new($name, { class  => 'f',
-                                    action => 'somepage.pl' });
+                                   action => 'somepage.pl' });
  $f = Web::DJWidgets->new($name, { class  => 'f',
-                                    action => 'somepage.pl' },
-                                  { class    => 'widgetcommonclass',
-                                    readonly => '1' });
+                                   action => 'somepage.pl' },
+                                 { class    => 'widgetcommonclass',
+                                   readonly => '1' });
  $form_name = $f->get_name;
 
  $f->define_widgets({ 'textbox' => { widget_type => 'TextBox',
@@ -98,7 +98,8 @@ C<$widget-E<gt>type_data_transform> for every widget type loaded, and
 C<$widget-E<gt>widget_data_transform> for every widget, in case you define
 first the form values (see below).
 
-Returns the number of processed widgets.
+Returns the number of processed widgets, or raises an exception if there was
+an error.
 
 =item define_form_values($values_hashref)
 
@@ -306,19 +307,16 @@ sub define_widgets {
    foreach my $w (keys %$widgets) {
       $self->{WIDGETS}->{$w} = $widgets->{$w};
       my $object = $self->get_widget_object($w);
-      if (defined $object) {
-         $cnt++;
-         my $class = $object->arg('widget_type');
-         if (not defined $self->{WIDGET_CLASSES}->{$class}) {
-            $self->{WIDGET_CLASSES}->{$class} = 1;
-            $object->init;
-            $object->type_data_transform($self->{VALUES});
-         }
-         $object->setup_form;
-         $object->widget_data_transform($self->{VALUES});
-      } else {
-         delete $widgets->{$w};
+      defined $object || die "Widget $w does not exit\n";
+      my $class = $object->arg('widget_type');
+      if (not defined $self->{WIDGET_CLASSES}->{$class}) {
+         $self->{WIDGET_CLASSES}->{$class} = 1;
+         $object->init;
+         $object->type_data_transform($self->{VALUES});
       }
+      $object->setup_form;
+      $object->widget_data_transform($self->{VALUES});
+      $cnt++;
    }
    $cnt;
 }
@@ -380,10 +378,6 @@ sub get_widget_object {
 
 sub render_widget {
    my ($self, $widget, $extra_args) = @_;
-   defined $self->{WIDGETS}->{$widget} || do {
-      print STDERR "render_widget: Can't find widget $widget";
-      return;
-   };
    print srender_widget(@_);
 }
 
@@ -391,8 +385,9 @@ sub srender_widget {
    my ($self, $widget, $extra_args) = @_;
    my $w = $self->get_widget_object($widget);
    defined $w || do {
-      print STDERR "srender_widget: Can't find widget $widget";
-      return "";
+      my $msg = "srender_widget: Can't find widget $widget";
+      print STDERR $msg;
+      die $msg;
    };
    $w->render($extra_args);
 }
