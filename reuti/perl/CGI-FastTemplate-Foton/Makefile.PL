@@ -7,5 +7,5 @@ WriteMakefile(
     'PREREQ_PM'    => {
                              'CGI::FastTemplate' => '0.01' 
 		      },
-    'AUTHORS'		=> 'Esteban Manchado Velazquez <zoso@foton.es>, Javier Arbelo <jarbelo@foton.es>, Eduardo Navarro <eduardo@foton.es>',
+    'AUTHOR'		=> 'Esteban Manchado Velazquez <zoso@foton.es>, Javier Arbelo <jarbelo@foton.es>, Eduardo Navarro <eduardo@foton.es>',
 );
