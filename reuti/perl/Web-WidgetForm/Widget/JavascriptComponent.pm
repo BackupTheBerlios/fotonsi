@@ -18,8 +18,9 @@ sub new {
 }
 
 sub setup_form {
-   my ($self) = @_;
+   my ($self, @args) = @_;
 
+   $self->SUPER::setup_form(@args);
    foreach my $attr (@js_event_attrs) {
       $self->{HTML_ATTRS}->{$attr} .= $self->{ARGS}->{$attr}
             if defined $self->{ARGS}->{$attr};
