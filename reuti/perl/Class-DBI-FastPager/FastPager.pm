@@ -50,79 +50,45 @@ __END__
 
 =head1 NAME
 
-Class::DBI::FastPager - Fast pager for Class::DBI
+Class::DBI::FastPager - A fast pager for Class::DBI
 
 =head1 SYNOPSIS
 
-  package CD::Music;
+  package My::Class::ClassDBI;
   use Class::DBI::FastPager;
-
+  # ...
   package main;
-  my @music = CD::Music->paged_search(
-      artist => [ 'Ozzy', 'Kelly' ],
-      status => { '!=', 'outdated' },
-  );
-
-  my @misc = CD::Music->paged_search(
-      { artist => [ 'Ozzy', 'Kelly' ],
-        status => { '!=', 'outdated' } },
-      { order_by  => "reldate DESC" });
+  # ...
+  My::Class::ClassDBI->paged_search($params_where, $attrs);
 
 =head1 DESCRIPTION
 
-Class::DBI::AbstractSearch is a Class::DBI plugin to glue
-SQL::Abstract into Class::DBI.
+Class::DBI::FastPager is a plugin for Class::DBI, which glues Data::Page with Class::DBI in a more efficient way (we think so!). 
+Other pagers retrieve all data and then returns the pages specified. This module makes paging at SQL level (with LIMIT and OFFSET), so retrieves "desired-data only" from database. 
+Results: faster and more efficient search.
+
 
 =head1 METHODS
 
-Using this module adds following methods into your data class.
+Using this module adds following method into your data class.
 
 =over 4
 
 =item paged_search
 
-  $class->paged_search(%where);
-
-Takes a hash to specify WHERE clause. See L<SQL::Abstract> for hash
-options.
-
   $class->paged_search(\%where,\%attrs);
 
-Takes hash reference to specify WHERE clause. See L<SQL::Abstract>
-for hash options. Takes a hash reference to specify additional query
-attributes. Class::DBI::AbstractSearch uses these attributes:
-
-=over 4
-
-=item *
-
-B<order_by>
-
-Array reference of fields that will be used to order the results of
-your query.
-
-=back
-
-Any other attributes are passed to the SQL::Abstract constructor,
-and can be used to control how queries are created.  For example,
-to use 'AND' instead of 'OR' by default, use:
-
-    $class->paged_search(\%where, { logic => 'AND' });
+Takes hash reference to specify WHERE (if ignored, retrieves all data) clause and another one to ATTRIBUTES. Attributes: page (itself) and nelems (number of elements per page).
 
 =head1 AUTHOR
 
-Tatsuhiko Miyagawa E<lt>miyagawa@bulknews.netE<gt> with some help from
-cdbi-talk mailing list, especially:
-
-  Tim Bunce
-  Simon Wilcox
-  Tony Bowden
+Esteban Manchado Velázquez (zoso@foton.es) and Ángel Zuate Suárez (angel@foton.es)
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-L<Class::DBI>, L<SQL::Abstract>
+L<Class::DBI>, L<SQL::Abstract>. L<Class::DBI::Pager>
 
 =cut
