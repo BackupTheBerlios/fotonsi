@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.6 2004/06/04 10:12:10 zoso Exp $
+# $Id: DJWidgets.pm,v 1.7 2004/08/09 16:55:23 zoso Exp $
 
 =head1 NAME
 
@@ -19,6 +19,7 @@ Web::DJWidgets - Web Component System
                                     action => 'somepage.pl' },
                                   { class    => 'widgetcommonclass',
                                     readonly => '1' });
+ $form_name = $f->get_name;
 
  $f->define_widgets({ 'textbox' => { widget_type => 'TextBox',
                                      focus => 1,
@@ -81,6 +82,10 @@ strings with checkings).
 
 Returns a new form object with the given name and arguments. The optional
 parameter C<$base_widget_args> stores the common widget arguments.
+
+=item get_name
+
+Returns the form name.
 
 =item define_widgets($widgets_hashref)
 
@@ -287,6 +292,11 @@ sub new {
                };
    bless ($self, $class);
    return $self;
+}
+
+sub get_name {
+   my ($self) = @_;
+   return $self->{NAME};
 }
 
 sub define_widgets {
