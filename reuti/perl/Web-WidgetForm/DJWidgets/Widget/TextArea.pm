@@ -12,6 +12,7 @@ sub new {
    $self->{VALUE_HTML_ATTRS} = [ grep { $_ ne 'value' && $_ ne 'type' }
                                       @{$self->{VALUE_HTML_ATTRS}},
                                  'cols', 'rows' ];
+   push @{$self->{EMPTY_HTML_ATTRS}}, 'readonly';
    return $self;
 }
 
