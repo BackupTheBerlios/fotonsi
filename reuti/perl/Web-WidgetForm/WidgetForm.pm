@@ -2,7 +2,7 @@ package Web::WidgetForm;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.2 2004/02/12 23:14:24 zoso Exp $
+# $Id: WidgetForm.pm,v 1.3 2004/02/21 23:56:31 zoso Exp $
 
 =head1 NAME
 
@@ -13,7 +13,8 @@ Web::WidgetForm - Web Component System
  use Web::WidgetForm;
 
  $f = Web::WidgetForm->new($name, { class => 'f' });
- $f->define_widgets({ 'textbox' => { type => 'TextBox', focus => 1,
+ $f->define_widgets({ 'textbox' => { widget_type => 'TextBox',
+                                     focus => 1,
                                      length => 10 } });
  $list = $f->get_widgets;
 
@@ -141,11 +142,12 @@ sub define_widgets {
       my $object = $self->get_widget_object($w);
       if (defined $object) {
          $cnt++;
-         my $class = $self->{WIDGETS}->{$w}->{type};
+         my $class = $self->{WIDGETS}->{$w}->{widget_type};
          if (not defined $self->{WIDGET_CLASSES}->{$class}) {
             $self->{WIDGET_CLASSES}->{$class} = 1;
             $object->init;
          }
+         $object->setup_form;
       } else {
          delete $widgets->{$w};
       }
@@ -156,6 +158,11 @@ sub define_widgets {
 sub define_widget_values {
    my ($self, $values) = @_;
    $self->{VALUES} = { %$values };
+}
+
+sub get_widget_value {
+   my ($self, $name) = @_;
+   return $self->{VALUES}->{$name};
 }
 
 sub get_widgets {
@@ -170,8 +177,8 @@ sub get_widget_object {
    return $self->{CACHED_WIDGET_OBJECTS}->{$widgetname}
          if defined $self->{CACHED_WIDGET_OBJECTS}->{$widgetname};
 
-   $self->{WIDGETS}->{$widgetname}->{type} ||= "TextBox";
-   my $class = $self->{WIDGETS}->{$widgetname}->{type};
+   $self->{WIDGETS}->{$widgetname}->{widget_type} ||= "TextBox";
+   my $class = $self->{WIDGETS}->{$widgetname}->{widget_type};
    eval "use Web::Widget::$class";
    if ($@) {
       print STDERR "Can't load Web Widget '$widgetname' (type '$class'): $@";
@@ -203,14 +210,14 @@ sub validate_widget {
 
 sub render_widget {
    my ($self, $widget, $extra_args) = @_;
-   return unless exists $self->{WIDGETS}->{$widget};
+   return unless defined $self->{WIDGETS}->{$widget};
    print $self->srender_widget(@_);
 }
 
 sub srender_widget {
    my ($self, $widget, $extra_args) = @_;
    return undef unless exists $self->{WIDGETS}->{$widget};
-   $self->render($extra_args);
+   $self->render_widget($extra_args);
 }
 
 sub add_prop {
