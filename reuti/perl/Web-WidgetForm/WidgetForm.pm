@@ -2,7 +2,7 @@ package Web::WidgetForm;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.3 2004/02/21 23:56:31 zoso Exp $
+# $Id: WidgetForm.pm,v 1.4 2004/02/23 22:40:54 zoso Exp $
 
 =head1 NAME
 
@@ -19,16 +19,16 @@ Web::WidgetForm - Web Component System
  $list = $f->get_widgets;
 
  # CGI style
- $f->define_widget_values({ $cgi->Vars });
+ $f->define_form_values({ $cgi->Vars });
  if ($f->validate_form({ $cgi->Vars }) == 0) { ... }
  # Mason style
- $f->define_widget_values(\%ARGS);
+ $f->define_form_values(\%ARGS);
  if ($f->validate_form(\%ARGS) == 0) { ... }
- # Both styles, if define_widget_values is used first
+ # Both styles, if define_form_values is used first
  if ($f->validate_form == 0) { ... }
  # Or.... one by one
  if ($f->validate_widget('textbox', $value)) { ... }
- # Only if define_widget_values is called first
+ # Only if define_form_values is called first
  if ($f->validate_widget('textbox')) { ... }
 
  $f->render_widget('textbox', $extra_args);
@@ -61,7 +61,7 @@ and the values are hashrefs with all the widget arguments.
 
 Returns the number of processed widgets.
 
-=item define_widget_values($values_hashref)
+=item define_form_values($values_hashref)
 
 Defines the received values for the widgets. The widgets then take the proper
 value when rendering themselves. Defining the values this way also allows the
@@ -155,12 +155,12 @@ sub define_widgets {
    $cnt;
 }
 
-sub define_widget_values {
+sub define_form_values {
    my ($self, $values) = @_;
    $self->{VALUES} = { %$values };
 }
 
-sub get_widget_value {
+sub get_form_value {
    my ($self, $name) = @_;
    return $self->{VALUES}->{$name};
 }
