@@ -83,8 +83,7 @@ sub get_calc_html_attrs {
         onfocus => 'djw_numeric_focus(this)');
 }
 
-sub validate
-{
+sub validate {
     my ($self, $vars) = @_;
 
     $vars ||= $self->get_form->get_form_values;
@@ -98,8 +97,7 @@ sub validate
 }
 
 
-sub _fmt_mac_to_human
-{
+sub _fmt_mac_to_human {
     my ($self, $val) = @_;
     my ($int, $dec);
 
@@ -117,8 +115,7 @@ sub _fmt_mac_to_human
     return join("", reverse(split //, substr($rev,1))) . $dec;
 }
 
-sub _fmt_human_to_mac 
-{
+sub _fmt_human_to_mac {
     my ($self, $n) = @_;
     $n =~ s/\.//g;
     $n =~ s/,/\./g;
