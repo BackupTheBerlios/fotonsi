@@ -50,22 +50,41 @@ __END__
 
 =head1 NAME
 
-Class::DBI::FastPager - A fast pager for Class::DBI
+Class::DBI::FastPager - Fast pager for Class::DBI
 
 =head1 SYNOPSIS
 
-  package My::Class::ClassDBI;
+  package CD::Music;
   use Class::DBI::FastPager;
   # ...
   package main;
   # ...
-  My::Class::ClassDBI->paged_search($params_where, $attrs);
+  # basic example
+  my @music = CD::Music->paged_search(
+      artist => [ 'Ozzy', 'Kelly' ],
+      status => { '!=', 'outdated' },
+  );
+  # attributes example
+  my @misc = CD::Music->paged_search(
+      { artist => [ 'Ozzy', 'Kelly' ],
+        status => { '!=', 'outdated' } },
+      { order_by  => "reldate DESC" });
+  # paging example (fourth page of 20-element pages)
+  my @paged_misc = CD::Music->paged_search(
+      { artist => [ 'Ozzy', 'Kelly' ],
+        status => { '!=', 'outdated' } },
+      { order_by  => "reldate DESC",
+        page => 4, nelems => 20 });
 
 =head1 DESCRIPTION
 
-Class::DBI::FastPager is a plugin for Class::DBI, which glues Data::Page with Class::DBI in a more efficient way (we think so!). 
-Other pagers retrieve all data and then returns the pages specified. This module makes paging at SQL level (with LIMIT and OFFSET), so retrieves "desired-data only" from database. 
-Results: faster and more efficient search.
+C<Class::DBI::FastPager> is a plugin for C<Class::DBI>, which glues
+L<Data::Page> with C<Class::DBI> in a more efficient but less general way than
+L<Class::DBI::Pager>.  The latter retrieve all data and then returns the
+specified page, but works with any C<Class::DBI> plugin or method. This module
+makes paging at SQL level (with LIMIT and OFFSET), so retrieves "desired-data
+only" from database.  Results: faster and more efficient search, but only
+with L<Class::DBI::AbstractSearch> style searches.
 
 
 =head1 METHODS
@@ -74,21 +93,62 @@ Using this module adds following method into your data class.
 
 =over 4
 
-=item paged_search
+=item paged_search(%where)
 
-  $class->paged_search(\%where,\%attrs);
+=item paged_search(\%where, \%attrs)
 
-Takes hash reference to specify WHERE (if ignored, retrieves all data) clause and another one to ATTRIBUTES. Attributes: page (itself) and nelems (number of elements per page).
+Takes either a hash with the WHERE clause, or a hash reference to specify
+WHERE clause (if empty, retrieves all data) and another one to ATTRIBUTES (see
+L<SQL::Abstract> for hash options.)
 
-=head1 AUTHOR
+Class::DBI::FastPager uses these attributes:
 
-Esteban Manchado Velázquez (zoso@foton.es) and Ángel Zuate Suárez (angel@foton.es)
+=over 4
+
+=item *
+
+B<order_by>
+
+Array reference of fields that will be used to order the results of
+your query.
+
+=item *
+
+B<page>
+
+Page number to retrieve.
+
+=item *
+
+B<nelems>
+
+Number of elements per page.
+
+=back
+
+Any other attributes are passed to the SQL::Abstract constructor,
+and can be used to control how queries are created.  For example,
+to use 'AND' instead of 'OR' by default, use:
+
+    $class->paged_search(\%where, { logic => 'AND' });
+
+=head1 AUTHORS
+
+Esteban Manchado Velázquez E<lt>zoso@foton.esE<gt> and Ángel Zuate Suárez
+E<lt>angel@foton.esE<gt>, based on L<Class::DBI::AbstractSearch>, by:
+
+Tatsuhiko Miyagawa E<lt>miyagawa@bulknews.netE<gt> with some help from
+cdbi-talk mailing list, especially:
+
+  Tim Bunce
+  Simon Wilcox
+  Tony Bowden
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-L<Class::DBI>, L<SQL::Abstract>. L<Class::DBI::Pager>
+L<Class::DBI>, L<SQL::Abstract>, L<Class::DBI::Pager>
 
 =cut
