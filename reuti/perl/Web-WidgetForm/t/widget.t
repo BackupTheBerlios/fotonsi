@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 6;
+use Test::More tests => 9;
 use Test::Deep;
 
 use Web::WidgetForm;
@@ -12,6 +12,11 @@ $f->define_widgets({'comp' => { focus => 1,
                                 class => 'foo',
                                 widget_type => 'Hidden' } });
 my $w = $f->get_widget_object('comp');
+
+# Arguments
+is($w->arg('class'), 'foo',                           "arg (get)");
+ok(!defined $w->arg('disabled'),                      "arg (set)");
+is($w->arg('disabled'), undef,                        " get set value");
 
 # Convenience methods
 is($w->html_escape("O'Reilly"), "O&#39;Reilly",       "html_escape");
