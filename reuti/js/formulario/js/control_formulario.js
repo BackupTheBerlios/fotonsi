@@ -254,7 +254,7 @@ function _setMaximo (maximo) {
 
 /*****************************************************************************/
 function _setRange (min, max) {
- if (isNaN(minimo) || isNaN(maximo) return ERR_NO_NUMERO;
+ if (isNaN(minimo) || isNaN(maximo)) return ERR_NO_NUMERO;
  if (parseFloat (min) > parseFloat (max)) return ERR_NO_RANGO;
 
  this.minimo = min;
