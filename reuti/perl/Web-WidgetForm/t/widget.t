@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 12;
+use Test::More tests => 13;
 use Test::Deep;
 
 use lib 't';
@@ -41,12 +41,19 @@ is($w->get_html_attrs({ class => 'foo', id => 'fooid', size => 4 }),
 my $expected_attrs3 = 'name="attrs_test" size="20" onchange="document.f.attrs_test.value = &#39;&#39;; " checked';
 is($w2->get_html_attrs, $expected_attrs3,           " widget custom attrs");
 
+
 # Rendering
 my $rendering = $w->render({ class => 'bar' });
 my $expected_rendering = '<input name="comp" class="bar" type="hidden">';
 $rendering =~ s/^\s*//go;
 $rendering =~ s/\s*$//go;
 is ($rendering, $expected_rendering,                " additional arguments");
+
+$rendering = $w2->render({ '.onchange'   => "alert('I have changed!'); " });
+$rendering =~ s/^\s*//go;
+$rendering =~ s/\s*$//go;
+$expected_rendering = '<input name="attrs_test" size="20" onchange="document.f.attrs_test.value = &#39;&#39;; alert(&#39;I have changed!&#39;); " checked>';
+is ($rendering, $expected_rendering,                " add attributes");
 
 # Values
 is($w2->get_value, 'mock',                          "get_value");
