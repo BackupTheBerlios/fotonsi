@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 37;
+use Test::More tests => 38;
 use Test::Deep;
 use lib 't';
 
@@ -59,6 +59,9 @@ ok(scalar(grep { $_ eq 'readonly' }
 $f->add_prop('testprop', '%widgetname%.value = "foo"');
 is ($f->prop('testprop'), 'document.testform.widgetname.value = "foo"',
                                                  "add_prop substitution");
+# By the "init" method in the Test widget
+is ($f->prop('def'), "var foo = 'Some definition';",
+                                                 " init method");
 
 # Form values
 is ($f->get_form_value('t2'), 'jander@mander.fander',
