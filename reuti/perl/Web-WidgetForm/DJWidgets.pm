@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.3 2004/05/03 08:53:36 zoso Exp $
+# $Id: DJWidgets.pm,v 1.4 2004/05/04 12:04:29 zoso Exp $
 
 =head1 NAME
 
@@ -138,12 +138,16 @@ Only works in HTML mode, that is, you can't change the MIME type or output
 garbage before calling this method. If you need to, you'll have to roll your
 own redirection with your own state variable handling.
 
+=back
+
 
 =head1 VALIDATION METHODS
 
 Each widget defines its own server validation code so all data is safe. You
 can validate the entire form (returning the list of widget names not
 validating correctly) or a given widget.
+
+=over 4
 
 =item validate_form
 
@@ -164,6 +168,8 @@ containing the list of validation errors, if the widget didn't validate
 correctly, C<1> if everything went fine, and C<-1> if the widget is not
 defined.
 
+=back
+
 
 =head1 PROPERTIES METHODS
 
@@ -171,6 +177,8 @@ Properties are special buffers where values are stored. These values are
 usually Javascript content, compiled from every form widget. The most common
 use is storing Javascript code to initialize the form, check the form before
 submitting, etc.
+
+=over 4
 
 =item add_prop($prop, $value)
 
@@ -187,6 +195,8 @@ C<document.E<lt>I<formname>E<gt>.foo>.
 
 Returns the stored value for the given property C<$prop>.
 
+=back
+
 
 =head1 STATE VARIABLES METHODS
 
@@ -196,6 +206,8 @@ directory or ordering in a web-based file manager. It's useful telling the
 form which ones are state variables because that way the form can perform
 redirections without losing the state values (and other widgets know them too,
 so they can also perform redirections without losing important information).
+
+=over 4
 
 =item register_state_variable($varname)
 
@@ -221,8 +233,12 @@ Returns a URI encoded string with the state information. If the hashref
 C<$new_state_values> is given, the new values take precedence, and the result
 is the URI-encoded I<new> state.
 
+=back
+
 
 =head1 MISC METHODS
+
+=over 4
 
 =item get_js_name($widget_name)
 
