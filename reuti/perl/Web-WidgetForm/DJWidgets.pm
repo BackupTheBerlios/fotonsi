@@ -2,20 +2,20 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.1 2004/04/30 09:49:28 zoso Exp $
+# $Id: DJWidgets.pm,v 1.2 2004/04/30 10:13:39 zoso Exp $
 
 =head1 NAME
 
-Web::WidgetForm - Web Component System
+Web::DJWidgets - Web Component System
 
 =head1 SYNOPSIS
 
- use Web::WidgetForm;
+ use Web::DJWidgets;
 
  # Form creation
- $f = Web::WidgetForm->new($name, { class  => 'f',
+ $f = Web::DJWidgets->new($name, { class  => 'f',
                                     action => 'somepage.pl' });
- $f = Web::WidgetForm->new($name, { class  => 'f',
+ $f = Web::DJWidgets->new($name, { class  => 'f',
                                     action => 'somepage.pl' },
                                   { class    => 'widgetcommonclass',
                                     readonly => '1' });
@@ -58,7 +58,7 @@ Usually only inside components
 
 =head1 DESCRIPTION
 
-Class C<Web::WidgetForm> represents a Web Component System form. By defining
+Class C<Web::DJWidgets> represents a Web Component System form. By defining
 the widgets inside the form, it allows you to validate them, print them out
 and check the form properties collected over the widgets (usually Javascript
 strings with checkings).
