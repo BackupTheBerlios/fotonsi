@@ -1,0 +1,269 @@
+<html>
+ <head>
+  <title>Ejemplo de Formularios</title>
+  <script Language="JavaScript" src="js/control_formulario.js"></script>
+ </head>
+
+
+<script Language="JavaScript">
+var form;
+
+var objeto;
+var palabra = '';
+
+
+/*****************************************************************************/
+function ComprobarTecla (event) {
+ if (!event) event = window.event;
+
+ objeto = form.lstLista;
+
+ var code = event.keyCode;
+ if (code == 27 ||
+     code == 8 ||
+     code == 46) {
+  palabra = '';
+  return true;
+ }
+
+ var tecla = String.fromCharCode (code);
+ palabra += tecla;
+
+ if (!palabra) return true;
+
+ if (objeto.seleccionar_inicio_opcion (palabra)) { 
+  return true;
+ }
+ else {
+  palabra = '';
+  return false;
+ }
+}//ComprobarTecla
+
+
+//document.onkeydown = ComprobarTecla;
+
+
+/*****************************************************************************/
+function SeleccionarObjeto () {
+ var str = this.name;
+ var tipo = '';
+
+ switch (this.tipo) {
+  case TIPO_NUMERO: tipo = 'Número'; break;
+  case TIPO_FECHA: tipo = 'Fecha'; break;
+  case TIPO_LISTA: tipo = 'Lista'; break;
+  default: tipo = 'Desconocido';
+ }//Tipo de objeto
+
+
+ str = str + ' ('+tipo+')'; 
+
+ document.getElementById ('NombreObjeto').innerHTML = str;
+ document.getElementById ('ValorObjeto').innerHTML = this.valor() + (this.tipo == TIPO_LISTA ? ' (Índice:'+this.indice()+')':'');
+
+ form.chkRequerido.checked = this.getNull() ? true:false;
+ form.chkFoco.checked = this.getFocus() ? true:false;
+
+
+ objeto = this;
+}//SeleccionarObjeto
+
+
+/*****************************************************************************/
+function EstablecerRequerido (objeto_actual) {
+ form.chkRequerido.checked ? objeto_actual.setNull() : objeto_actual.setNoNull();
+}//EstablecerRequerido
+
+
+/*****************************************************************************/
+function EstablecerFoco (objeto_actual) {
+ form.chkFoco.checked ? objeto_actual.setFocus() : objeto_actual.setNoFocus();
+}//EstablecerFoco
+
+
+function ControlTeclado (event) {
+ if (!event) event = window.event;
+
+ alert ('Entra...'+event.keyCode+', '+event.charCode); //event.keyCode);
+ return true;
+}//ControlTeclado
+
+
+
+/*****************************************************************************/
+function ConfigurarCampos () {
+ var objeto = document.getElementById ('txtNumero');
+ objeto = ControlNumero (objeto);
+ objeto.setNoNull();
+ objeto.AddEvent ('onClick', 'SeleccionarObjeto');
+
+ objeto = document.getElementById ('txtFecha');
+ objeto = ControlFecha (objeto);
+ objeto.setNoNull ();
+ objeto.AddEvent ('onClick', 'SeleccionarObjeto');
+
+ objeto = document.getElementById ('lstLista');
+ objeto = ControlListaTeclado (objeto);
+ objeto.AddEvent ('onClick', 'SeleccionarObjeto');
+// objeto.AddEvent ('onKeyDown', '_SeleccionarInicioOpcion'); //ComprobarTecla');
+
+ objeto = document.getElementById ('lstTipo');
+ objeto = ControlListaTeclado (objeto);
+ objeto.AddEvent ('onClick', 'SeleccionarObjeto');
+// objeto.AddEvent ('onKeyDown', '_SeleccionarInicioOpcion'); //ComprobarTecla');
+
+
+// form.lstLista.onkeypress = ComprobarTecla;
+}//ConfigurarCampos
+
+
+
+
+</script>
+
+
+
+<body onLoad="form = document.ejemplo; ConfigurarCampos ();">
+
+<form method="POST" name="ejemplo">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+ <td width="48%">
+
+
+<table width="95%" align="center" cellpadding="3" cellspacing="0">
+<tr>
+ <td width="20%">
+  <b>Solo Números</b>
+ </td>
+
+ <td width="80%">
+  <input type="text" id="txtNumero" name="txtNumero" size="5" maxlength="5">
+ </td>
+</tr>
+
+
+<tr>
+ <td width="20%">
+  <b>Fecha</b>
+ </td>
+
+ <td width="80%">
+  <input type="text" id="txtFecha" name="txtFecha" size="10" maxlength="10">
+ </td>
+</tr>
+
+<tr>
+ <td width="20%">
+  <b>Lista Desplegable</b>
+ </td>
+
+ <td width="80%">
+  <select id="lstLista" name="lstLista">
+   <option value="0" SELECTED>--- Seleccione uno---</option>
+   <option value="opcion1">800</option>
+   <option value="opcion2">801</option>
+   <option value="opcion3">812</option>
+   <option value="opcion3">813</option>
+   <option value="opcion3">824</option>
+   <option value="opcion3">825</option>
+  </select>
+ </td>
+</tr>
+
+
+
+</table>
+
+ </td>
+
+ <td width="4%">&nbsp;</td>
+
+ <td width="48%" valign="top">
+
+<table width="95%" align="center" cellpadding="3" cellspacing="0">
+
+<tr>
+ <td width="35%"><b>Nombre del Objeto</b></td>
+ <td width="65%" id="NombreObjeto">---</td>
+</tr>
+
+<tr>
+ <td width="35%"><b>Valor</b></td>
+ <td width="65%" id="ValorObjeto">---</td>
+</tr>
+
+<tr>
+ <td width="35%"><b>Requerido</b></td>
+ <td width="65%">
+  <input type="checkbox" name="chkRequerido">
+  <input type="button" value="Establecer" onClick="if (objeto) EstablecerRequerido (objeto); else alert ('Primero debe seleccionar un objeto.');">
+ </td>
+</tr>
+
+<tr>
+ <td width="35%"><b>Coger Foco</b></td>
+ <td width="65%">
+  <input type="checkbox" name="chkFoco">
+  <input type="button" value="Establecer" onClick="if (objeto) EstablecerFoco (objeto); else alert ('Primero debe seleccionar un objeto.');">
+ </td>
+</tr>
+
+
+
+</table>
+
+
+ </td>
+</tr>
+</table>
+
+<select id="lstTipo" name="lstTipo">
+ <option>-TEST-</option>
+ <option>A1</option>
+ <option>A3</option>
+ <option>B1</option>
+ <option>B5</option>
+ <option>B6</option>
+ <option>C4</option>
+ <option>C5</option>
+ <option>F3</option>
+</select>
+
+<br>
+
+<select>
+ <option>-TEST-</option>
+ <option>A1</option>
+ <option>A3</option>
+ <option>B1</option>
+ <option>B5</option>
+ <option>B6</option>
+ <option>C4</option>
+ <option>C5</option>
+ <option>F3</option>
+</select>
+
+
+<input type="text" name="txtTipo">
+
+</form>
+
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+<div id="test">TEST</div>
+
+</body>
+</html>

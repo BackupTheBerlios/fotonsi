@@ -1,0 +1,1000 @@
+   43  cd
+   44  cd html/jarbelo/lacaja/caja_boda_administracion/
+   45  ls
+   46  cvs up
+   47  pwd
+   48  vim AdmServicioBoda.pm 
+   49  cvs up
+   50  cvs commit
+   51  cvs up
+   52  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+   53  cd tpl
+   54  cvs up
+   55  cd ..
+   56  cvs up
+   57  mkdir /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031216/
+   58  cp -a * /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031216/
+   59  ls -l* /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031216/
+   60  ls -l * /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031216/
+   61  ls -l /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031216/
+   62  cd tpl
+   63  vim telefonia_gastos.html 
+   64  exit
+   65  cd /home/jarbelo/html/jarbelo/economistas
+   66  cd tpl
+   67  mostro mostrar_curriculum_recibidos.html 
+   68  pwd
+   69  ls his*
+   70  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+   71  ls *.pm
+   72  vim TelefoniaGastos.pm 
+   73  psql -U entrada tpvboda
+   74  pwd
+   75  cd img/
+   76  ls
+   77  pwd
+   78  ls
+   79  rm esq_*
+   80  pd
+   81  pwd
+   82  ls
+   83  pwd
+   84  cd ..
+   85  vim TelefoniaGastos.pm 
+   86  exit
+   87  cd html/jarbelo/economistas
+   88  pwd
+   89  cd
+   90  cd html/jarbelo/lacaja/telefonia_gastos
+   91  ls
+   92  cvs up
+   93  cvs commit
+   94  cvs up
+   95  pwd
+   96  cd js
+   97  ls
+   98  mv lista_centro_costes.js $HOME/lista_centros_costes.js.old
+   99  mv lista_centro_costes_test.js lista_centro_costes.js
+  100  cd ..
+  101  cd tpl
+  102  cd ..
+  103  s
+  104  ls
+  105  vim test.html 
+  106  rm test.html 
+  107  ls
+  108  pwd
+  109  vim index.cgi 
+  110  exit
+  111  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  112  vim TelefoniaGastos.pm 
+  113  exit
+  114  cd html/jarbelo/lacaja/telefonia_gastos
+  115  pwd
+  116  vim index.cgi 
+  117  exit
+  118  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  119  tail -f /var/log/httpd/error_log
+  120  c
+  121  exit
+  122  exit
+  123  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  124  cd tpl
+  125  vim telefonia_gastos.html 
+  126  exit
+  127  cd html/jarbelo/lacaja/telefonia_gastos
+  128  pwd
+  129  vim index.cgi 
+  130  cd js
+  131  ls
+  132  vim lista_centro_costes.js 
+  133  vim lista_centro_costes.js 
+  134  cp lista_centro_costes.js $HOME/
+  135  ls -l $HOME
+  136  ls -l $HOME/*.js
+  137  ls
+  138  vim lista_centro_costes.js 
+  139  vim lista_centro_costes.js 
+  140  cd ..
+  141  cvs up
+  142  cvs commit
+  143  cvs up
+  144  cvs add img/mas.gif img/menos.gif img/transp.gif
+  145  cvs commit
+  146  ls
+  147  exit
+  148  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  149  vim TelefoniaGastos.pm 
+  150  ls
+  151  vim caj-inf-com.css 
+  152  vim caj-inf-com.css 
+  153  exit
+  154  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  155  cd tpl
+  156  vim telefonia_gastos.html 
+  157  cd
+  158  cd html/eduardo/lacaja/telefonia_gastos
+  159  ls
+  160  cd js
+  161  ls
+  162  vim lista_centro_costes.js 
+  163  pwd
+  164  mkdir /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031217.edu/
+  165  cp -a * /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031217.edu/
+  166  cd ..
+  167  cp -a * /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031217.edu/
+  168  ls -l /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031217.edu/
+  169  ls -l /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031217.edu//js
+  170  cd
+  171  exit
+  172  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  173  exit
+  174  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  175  tail -f /var/log/httpd/error_log
+  176  exit
+  177  cd html/jarbelo/lacaja/telefonia_gastos
+  178  ls
+  179  pwd
+  180  vim caj-inf-com.css 
+  181  cvs up
+  182  cvs commit
+  183  cvs up
+  184  exit
+  185  exit
+  186  exit
+  187  exit
+  188  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  189  cd tpl
+  190  cd ..
+  191  cd js
+  192  ls
+  193  vim lista_centro_costes.js 
+  194  exit
+  195  tail -f /var/log/httpd/error_log
+  196  cd /home/jarbelo/html/jarbelo/lacaja/generacion_excel
+  197  tail -f /var/log/httpd/error_log
+  198  cd html
+  199  ls
+  200  cd eduardo/
+  201  cd comercio/
+  202  ls
+  203  cd ..
+  204  cd lacaja/
+  205  ls
+  206  cd ..
+  207  cd ..
+  208  cd cristina/lacaja/comercio_exterior_negocio
+  209  ls
+  210  vim index.cgi 
+  211  ls
+  212  ls *.ini
+  213  ls
+  214  vim index.cgi 
+  215  cd
+  216  cd /home/jarbelo/html/eduardo/lacaja/cajeros_informe_cajero
+  217  ls
+  218  vim configuracion.ini 
+  219  cd /home/jarbelo/html/jarbelo/lacaja/generacion_excel
+  220  ls
+  221  vim generacion_excel.pl 
+  222  ls
+  223  cd
+  224  cd html/eduardo/lacaja/cajeros_informe_comercio/
+  225  ls
+  226  vim configuracion.in
+  227  vim configuracion.ini
+  228  gnumeric Formulario_con_formulas_y_edd.xls &
+  229  ls
+  230  vim generacion_excel.pl 
+  231  pwd
+  232  rdesktop -k ES -g 900x675 ocre -n jaja &
+  233  cd
+  234  cd html/jarbelo/lacaja/telefonia_gastos
+  235  vim TelefoniaGastos.pm 
+  236  pwd
+  237  ls
+  238  cp index.cgi mostrar_detalles_telefono.cgi
+  239  vim mostrar_detalles_telefono.cgi 
+  240  cd ..
+  241  cd caja_boda_administracion/
+  242  vim AdmServicioBoda.pm 
+  243  cd -
+  244  cd telefonia_gastos
+  245  cd ..
+  246  cd ..
+  247  cd ..
+  248  cd asescan_whizhost/
+  249  grep 'Carp' *
+  250  cd -
+  251  cd jarbelo/lacaja/telefonia_gastos
+  252  ls
+  253  vim mostrar_detalles_telefono.cgi 
+  254  cvs up
+  255  cvs add mostrar_detalles_telefono.cgi
+  256  cvs commit
+  257  cvs up
+  258  exit
+  259  cd html/eduardo/lacaja/cajeros_informe_c
+  260  ls
+  261  cd html/eduardo/lacaja/cajeros_informe_cajero/
+  262  ls
+  263  ls
+  264  vim configuracion.ini 
+  265  cd xls
+  266  ls
+  267  pwd
+  268  mkdir xls
+  269  su
+  270  cd /home/jarbelo/html/jarbelo/lacaja/generacion_excel
+  271  vim Generacion_excel.pm 
+  272  vim GeneracionExcel.pm
+  273  cd ..
+  274  cd telefonia_gastos
+  275  ls
+  276  vim TelefoniaGastos.pm 
+  277  vim TelefoniaGastos.pm 
+  278  vim TelefoniaGastos.pm 
+  279  exit
+  280  cd html/
+  281  cd jarbelo/
+  282  ls
+  283  cd html
+  284  ls
+  285  vim control_formulario.html 
+  286  ls asesor_personal/
+  287  rm -fR asesor_personal
+  288  ls
+  289  pwd
+  290  ls canarias7/
+  291  rm -fR canarias7/
+  292  ls
+  293  ls form/
+  294  rm -fR form
+  295  rm -f eventos_original.html eventosZEC.html
+  296  rm -f frames.html
+  297  vim radio.html 
+  298  rm -f radio.html
+  299  ls pg
+  300  rm -fR pg
+  301  ls
+  302  ls crea
+  303  rm -fR crea crea.tar 
+  304  ls
+  305  ls ControlArbol/
+  306  ls
+  307  rm -fR ControlArbol/
+  308  ls
+  309  ls copias/
+  310  rm -fR copias/
+  311  ls robot/
+  312  ls paginas/
+  313  rm -fR paginas/
+  314  ls
+  315  ls
+  316  clear
+  317  df
+  318  ls
+  319  ls mailing/
+  320  cd mailing/
+  321  ls
+  322  vim mailing.php 
+  323  cd ..
+  324  ls
+  325  ls lacaja
+  326  rm -fR lacaja
+  327  ls
+  328  ls lacajaweb
+  329  cd lacajaweb
+  330  cd simuladores/
+  331  ls
+  332  cd espanol
+  333  ls
+  334  cd ..
+  335  ls
+  336  clear
+  337  cd ..
+  338  ls
+  339  cd ..
+  340  ls
+  341  ls cookies/
+  342  rm -fR cookies/
+  343  ls python/
+  344  ls
+  345  cd lacajaweb
+  346  vim comprobar_formularios.js 
+  347  cd ..
+  348  cd 
+  349  cd html/jarbelo/lacaja/caja_boda_administracion/js/
+  350  ls
+  351  vim basico.js 
+  352  cd
+  353  ls
+  354  cd html/
+  355  cd jarbelo/
+  356  cd lacaja/
+  357  mkdir generacion_excel
+  358  cd generacion_excel/
+  359  ls
+  360  vim generacion_excel.pl 
+  361  pwd
+  362  ls
+  363  ls
+  364  gnumeric informe_detalles_telefonos.gnumeric &
+  365  pwd
+  366  ls
+  367  pwd
+  368  vim test_excel.pl
+  369  ls
+  370  cp generacion_excel.pl test_excel.pl
+  371  vim test_excel.pl 
+  372  ./test_excel.pl 
+  373  ./test_excel.pl 
+  374  clear
+  375  ./test_excel.pl 
+  376  ./test_excel.pl 
+  377  ./test_excel.pl 
+  378  ./test_excel.pl 
+  379  ./test_excel.pl 
+  380  ./test_excel.pl 
+  381  ./test_excel.pl 
+  382  ./test_excel.pl 
+  383  ./test_excel.pl 
+  384  ./test_excel.pl 
+  385  pwd
+  386  pwd
+  387  ./test_excel.pl 
+  388  ./test_excel.pl 
+  389  ./test_excel.pl 
+  390  ./test_excel.pl 
+  391  gnumeric test_1071760134.xls &
+  392  ls -l
+  393  vim informe_detalles_telefonos.xls 
+  394  gnumeric informe_detalles_telefonos.xls &
+  395  ls
+  396  clear
+  397  ls
+  398  ls *.xls
+  399  rm -f *.xls
+  400  gnumerico informe_detalles_telefonos.xls&
+  401  gnumeric informe_detalles_telefonos.xls&
+  402  ls *.xls
+  403  ls
+  404  cp informe_detalles_telefonos_plantilla.xls informe_detalles_telefonos.xls
+  405  clear
+  406  ./test_excel.pl 
+  407  ls *.xls -l
+  408  ./test_excel.pl 
+  409  ./test_excel.pl 
+  410  ls -l
+  411  rm -f test_1071760593.xls test_1071760704.xls
+  412  ./test_excel.pl 
+  413  ls -l
+  414  ./test_excel.pl 
+  415  ls -l *.xls
+  416  rm -f test_1071760726.xls test_1071760768.xls
+  417  ./test_excel.pl 
+  418  ./test_excel.pl 
+  419  ls -l *.xls
+  420  gnumeric informe_detalles_telefonos_plantilla.xls &
+  421  ./test_excel.pl 
+  422  clear
+  423  ./test_excel.pl 
+  424  ls -l
+  425  rm -f test_1071760817.xls test_1071760981.xls 
+  426  ls -l *.xls
+  427  ./test_excel.pl 
+  428  ./test_excel.pl 
+  429  ls -l *.xls
+  430  ./test_excel.pl 
+  431  ./test_excel.pl 
+  432  ./test_excel.pl 
+  433  ls -l *.xls
+  434  rm -f test_1071761808.xls
+  435  ./test_excel.pl 
+  436  gnumeric test_1071761933.xls &
+  437  rm -f test_1071761933.xls
+  438  ls -l *.xls
+  439  cp informe_detalles_telefonos_plantilla.xls informe_detalles_telefonos.xls 
+  440  ls
+  441  vim TelefoniaGastosDetalles.pm
+  442  cd ..
+  443  cd telefonia_gastos
+  444  ls
+  445  cd js
+  446  ls
+  447  vim lista_centro_costes.js 
+  448  vim ventanas.js 
+  449  exit
+  450  psql -U entrada listin
+  451  cd /home/jarbelo/html/jarbelo/lacaja/generacion_excel
+  452  ls
+  453  ls
+  454  gnumeric informe_detalles_telefonos.xls&
+  455  ls
+  456  ls *.xls
+  457  mv informe_detalles_telefonos.gnumeric informe_detalles_telefonos.xls
+  458  ls *.xls
+  459  cd
+  460  cd html/jarbelo/lacaja/telefonia_gastos
+  461  cd tpl/
+  462  ls
+  463  vim telefonia_gastos.html 
+  464  exit
+  465  tail -f /var/log/httpd/error_log
+  466  exit
+  467  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  468  top
+  469  tail -f /var/log/httpd/error_log
+  470  cd /home/gordo/
+  471  cd ftp
+  472  ls
+  473  cd ..
+  474  cd /home2
+  475  cd ftp
+  476  cd pub
+  477  cd almacen
+  478  ls
+  479  cd RPMS/
+  480  ls
+  481  vim /etc/freetds.conf 
+  482  pwd
+  483  cd
+  484  clear
+  485  cd
+  486  pwd
+  487  tail -f /var/log/httpd/error_log
+  488  cd html/jarbelo/html
+  489  ls
+  490  mkdir formulario
+  491  cd formulario/
+  492  pwd
+  493  exit
+  494  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  495  exit
+  496  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  497  exit
+  498  cd html/jarbelo/lacaja/telefonia_gastos
+  499  pwd
+  500  ping ocre
+  501  cd ../caja_boda_administracion/
+  502  vim AdmServicioBoda.pm 
+  503  cd -
+  504  vim mostrar_detalles_telefono.cgi 
+  505  vim ../caja_boda_administracion/AdmServicioBoda.pm 
+  506  vim mostrar_detalles_telefono.cgi 
+  507  tail -f /var/log/httpd/error_log
+  508  cvs up
+  509  cvs commit
+  510  exit
+  511  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  512  vim TelefoniaGastos.pm 
+  513  exit
+  514  ls
+  515  vim test.txt
+  516  exit
+  517  vim test.txt
+  518  exit
+  519  clear
+  520  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  521  vim TelefoniaGastos.pm 
+  522  cd tpl
+  523  ls
+  524  cp telefonia_gastos.html mostrar_detalles_telefono.html
+  525  vim mostrar_detalles_telefono.html 
+  526  cd 
+  527  ls
+  528  cd html/
+  529  cd lacaja
+  530  cd tel
+  531  pwd
+  532  cd
+  533  cd html/jarbelo/lacaja/telefonia_gastos
+  534  ls
+  535  ls ../generacion_excel/
+  536  ls ../generacion_excel/*.xls
+  537  mkdir excel
+  538  chmod 0777 excel/
+  539  vim GeneracionExcel.pm 
+  540  mv GeneracionExcel.pm GeneracionExcel.pm.old
+  541  cp ../generacion_excel/GeneracionExcel.pm .
+  542  vim GeneracionExcel.pm
+  543  tail -f /var/log/httpd/error_log
+  544  exit
+  545  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  546  tail -f /var/log/httpd/error_log
+  547  cd js
+  548  vim lista_centro_costes.js 
+  549  cd ..
+  550  cd ..
+  551  cd ..
+  552  ls
+  553  cd prueba/
+  554  ls
+  555  cd ..
+  556  cd html
+  557  ls
+  558  cd ..
+  559  cd lacaja/
+  560  ls
+  561  cd generacion_excel/
+  562  ls
+  563  vim GeneracionExcel.pm 
+  564  cp GeneracionExcel.pm ../telefonia_gastos
+  565  vim generacion_excel.pl 
+  566  ls *.pl
+  567  vim test_excel.pl s
+  568  cd ../telefonia_gastos
+  569  ls
+  570  vim GeneracionExcel.pm 
+  571  cd excel
+  572  ls
+  573  tail -f /var/log/httpd/error_log
+  574  ls
+  575  cd ..
+  576  ls
+  577  cp ../generacion_excel/informe_detalles_telefonos_plantilla.xls excel/
+  578  ls excel/
+  579  tail -f /var/log/httpd/error_log
+  580  ls excel/
+  581  cp excel/informe_detalles_telefonos_plantilla.xls  .
+  582  ls *.xls
+  583  ls *.xls
+  584  ls excel/
+  585  ls excel/
+  586  cd excel
+  587  ls -l
+  588  vim test_1072100748.xls 
+  589  :q
+  590  cd ..
+  591  cd tpl
+  592  vim mostrar_detalles_telefono.
+  593  vim mostrar_detalles_telefono.html 
+  594  tail -f /var/log/httpd/error_log
+  595  exit
+  596  ls
+  597  telnet laser.foton.es 80
+  598  cd html/jarbelo/lacaja/telefonia_gastos
+  599  ls
+  600  pwd
+  601  vim mostrar_detalles_telefono.cgi 
+  602  cvs up
+  603  vim TelefoniaGastos.pm 
+  604  vim TelefoniaGastos.pm 
+  605  cvs up
+  606  cvs add GeneracionExcel.pm excel tpl/fila_detalles_tlf_mes.tpl tpl/mostrar_detalles_telefono.html tpl/mostrar_detalles_telefono.tpl
+  607  cvs commit
+  608  cvs up
+  609  rm -f informe_detalles_telefonos_plantilla.xls
+  610  cvs add excel/informe_detalles_telefonos_plantilla.xls
+  611  cvs commit
+  612  cvs up
+  613  exit
+  614  mozilla&
+  615  exit
+  616  cd -
+  617  cd
+  618  cd html/jarbelo/lacaja/telefonia_gastos
+  619  cvs up
+  620  ls
+  621  ls -l
+  622  cvs add excel
+  623  ls excel/
+  624  ls
+  625  cvs up
+  626  cd excel/
+  627  ls
+  628  cd ..
+  629  vim TelefoniaGastos.pm 
+  630  cd tpl
+  631  vim mostrar_detalles_telefono.html 
+  632  cd ..
+  633  vim TelefoniaGastos.pm 
+  634  vim GeneracionExcel.pm
+  635  cvs commit
+  636  vim TelefoniaGastos.pm 
+  637  cvs commit
+  638  tail -f /var/log/httpd/error_log
+  639  ls
+  640  tail -f /var/log/httpd/error_log
+  641  exit
+  642  exit
+  643  exit
+  644  cd html/jarbelo/lacaja/telefonia_gastos/excel/
+  645  ls
+  646  cp /home/jarbelo/informe_detalles_telefonos_plantilla.xls .
+  647  ls -l
+  648  rm -f test_1072261306.xls
+  649  exit
+  650  cd html/jarbelo/lacaja/telefonia_gastos
+  651  mkdir /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031224/
+  652  cp -a * /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031224/
+  653  ls -l /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20031224/
+  654  ls
+  655  cvs up
+  656  vim TelefoniaGastos.pm 
+  657  cd excel/
+  658  ls
+  659  pwd
+  660  ls
+  661  cp informe_detalles_telefonos_plantilla.xls $HOME/
+  662  ls -l $HOME
+  663  ls -l $HOME/i*
+  664  ls
+  665  ls
+  666  rm test_1072*
+  667  rm -f test_1072*
+  668  ls
+  669  ls -l
+  670  cd ..
+  671  cvs up
+  672  cd js
+  673  ls -l lista_centro_costes.js 
+  674  vim lista_centro_costes.js 
+  675  cd ..
+  676  cvs commit
+  677  cvs up
+  678  exit
+  679  cd html/jarbelo/
+  680  cd prueba/
+  681  ls
+  682  vim formato_formulario.html 
+  683  cd ..
+  684  ls
+  685  cd html
+  686  ls
+  687  vim ordenar_tabla.html 
+  688  vim seleccion_js.html
+  689  vim seleccion_js.html
+  690  exit
+  691  cd html/jarbelo/lacaja/telefonia_gastos
+  692  ls
+  693  rm GeneracionExcel.pm.old 
+  694  ls
+  695  exiut
+  696  exit
+  697  cd html/jarbelo/lacaja/telefonia_gastos
+  698  ls
+  699  cd js
+  700  vim lista_centro_costes.js 
+  701  cd ..
+  702  cvs up
+  703  cvs commit
+  704  cvs up
+  705  cvs add img/ampliacion.jpg
+  706  cvs commit
+  707  cvs up
+  708  cd ..
+  709  cd ..
+  710  cd economistas
+  711  ls
+  712  mkdir /home/jarbelo/copias/economistas/economistas.20031229/
+  713  cp -a * /home/jarbelo/copias/economistas/economistas.20031229/
+  714  cd
+  715  cd html/jarbelo/lacaja/telefonia_gastos
+  716  ls
+  717  ls img/
+  718  tail -f /var/log/httpd/error_log
+  719  exit
+  720  exit
+  721  cd html/lacaja/
+  722  ls
+  723  cd
+  724  ls
+  725  ls
+  726  mv hoja2.jpeg jarbelo/lacaja/telefonia_gastos/img
+  727  cd /home/jarbelo/html/asescan_whizhost
+  728  vim Configuracion.pm 
+  729  ls
+  730  ls *.old
+  731  rm -f Basico.pm.old EnvioNotificacion.pm.old UsuariosAsesCan.pm.old CurriculumOfertas.pm.old SeguridadAsescan.pm.old
+  732  ls
+  733  exit
+  734  cd html/jarbelo/lacaja/telefonia_gastos/img/
+  735  ls
+  736  ls
+  737  cd ..
+  738  ls
+  739  ls img/
+  740  pwd
+  741  ls img/
+  742  cdls
+  743  ls img/
+  744  ls -l
+  745  mv hoja2.jpeg ampliacion.jpg
+  746  ls -l
+  747  ls -l img/
+  748  mv hoja2.jpeg ampliacion.jpg
+  749  ls
+  750  cd img/
+  751  ls
+  752  mv hoja2.jpeg ampliacion.jpg
+  753  ls -l
+  754  ls
+  755  ls
+  756  ls -l
+  757  cd ..
+  758  ls
+  759  ls
+  760  rm ampliacion.jpg -f
+  761  vim TelefoniaGastos.pm 
+  762  cd
+  763  cd html/asescan_whizhost/
+  764  ls
+  765  mkdir /home/jarbelo/copias/asescan
+  766  mkdir /home/jarbelo/copias/asescan/asescan.20031229/
+  767  cp -a * /home/jarbelo/copias/asescan/asescan.20031229/
+  768  ls  -l /home/jarbelo/copias/asescan/asescan.20031229/
+  769  ls
+  770  ping www.nmsftn.com
+  771  ping www.nmsftn.com
+  772  pwd
+  773  cd /home/jarbelo/html/asescan_whizhost
+  774  su
+  775  exit
+  776  cd html/jarbelo/lacaja/telefonia_gastos
+  777  vim TelefoniaGastos.pm 
+  778  exit
+  779  exit
+  780  cd basesmysql/
+  781  ls
+  782  cd asescan/
+  783  ls
+  784  mysqldump -u root -h localhost -p asescan > asescan.20031230.txt 
+  785  ls -l
+  786  vim asescan.20031230.txt
+  787  cd ..
+  788  ls
+  789  mkdir economistas
+  790  cd economistas/
+  791  mysqldump -u root -h localhost -p economistas > economistas.20031230.txt 
+  792  vim economistas.20031230.txt 
+  793  exit
+  794  exit
+  795  exit
+  796  tail -f /var/log/httpd/error_log
+  797  exiut
+  798  exit
+  799  mozilla&
+  800  cd html/jarbelo/lacaja/telefonia_gastos
+  801  ls
+  802  cd img
+  803  ls
+  804  gimp ampliacion.jpg &
+  805  ls
+  806  mv ampliacion.jpg ampliacion.jpg.old
+  807  mv ampliacion2.jpg ampliacion.jpg
+  808  rm ampliacion.jpg.old 
+  809  ls
+  810  cd ..
+  811  cvs up
+  812  cvs up
+  813  cvs up
+  814  cvs commit
+  815  cvs up
+  816  cd excel/
+  817  ls
+  818  rm test_107* -f
+  819  ls
+  820  cd ..
+  821  cvs up
+  822  rm -f img/.xvpics/ampliacion2.jpg 
+  823  rmdir -f img/.xvpics 
+  824  rmdir img/.xvpics 
+  825  cvs up
+  826  exit
+  827  exit
+  828  exit
+  829  exit
+  830  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  831  ping ocre
+  832  exit
+  833  cd/home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  834  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  835  ls
+  836  telnet laser 80
+  837  ls
+  838  top
+  839  vim mostrar_detalles_telefono.cgi 
+  840  cd js
+  841  ls
+  842  vim lista_centro_costes.js 
+  843  exit
+  844  cd html/jarbelo/lacaja/telefonia_gastos
+  845  cvs up
+  846  pwd
+  847  mkdir /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20040108/
+  848  cp -a * /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20040108/
+  849  ls -l /home/jarbelo/copias/telefonia_gastos/telefonoia_gastos.20040108/
+  850  vim GeneracionExcel.pm 
+  851  cvs up
+  852  cvs commit
+  853  cvs up
+  854  exit
+  855  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  856  cd tpl
+  857  ls
+  858  vim mostrar_detalles_telefono.html 
+  859  exit
+  860  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  861  top
+  862  exit
+  863  cd /home/jarbelo/html/jarbelo/lacaja/telefonia_gastos
+  864  tail -f /var/log/httpd/error_log
+  865  exit
+  866  cd html/jarbelo/html
+  867  ls
+  868  cd formulario/
+  869  ls
+  870  ls js
+  871  vim formulario.html 
+  872  exit
+  873  cd html/jarbelo/html/formulario/js/
+  874  ls
+  875  vim control_formulario.js 
+  876  ls
+  877  vim control_formulario.js 
+  878  exit
+  879  cd html/jarbelo/html/formulario/
+  880  ls
+  881  mv formulario.html formulario.html.old
+  882  cd js
+  883  ls
+  884  mv control_formulario.js control_formulario.js.old
+  885  cd ..
+  886  pwd
+  887  ls
+  888  mv control_formulario.js js
+  889  man cvs
+  890  cvs init
+  891  cd
+  892  cvs co formulario
+  893  cd -
+  894  ls
+  895  cvs init add
+  896  cvs --help
+  897  cvs --help init
+  898  ps
+  899  cvs add formulario
+  900  cvs co formulario
+  901  cvs formulario
+  902  cvs --help init
+  903  cvs init
+  904  cvs init formulario target
+  905  ps
+  906  cvs co formulario
+  907  cvs up
+  908  cvs co 
+  909  cvs co formulario
+  910  cvs co servicio_boda
+  911  ls
+  912  rm -fR servicio_boda/
+  913  ls
+  914  cvs import formulario
+  915  cvs import formulario target
+  916  cvs import formulario version 0.1
+  917  cvs import formulario version a0.1
+  918  cvs import formulario version v0.1
+  919  cvs import formulario version v1
+  920  ls
+  921  cd
+  922  cvs co formulario
+  923  ls
+  924  cd formulario/
+  925  ls
+  926  cd ..
+  927  rm -fR formulario/
+  928  dc -
+  929  cd -
+  930  pwd
+  931  cd html/jarbelo/html
+  932  ls
+  933  cd formulario/
+  934  ls
+  935  cd
+  936  cvs co formulario
+  937  cd formulario/
+  938  ls
+  939  ls js
+  940  cd ..
+  941  rm -fR formulario
+  942  exit
+  943  cd html/html
+  944  cd html/jarbelo/html
+  945  ls
+  946  vim eventos.
+  947  vim eventos.html 
+  948  vim teclas.html 
+  949  exit
+  950  cd html/jarbelo/economistas/tpl
+  951  cd ..
+  952  cd ..
+  953  cd lacaja/servicio_boda_administracion
+  954  ls
+  955  cd tpl
+  956  ls
+  957  vim establecer_novios.html 
+  958  cd
+  959  cd html/jarbelo/html
+  960  cd formulario/
+  961  cvs up
+  962  cd ..
+  963  mv formulario formulario.old
+  964  cvs co formulario
+  965  cd formulario
+  966  ls
+  967  cvs up
+  968  vim formulario.html 
+  969  vim formulario.html 
+  970  ls
+  971  cd
+  972  cd html/cristina/lacaja/comercio_exterior_negocio/tpl
+  973  ls
+  974  vim anyo.html 
+  975  su
+  976  ls -l /htdocs/jarbelo/lacaja/servicio_boda
+  977  vim anyo.html 
+  978  man Foton::Pdflatex
+  979  exit
+  980  cd html/cristina/lacaja/comercio_exterior_negocio/tpl
+  981  ls -l anyo.*
+  982  vim anyo.html 
+  983  cd html/ialiende/
+  984  cd pruebas_js/
+  985  s -l seleccion*
+  986  ls -l seleccion*
+  987  su
+  988  vim seleccion_dom.html 
+  989  cp seleccion_dom.html /home/jarbelo/html/jarbelo/html/
+  990  cd
+  991  cd html/jarbelo/html
+  992  vim seleccion_dom.html 
+  993  exit
+  994  cd html/jarbelo/html/
+  995  vim seleccion_dom.html 
+  996  cd formulario
+  997  ls
+  998  cd ..
+  999  vim seleccion.html
+ 1000  exit
+ 1001  cd html/html
+ 1002  cd html/jarbelo/html/formulario
+ 1003  ls
+ 1004  cd ..
+ 1005  mkdir listas
+ 1006  cd listas/
+ 1007  pwd
+ 1008  ls
+ 1009  rm -fR CVS
+ 1010  cd js
+ 1011  ls
+ 1012  rm -fR CVS
+ 1013  cd ..
+ 1014  cd ..
+ 1015  mv listas objetos_js
+ 1016  cd objetos_js
+ 1017  ls
+ 1018  cd ..
+ 1019  mv objetos_js formulario
+ 1020  cd formulario
+ 1021  ls
+ 1022  ls formulario.html 
+ 1023  vim formulario.html 
+ 1024  ls -l
+ 1025  cd objetos_js/
+ 1026  ls
+ 1027  cd ..
+ 1028  cd ..
+ 1029  mv formulario formulario.old2
+ 1030  cd formulario.old2
+ 1031  mv objetos_js ../formulario
+ 1032  cd ../formulario
+ 1033  ls
+ 1034  rm test.html 
+ 1035  ls
+ 1036  ls js
+ 1037  ls -l js
+ 1038  ls
+ 1039  cvs import reuti/js/formulario
+ 1040  cvs import /reuti/js/formulario
+ 1041  history 
+ 1042  history > fichero
