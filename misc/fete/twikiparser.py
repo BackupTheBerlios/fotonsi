@@ -1,6 +1,6 @@
 # -*- coding: latin1 -*-
 
-RCS_ID = '$Id: twikiparser.py,v 1.2 2004/10/11 22:52:05 setepo Exp $'
+RCS_ID = '$Id: twikiparser.py,v 1.3 2004/11/16 12:51:11 setepo Exp $'
 
 import re
 RE_editlink = re.compile(r'''<b>(.*?)</b>.*?<a href="javascript:window.open\('(.*?)'\);window.close\(\);">edit</a>''', re.I)
@@ -89,7 +89,7 @@ class TWiki:
 
     def createpage(self, page):
 
-        tp = self.config.get('system.topicparent')
+        tp = self.config.get('system.topic_parent')
         if len(tp) > 0:
             url = self.config.get('urls.crear_padre').replace('%U', tp)
         else:
