@@ -15,3 +15,7 @@ INSERT INTO tcosa VALUES (7, 'Séptima cosa', NULL);
 INSERT INTO tcosa VALUES (8, 'Octava cosa', NULL);
 INSERT INTO tcosa VALUES (9, 'Novena cosa', '');
 INSERT INTO tcosa VALUES (10, 'Décima cosa', NULL);
+
+CREATE TABLE tvacia (
+  cod_vacio int
+);

@@ -2,12 +2,12 @@
 
 use strict;
 
-my $pruebas = 5;
-use Test::More tests => 5;
+my $pruebas = 6;
+use Test::More tests => 6;
 use Test::Deep;
 use DBIx::DataSource qw(create_database drop_database);
 use Config::Tiny;
-use Foton::Pruebas qw(conectar_bdd);
+use Foton::BBDD qw(conectar_bdd);
 use Class::DBI::FastPager;
 
 my $fich_config = 't/paging.ini';
@@ -17,6 +17,7 @@ my $conf_bdd_eval = "nombre => '$conf->{base_datos}->{nombre}',
                      usuario => '$conf->{base_datos}->{usuario}',
                      clave => '$conf->{base_datos}->{clave}'";
 eval "use Cosa $conf_bdd_eval";
+eval "use Vacia $conf_bdd_eval";
 
 SKIP: {
     skip "NO EXISTE EL FICHERO DE CONFIGURACIÓN $fich_config", $pruebas unless -r $fich_config;
@@ -43,6 +44,11 @@ SKIP: {
     is (scalar @lista, 3,                     ' restricciones');
     cmp_deeply([ map { $_->cod_cosa } @lista ],
                [ 7, 8, 9 ],                   ' cod_cosa');
+
+
+    # Comprobamos que no pete con tablas vacías
+    eval { Vacia->paged_search({ cod_vacio => 0 }, { nelems => 5 }); };
+    is ($@, "", 'tabla vacía');
 
 
     # Tenemos que cerrar las conexiones de Class::DBI. Si no, no funcionará
