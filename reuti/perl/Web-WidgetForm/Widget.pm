@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.8 2004/03/17 00:28:41 zoso Exp $
+# $Id: Widget.pm,v 1.9 2004/04/14 11:50:06 zoso Exp $
 
 =head1 NAME
 
@@ -29,7 +29,7 @@ Web::Widget - Base Web Widget
 The class C<Web::Widget> is the base class for every Web Component System
 widget.
 
-=head1 METHOD
+=head1 METHODS
 
 =over 4
 
@@ -48,6 +48,12 @@ every widget type.
 Fills the associated form properties for the current widget. It's called
 automatically for every widget.
 
+=item arg($name)
+=item arg($name, $value)
+
+Returns the value of the argument C<$name>. If C<$value> is given, it's first
+assigned to the argument C<$name>.
+
 =item render($opt_args)
 
 Renders the widget and returns the result. If C<$opt_args> is given, those
@@ -59,6 +65,31 @@ form. Its main use is to support multiple form elements with the same name.
 
 Validates the widget with the given value. This validation is a "server
 validation", of course, when the actual data have arrived.
+
+=item type_data_transform($form_values)
+
+Transform the form received data in some way that makes sense to the widget
+type. It's usually called to e.g.: convert human-readable dates to
+machine-readable ones, or to change some form values depending on the form
+button pushed.
+
+It's called automatically by the form when some data is loaded, once for every
+widget type loaded.
+
+=item widget_data_transform($form_values)
+
+Transform the form received data in some way that makes sense to the widget.
+It's usually called to e.g.: convert human-readable dates to machine-readable
+ones, or to change some form values depending on the form button pushed.
+
+It's called automatically by the form when some data is loaded, once for every
+widget loaded.
+
+=back
+
+=head1 CONVENIENCE METHODS
+
+=over 4
 
 =item get_html_attrs
 =item get_html_attrs($html_attrs_hash)
@@ -139,22 +170,10 @@ sub setup_form {
    }
 }
 
-sub get_html_attrs {
-   my ($self, $html_attrs, $html_valid_attrs) = @_;
-   $html_attrs       ||= $self->{HTML_ATTRS};
-   $html_valid_attrs ||= $self->{HTML_VALID_ATTRS};
-   my %attrs_hash = %$html_attrs;
-   my @r = ();
-   foreach my $attr (@$html_valid_attrs) {
-      if (exists $attrs_hash{$attr}) {
-         if (defined $attrs_hash{$attr}) {
-            push @r, "$attr=\"".$self->html_escape($attrs_hash{$attr})."\"";
-         } else {
-            push @r, $attr;
-         }
-      }
-   }
-   join(" ", @r);
+sub arg {
+   my ($self, $name, $value) = @_;
+   $self->{ARGS}->{$name} = $value if (scalar @_ > 2);
+   $self->{ARGS}->{$name};
 }
 
 sub render {
@@ -179,6 +198,37 @@ sub validate {
    };
    return 0 if $value =~ /^\s*$/ && $self->{ARGS}->{nonempty};
    1;
+}
+
+sub type_data_transform {
+   my ($self, $form_values) = @_;
+   # No default transform
+}
+
+sub widget_data_transform {
+   my ($self, $form_values) = @_;
+   # No default transform
+}
+
+
+
+
+sub get_html_attrs {
+   my ($self, $html_attrs, $html_valid_attrs) = @_;
+   $html_attrs       ||= $self->{HTML_ATTRS};
+   $html_valid_attrs ||= $self->{HTML_VALID_ATTRS};
+   my %attrs_hash = %$html_attrs;
+   my @r = ();
+   foreach my $attr (@$html_valid_attrs) {
+      if (exists $attrs_hash{$attr}) {
+         if (defined $attrs_hash{$attr}) {
+            push @r, "$attr=\"".$self->html_escape($attrs_hash{$attr})."\"";
+         } else {
+            push @r, $attr;
+         }
+      }
+   }
+   join(" ", @r);
 }
 
 sub merge_args {
