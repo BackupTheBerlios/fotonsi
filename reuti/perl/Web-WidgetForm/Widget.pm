@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.7 2004/03/16 23:47:49 zoso Exp $
+# $Id: Widget.pm,v 1.8 2004/03/17 00:28:41 zoso Exp $
 
 =head1 NAME
 
@@ -129,7 +129,7 @@ sub setup_form {
 
    # Common HTML attributes
    $self->{HTML_ATTRS}->{name} = $name;
-   foreach my $empty_attr ('readonly', 'disabled') {
+   foreach my $empty_attr ('readonly', 'disabled', 'selected', 'checked') {
       $self->{HTML_ATTRS}->{$empty_attr} = undef if $args->{$empty_attr};
    }
    foreach my $value_attr ('class', 'id', 'tabindex', 'accesskey',
