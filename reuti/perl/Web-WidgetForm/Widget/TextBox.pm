@@ -21,8 +21,19 @@ sub setup_form {
 
    # Common form rules
    $args->{focus} && $form->add_prop('init', "\%$name\%.focus();");
-   $args->{nonempty} && $form->add_prop('before_send', "if (\%$name\%.value =~ /^ *\$/) { alert('".($args->{nonempty_msg} || "Error: empty field. Please fill in.")."'); \%$name\%.focus(); return 0 };");
+   $args->{nonempty} && $form->add_prop('before_send', "if (\%$name\%.value.match(/^ *\$/)) { alert('".($args->{nonempty_msg} || "Error: empty field. Please fill in.")."'); \%$name\%.focus(); return false; };");
    $args->{before_send_extra} && $form->add_prop('before_send', $args->{before_send_extra});
+}
+
+sub render {
+   my ($self, $extra_args) = @_;
+
+   $self->SUPER::render;
+   my ($name,         $value,           $extra_attrs) =
+      ($self->{NAME}, $self->get_value, $self->get_html_attrs);
+   return <<EOWIDGET;
+   <input type="text" name="$name" value="$value" $extra_attrs>
+EOWIDGET
 }
 
 1;
