@@ -19,10 +19,12 @@ sub setup_form {
 
    $self->SUPER::setup_form(@args);
    my ($form, $name, $args) = ($self->{FORM}, $self->{NAME}, $self->{ARGS});
+   $self->arg('nonempty_msg', "Empty field. Please fill in.")
+         unless defined $self->arg('nonempty_msg');
 
    # Common form rules
    $args->{focus} && $form->add_prop('init', "\%$name\%.focus();");
-   $args->{nonempty} && $form->add_prop('before_send', "if (\%$name\%.value.match(/^ *\$/)) { alert('".($args->{nonempty_msg} || "Error: empty field. Please fill in.")."'); \%$name\%.focus(); return false; };");
+   $args->{nonempty} && $form->add_prop('before_send', "if (\%$name\%.value.match(/^ *\$/)) { alert('$args->{nonempty_msg}'); \%$name\%.focus(); return false; };");
    $args->{before_send_extra} && $form->add_prop('before_send', $args->{before_send_extra});
 }
 
