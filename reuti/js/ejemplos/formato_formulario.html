@@ -1,0 +1,38 @@
+<html>
+ <head>
+  <title>Test: Formato Formulario</title>
+  <script Language="JavaScript" src="../formato_formulario.js"></script>
+ </head>
+
+
+<script Language="JavaScript">
+ var form;
+
+/*****************************************************************************/
+function MostrarNumero () {
+ var importe = parseFloat (FormateaEntrada(form.importe.value));
+
+ alert (importe+" + 10 = "+(importe+10));
+}//MostrarNumero
+</script>
+
+
+ <body onLoad="form=document.test;">
+<h1>Test: Formato Formulario. formato_formulario.js</h1>
+
+<p>
+Los números con decimales se ponen con '.', al salir de la caja de texto se convierte en: '.' para separador de miles y ',' para separador de decimales.
+</p>
+
+<p>
+ También se ve como, una vez tenemos el número en la caja de texto, se puede pasar a número y realizar operaciones sobre él.
+</p>
+
+  <form name="test">
+   <input type="text" name="importe" size="15" maxlength="15" onFocus="this.value=FormateaEntrada (this.value);" onBlur="this.value=FormateaNumero(this.value);">
+
+<br>
+<input type="button" value="Ver Número" onClick="MostrarNumero();">
+  </form>
+ </body>
+</html>

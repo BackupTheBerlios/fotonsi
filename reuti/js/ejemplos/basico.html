@@ -1,0 +1,64 @@
+<html>
+ <head>
+  <title>Ejemplo: basico.js</title>
+  <script Language="JavaScript" src="../basico.js"></script>
+  <script Language="JavaScript" src="../ventanas.js"></script>
+ </head>
+
+
+<script Language="JavaScript">
+
+var form;
+
+/************************************************************++***************/
+// ComprobarNumero:
+/************************************************************++***************/
+function ComprobarNumero (numero) {
+ if (EsNumero(numero))
+   return numero;
+ else
+  alert ('Debe especificar un número');
+
+ return '';
+}//ComprobarNumero
+
+
+/************************************************************++***************/
+// PonerFecha:
+/************************************************************++***************/
+function PonerFecha (fecha) {
+ if (!EsFecha (fecha)) {
+  alert ('Debe introducir una fecha válida.');
+  return '';
+ }
+
+ return DiaSiguiente (fecha);
+}//PonerFecha
+
+
+</script>
+
+<body onLoad="for=document.test;">
+
+<h1>Ejemplo: basico.js, ventanas.js</h1>
+
+<form name="test">
+
+<b>Sólo número:</b>
+<input type="text" name="txtNumero" size="10" maxlength="15" onBlur="this.value = ComprobarNumero (this.value);">
+
+<br>
+
+<b>Fecha:</b>
+<input type="text" name="txtFechaActual" size="10" maxlength="10" onBlur="form.txtFechaSiguiente.value = PonerFecha(this.value);">
+-- <b>Fecha siguiente:</b><input type="text" name="txtFechaSiguiente" size="10" maxlength="10">
+
+<br>
+
+<b>Pasar parámetros a otra página:<b>
+<input type="text" name="txtEnlace" value="?nombre=Fco&ape1=Arbelo&ape2=Robaina" onBlur="AbrirVentana ('param.html'+form.txtEnlace.value,400,250);">
+
+</form>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<html>
+ <head>
+  <title>Ejemplo: Paso de parámetros</title>
+  <script Language="JavaScript" src="../basico.js"></script>
+ </head>
+
+
+<script Language="JavaScript">
+
+function MostrarParametros () {
+ param = LeerParametros ();
+
+// var mensaje = param['nombre'];
+
+// for info in param {
+//  mensaje += info+"="+param[info];
+// }
+
+ document.getElementById ('Texto').innerHTML = '';
+
+ if (!param)
+  document.getElementById ('Texto').innerHTML = 'No se han pasado parámetros.';
+ else
+  for (info in param)
+   document.getElementById ('Texto').innerHTML += "<b>"+info+"</b>:"+param[info]+"<hr>\n";
+}//MostrarParametros
+
+
+</script>
+
+<body onLoad="MostrarParametros ();">
+<h2>Ejemplo: Paso de parámetros. basico.js</h2>
+ <div id="Texto">
+ </div>
+</body>
+
+</html>
