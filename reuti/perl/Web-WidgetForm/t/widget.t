@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 14;
+use Test::More tests => 15;
 use Test::Deep;
 
 use lib 't';
@@ -61,10 +61,13 @@ $rendering =~ s/\s*$//go;
 $expected_rendering = '<input name="attrs_testimportant" size="20" onchange="alert(&#39;I have changed!&#39;); " checked>';
 is ($rendering, $expected_rendering,                " absolute attributes");
 
+$rendering = $w2->render({ 'size'   => 0 });
+like ($rendering, qr/size="0"/,                     " attribute=0");
+
 # Values
 is($w2->get_value, 'mock',                          "get_value");
 is($w2->get_value('_child'), 'mocking_child',       " suffix");
 $f->define_form_values({ attrs_testimportant => 'real_mock',
-                         attrs_test_child => 'real mocking child' });
+                         attrs_test_child    => 'real mocking child', });
 is($w2->get_value, 'real_mock',                     " from form values");
 is($w2->get_value('_child'), 'real mocking child',  " suffix/from form values");
