@@ -2,7 +2,7 @@ package Web::WidgetForm;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.5 2004/02/26 21:54:21 zoso Exp $
+# $Id: WidgetForm.pm,v 1.6 2004/04/01 16:08:47 zoso Exp $
 
 =head1 NAME
 
@@ -179,12 +179,13 @@ sub get_widget_object {
 
    $self->{WIDGETS}->{$widgetname}->{widget_type} ||= "TextBox";
    my $class = $self->{WIDGETS}->{$widgetname}->{widget_type};
-   eval "use Web::Widget::$class";
+   my $total_class = "Web::Widget::$class";
+   eval "use $total_class";
    if ($@) {
       print STDERR "Can't load Web Widget '$widgetname' (type '$class'): $@";
       return undef;
    }
-   $self->{CACHED_WIDGET_OBJECTS}->{$widgetname} = eval "Web::Widget::$class->new(\$self, \$widgetname, \$self->{WIDGETS}->{\$widgetname})";
+   $self->{CACHED_WIDGET_OBJECTS}->{$widgetname} = $total_class->new($self, $widgetname, $self->{WIDGETS}->{$widgetname});
    if ($@) {
       print STDERR "Can't create widget of type '$class'\: $@";
       return undef;
