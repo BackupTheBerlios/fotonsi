@@ -10,16 +10,16 @@ my $f = Web::DJWidgets->new('f');
 my $empty_msg = "You can't leave it empty, fuck!";
 $f->define_widgets({'comp' => { focus => 1,
                                 widget_type => 'FileBox',
+                                readonly => 1,  # Should be ignored
                                 nonempty => 1,
-                                nonempty_msg => $empty_msg,
-                                readonly => 1 } });
+                                nonempty_msg => $empty_msg, } });
 my $w = $f->get_widget_object('comp');
 
 ok($f->prop('before_send') =~ /if \(document.f.comp.value.match\(\/\^ \*\$\/\)\) { alert\('$empty_msg'\); document.f.comp.focus\(\); return false; };/,
                                                       "nonempty");
 ok($f->prop('init') =~ /document.f.comp.focus()/,     "focus");
 
-my $expected_attrs = 'name="comp" type="file" readonly';
+my $expected_attrs = 'name="comp" type="file"';
 is($w->get_html_attrs, $expected_attrs,               "get_html_attrs");
 
 # Validation
