@@ -15,6 +15,7 @@ $f->define_widgets({'comp' => { focus => 1,
                                 nonempty_msg => $empty_msg,
                                 value => 'somevalue',
                                 maxlength => 40,
+                                accesskey => 'a',
                                 readonly => 1 } });
 my $w = $f->get_widget_object('comp');
 
@@ -23,7 +24,7 @@ ok($f->prop('before_send') =~ /if \(document.f.comp.value.match\(\/\^ \*\$\/\)\)
 ok($f->prop('init') =~ /document.f.comp.focus()/,     "focus");
 ok($f->srender_widget('comp') =~ /class="foo"/,       " render");
 
-my $expected_attrs = 'name="comp" class="foo" type="text" value="somevalue" maxlength="40" readonly';
+my $expected_attrs = 'name="comp" class="foo" type="text" value="somevalue" accesskey="a" maxlength="40" readonly';
 is($w->get_html_attrs, $expected_attrs,               "get_html_attrs");
 
 # Validation
