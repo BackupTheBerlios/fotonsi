@@ -2,7 +2,7 @@ package Web::DJWidgets::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.6 2005/01/24 13:22:35 setepo Exp $
+# $Id: Widget.pm,v 1.7 2005/02/23 19:43:01 zoso Exp $
 
 =head1 NAME
 
@@ -17,6 +17,7 @@ Web::DJWidgets::Widget - Base Web Widget
  $o->setup_form;  # Called automatically for every widget instance
 
  $name = $o->get_name;
+ $name = $o->get_html_name;
  $form = $o->get_form;
  %args = $o->get_args;
 
@@ -61,6 +62,10 @@ automatically for every widget.
 =item get_name
 
 Returns the widget name.
+
+=item get_html_name
+
+As C<get_name>, but takes into account the C<suffix> argument, if any.
 
 =item get_form
 
@@ -201,6 +206,11 @@ sub setup_form {
 
 sub get_name {
    $_[0]->{NAME};
+}
+
+sub get_html_name {
+   $_[0]->{NAME} . (defined $_[0]->{ARGS}->{suffix} ?
+                            $_[0]->{ARGS}->{suffix} : '');
 }
 
 sub get_form {
