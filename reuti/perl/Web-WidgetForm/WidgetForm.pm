@@ -2,7 +2,7 @@ package Web::WidgetForm;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.10 2004/04/28 08:35:56 zoso Exp $
+# $Id: WidgetForm.pm,v 1.11 2004/04/29 08:12:20 zoso Exp $
 
 =head1 NAME
 
@@ -81,6 +81,12 @@ parameter C<$base_widget_args> stores the common widget arguments.
 Defines the form widgets in a hash. The hash keys are the widget form names,
 and the values are hashrefs with all the widget arguments.
 
+It calls the C<init> method once for each widget class it encounters, and
+C<setup_form> for every widget. It also calls
+C<$widget-E<gt>type_data_transform> for every widget type loaded, and
+C<$widget-E<gt>widget_data_transform> for every widget, in case you define
+first the form values (see below).
+
 Returns the number of processed widgets.
 
 =item define_form_values($values_hashref)
@@ -88,7 +94,8 @@ Returns the number of processed widgets.
 Defines the received values for the widgets. The widgets then take the proper
 value when rendering themselves. It also calls
 C<$widget-E<gt>type_data_transform> for every widget type loaded, and
-C<$widget-E<gt>widget_data_transform> for every widget loaded.
+C<$widget-E<gt>widget_data_transform> for every widget loaded, just in case
+you defined your widgets before the form values.
 
 =item get_form_value($name)
 
@@ -208,7 +215,11 @@ Returns a hash with the state variable names and values.
 
 =item get_uri_enc_state
 
-Returns a URI encoded string with the state information.
+=item get_uri_enc_state($new_state_values)
+
+Returns a URI encoded string with the state information. If the hashref
+C<$new_state_values> is given, the new values take precedence, and the result
+is the URI-encoded I<new> state.
 
 
 =head1 MISC METHODS
@@ -264,12 +275,14 @@ sub define_widgets {
       my $object = $self->get_widget_object($w);
       if (defined $object) {
          $cnt++;
-         my $class = $self->{WIDGETS}->{$w}->{widget_type};
+         my $class = $object->arg('widget_type');
          if (not defined $self->{WIDGET_CLASSES}->{$class}) {
             $self->{WIDGET_CLASSES}->{$class} = 1;
             $object->init;
+            $object->type_data_transform($self->{VALUES});
          }
          $object->setup_form;
+         $object->widget_data_transform($self->{VALUES});
       } else {
          delete $widgets->{$w};
       }
@@ -455,8 +468,9 @@ sub get_state {
 }
 
 sub get_uri_enc_state {
-   my ($self) = @_;
-   return join("&", map { $_ . "=" . uri_escape($self->{VALUES}->{$_} || "") }
+   my ($self, $new_state) = @_;
+   $new_state = { %{$self->{VALUES}}, %{$new_state || {}} };
+   return join("&", map { $_ . "=" . uri_escape($new_state->{$_} || "") }
                         @{$self->{STATE_VARS}});
 }
 
