@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.11 2005/01/24 16:32:41 zoso Exp $
+# $Id: DJWidgets.pm,v 1.12 2005/01/24 16:48:48 zoso Exp $
 
 =head1 NAME
 
@@ -309,9 +309,10 @@ sub define_widgets {
    my ($self, $widgets) = @_;
    my $cnt = 0;
    foreach my $w (keys %$widgets) {
+      ref $widgets->{$w} eq 'HASH' || die "Attributes for widget '$w' is not a hashref";
       $self->{WIDGETS}->{$w} = $widgets->{$w};
       my $object = $self->get_widget_object($w);
-      defined $object || die "Can't define widget '$w' (is widget type '$widgets->{$w}->{widget_type}' defined?)\n";
+      defined $object || die "Can't define widget '$w' (is widget type '$widgets->{$w}->{widget_type}' defined?)";
       my $class = $object->arg('widget_type');
       if (not defined $self->{WIDGET_CLASSES}->{$class}) {
          $self->{WIDGET_CLASSES}->{$class} = 1;
