@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 40;
+use Test::More tests => 41;
 use Test::Deep;
 use lib 't';
 
@@ -29,9 +29,10 @@ my $widget_list = { 'testwidget' => { widget_type => 'TextBox',
 $f = Web::DJWidgets->new('testform', { action => 'foo.pl' },
                                       { readonly => 1 });
 my $f2 = Web::DJWidgets->new('anotherone');
-is ($f2->define_widgets({'t'  => { widget_type => 'NonExistent' },
-                         'tt' => { nonempty => 0 } }), 1,
-                                                 " wrong widget definition");
+eval { $f2->define_widgets({ 't'  => { widget_type => 'NonExistent' },
+                             'tt' => { nonempty => 0 } }) };
+ok ($@ ne "",                                    " wrong widget definition");
+
 is ($f->get_name, 'testform',                    "get_name");
 is ($f2->get_name, 'anotherone',                 " f2");
 is ($f->define_widgets($widget_list), scalar keys %$widget_list,
@@ -132,5 +133,7 @@ is($f->html_escape("O'Reilly"), "O&#39;Reilly",       "html_escape");
 is($f->html_escape('"Hi", she said'), '&quot;Hi&quot;, she said',
                                                       " double quote");
 is($f->html_escape("Back\\slash"), "Back\\slash",     " backslash");
-$f->define_widgets({ 'unknown_type' => { widget_type => 'NonExistent' } });
-is($f->srender_widget('unknown_type'), "",            "srender_widget/bad widget");
+eval { $f->define_widgets({ 'unknown_type' => { widget_type => 'NonExistent' } }); };
+ok ($@ ne "",                                    " render nonexistent widget");
+eval { is($f->srender_widget('unknown_type'), "",            "srender_widget/bad widget"); };
+ok ($@ ne "",                                    " render nonexistent widget");
