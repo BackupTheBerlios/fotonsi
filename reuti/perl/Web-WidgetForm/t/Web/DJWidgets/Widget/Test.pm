@@ -11,6 +11,13 @@ sub new {
    return $self;
 }
 
+sub init {
+    my ($self, @args) = @_;
+
+    $self->SUPER::init(@args);
+    $self->get_form->add_prop('def', "var foo = 'Some definition';");
+}
+
 sub type_data_transform {
    my ($self, $values) = @_;
    $values->{type_Test}++;
