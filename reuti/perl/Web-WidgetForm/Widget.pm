@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.11 2004/04/20 10:25:13 zoso Exp $
+# $Id: Widget.pm,v 1.12 2004/04/28 08:35:56 zoso Exp $
 
 =head1 NAME
 
@@ -16,12 +16,17 @@ Web::Widget - Base Web Widget
  $o->init;        # Called automatically once for every widget type
  $o->setup_form;  # Called automatically for every widget instance
 
+ $o->get_name;
+ $o->get_form;
+ $o->get_args;
+
  print $o->render;
 
- if ($o->validate($value)) {
-    # Do something
- } else {
+ my @errors = $o->validate($value);
+ if (scalar @errors) {
     # Invalid data
+ } else {
+    # Do something useful
  }
 
 =head1 DESCRIPTION
@@ -48,6 +53,18 @@ every widget type.
 Fills the associated form properties for the current widget. It's called
 automatically for every widget.
 
+=item get_name
+
+Returns the widget name.
+
+=item get_form
+
+Returns the form object the widget is in.
+
+=item get_args
+
+Returns the widget argument hash.
+
 =item arg($name)
 
 =item arg($name, $value)
@@ -62,10 +79,12 @@ arguments are added/replaced for that particular I<rendering>. B<NOTE:> the
 optional arguments are used only for the rendering, not for setting-up the
 form. Its main use is to support multiple form elements with the same name.
 
-=item validate($value)
+=item validate($vars)
 
-Validates the widget with the given value. This validation is a "server
-validation", of course, when the actual data have arrived.
+Validates the widget with the given variables. This validation is a "server
+validation", of course, when the actual data have arrived. It returns a list
+of validation errors for the given values. The list is empty if the widget
+validates correctly.
 
 =item type_data_transform($form_values)
 
@@ -86,6 +105,15 @@ ones, or to change some form values depending on the form button pushed.
 It's called automatically by the form when some data is loaded, once for every
 widget loaded.
 
+=item get_calc_html_attrs
+
+=item get_calc_html_attrs($args)
+
+Returns the calculated attributes hash. Calculated attributes are the ones
+obtained through widget arguments B<not> of the same name, or form arguments.
+E.g. (part of) the attribute B<onchange>, based on some attribute
+B<sync_to_widget>.
+
 =back
 
 =head1 CONVENIENCE METHODS
@@ -94,11 +122,11 @@ widget loaded.
 
 =item get_html_attrs
 
-=item get_html_attrs($html_attrs_hash)
+=item get_html_attrs($args)
 
-=item get_html_attrs($html_attrs_hash, $value_html_attrs_list)
+=item get_html_attrs($args, $value_html_attrs_list)
 
-=item get_html_attrs($html_attrs_hash, $value_html_attrs_list, $empty_html_attrs_list)
+=item get_html_attrs($args, $value_html_attrs_list, $empty_html_attrs_list)
 
 Returns the HTML attributes for the component, filtering them with the valid
 HTML attributes list ("value" attributes and "empty" attributes). If
@@ -145,7 +173,6 @@ sub new {
                  ARGS => $args,
                  EMPTY_HTML_ATTRS => ['disabled'],
                  VALUE_HTML_ATTRS => ['name', 'class', 'id', 'accesskey'],
-                 COMPILED_HTML_ATTRS => {},
                };
    bless ($self, $class);
    return $self;
@@ -157,18 +184,18 @@ sub init {
 
 sub setup_form {
    my ($self) = @_;
+}
 
-   my ($form, $name, $args) = ($self->{FORM}, $self->{NAME}, $self->{ARGS});
+sub get_name {
+   $_[0]->{NAME};
+}
 
-   # Common HTML attributes
-   $self->{COMPILED_HTML_ATTRS}->{name} = $name;
-   foreach my $empty_attr (@{$self->{EMPTY_HTML_ATTRS}}) {
-      $self->{COMPILED_HTML_ATTRS}->{$empty_attr} = undef if $args->{$empty_attr};
-   }
-   foreach my $value_attr (@{$self->{VALUE_HTML_ATTRS}}) {
-      $self->{COMPILED_HTML_ATTRS}->{$value_attr} = $args->{$value_attr}
-            if defined $args->{$value_attr};
-   }
+sub get_form {
+   $_[0]->{FORM};
+}
+
+sub get_args {
+   %{$_[0]->{ARGS}};
 }
 
 sub arg {
@@ -179,27 +206,33 @@ sub arg {
 
 sub render {
    my ($self, $opt_args) = @_;
-   my $current_args = $self->merge_args($self->{ARGS}, $opt_args);
-   "<input type='hidden' name='".$self->html_escape($self->{NAME}).
-         "' value='".$self->html_escape($current_args->{value} || '')."' ".
-         $self->get_html_attrs.
+
+   my ($form, $name, $args) = ($self->get_form, $self->get_name,
+                               { $self->get_args });
+   $args = $self->merge_args($args, $opt_args);
+
+   "<input type='hidden' name='".$self->html_escape($name).
+         "' value='".$self->html_escape($args->{value} || '')."' ".
+         $self->get_html_attrs($args).
          ">";
 }
 
 sub validate {
-   my ($self, $value) = @_;
+   my ($self, $vars) = @_;
 
-   # First of all, test with given validators
+   $vars ||= $self->get_form->get_form_values;
+   my @errors;
+   # Test with given validators. Overriden methods will add their own
+   # validators
    defined $self->{ARGS}->{validators} && do {
       $self->{ARGS}->{validators} = [ $self->{ARGS}->{validators} ]
             unless ref $self->{ARGS}->{validators} eq 'ARRAY';
       foreach my $v (@{$self->{ARGS}->{validators}}) {
-         $v->validate($value) || return 0;
+         push @errors, $v->get_feedback
+               unless $v->validate($vars->{$self->get_name});
       }
    };
-   # Custom, programatic, validators
-   return 0 if $value =~ /^\s*$/ && $self->{ARGS}->{nonempty};
-   1;
+   @errors;
 }
 
 sub type_data_transform {
@@ -215,20 +248,32 @@ sub widget_data_transform {
 
 
 
+sub get_calc_html_attrs {
+   my ($self, $args) = @_;
+   # No default calculated attributes
+   return ();
+}
+
 sub get_html_attrs {
-   my ($self, $html_attrs, $value_html_attrs, $empty_html_attrs) = @_;
-   $html_attrs       ||= $self->{COMPILED_HTML_ATTRS};
+   my ($self, $args, $value_html_attrs, $empty_html_attrs) = @_;
+   $args             ||= $self->{ARGS};
    $value_html_attrs ||= $self->{VALUE_HTML_ATTRS};
    $empty_html_attrs ||= $self->{EMPTY_HTML_ATTRS};
-   my %attrs_hash = %$html_attrs;
+
+   my %html_attrs = ($self->get_calc_html_attrs($args),
+                     name => $self->{NAME});
+
+   # Filter the calculated attribute list to build the final attribute string
    my @r = ();
    foreach my $attr (@$value_html_attrs) {
-      if (exists $attrs_hash{$attr}) {
-         push @r, "$attr=\"".$self->html_escape($attrs_hash{$attr})."\"";
+      if (exists $html_attrs{$attr} || $args->{$attr}) {
+         push @r, "$attr=\"".
+                  $self->html_escape(exists $html_attrs{$attr} ? $html_attrs{$attr} : $args->{$attr}).
+                  "\"";
       }
    }
    foreach my $attr (@$empty_html_attrs) {
-      if (exists $attrs_hash{$attr}) {
+      if (exists $html_attrs{$attr} || $args->{$attr}) {
          push @r, $attr;
       }
    }

@@ -2,7 +2,7 @@ package Web::WidgetForm;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.9 2004/04/20 10:23:42 zoso Exp $
+# $Id: WidgetForm.pm,v 1.10 2004/04/28 08:35:56 zoso Exp $
 
 =head1 NAME
 
@@ -34,7 +34,7 @@ Web::WidgetForm - Web Component System
  # Both styles, if define_form_values is used first
  if ($f->validate_form == 0) { ... }
  # Or.... one by one
- if ($f->validate_widget('textbox', $value)) { ... }
+ if ($f->validate_widget('textbox', $vars)) { ... }
  # Only if define_form_values is called first
  if ($f->validate_widget('textbox')) { ... }
 
@@ -52,6 +52,9 @@ Usually only inside components
  $f->add_prop($property, $value);      # Performs special translations
  $f->register_state_variable('current_folder');
  $f->unregister_state_variable('current_folder');
+
+ # Returns "document.my_form_name.some_widget_name"
+ $f->get_js_name('some_widget_name');
 
 =head1 DESCRIPTION
 
@@ -140,16 +143,19 @@ validating correctly) or a given widget.
 =item validate_form($vars)
 
 This method validates all the form widgets with the given hashref (or with the
-registered values if none is given). Returns the list of widget names not
-validated correctly, or C<0> if everything went fine.
+registered values if none is given). Returns a hash of widget names not
+validated correctly (the values are the error messages array ref), or C<0>
+(empty hash) if everything went fine.
 
 =item validate_widget($widgetname)
 
-=item validate_widget($widgetname, $value)
+=item validate_widget($widgetname, $vars)
 
-Validates the widget C<$widgetname> with the value C<$value> (or with the
-registered value if only one argument is given). Returns C<1> if the widget
-validated correctly, C<0> if not, and C<undef> if the widget is not defined.
+Validates the widget C<$widgetname> with the form values C<$vars> (or with the
+registered values if only one argument is given). Returns an array reference
+containing the list of validation errors, if the widget didn't validate
+correctly, C<1> if everything went fine, and C<-1> if the widget is not
+defined.
 
 
 =head1 PROPERTIES METHODS
@@ -203,6 +209,14 @@ Returns a hash with the state variable names and values.
 =item get_uri_enc_state
 
 Returns a URI encoded string with the state information.
+
+
+=head1 MISC METHODS
+
+=item get_js_name($widget_name)
+
+Returns the "Javascript name" to access the given widget, that is,
+C<document.E<lt>formnameE<gt>.E<lt>widgetnameE<gt>>.
 
 =back
 
@@ -358,15 +372,14 @@ sub redirect {
    foreach my $var ($self->get_state_variables) {
       print qq(<input type="hidden" name="$var" value=").$self->html_escape($self->{VALUES}->{$var}).qq(">\n);
    }
-   print qq(</form>\n);
-   my $uri_enc_state = $self->get_uri_enc_state;
    print <<EOFORM;
    <script>
       document.webwidgetsredirectform.submit();
    </script>
    <noscript>
-      <a href="$url?$uri_enc_state">Click here</a>
+      <input type="submit" name="button" value="Click here">
    </noscript>
+</form>
 EOFORM
    1;
 }
@@ -377,17 +390,28 @@ EOFORM
 sub validate_form {
    my ($self, $vars) = @_;
 
-   $vars = $self->{VALUES} if $#_ == 0;      # $vars not given
-   return grep { ! $self->validate_widget($_, $vars->{$_}) } 
-               keys %{$self->{WIDGETS}};
+   $vars ||= $self->{VALUES};
+   my %errors = ();
+   foreach my $w (keys %{$self->{WIDGETS}}) {
+      my $result = $self->validate_widget($w, $vars);
+      if (ref($result) eq 'ARRAY') {
+         $errors{$w} = $result;
+      } elsif ($result == -1) {
+         $errors{$w} = [ 'Internal error: non-existent widget' ];
+      } elsif ($result != 1) {
+         $errors{$w} = [ "Internal error: widget validation returned $result" ];
+      }
+   }
+   %errors;
 }
 
 sub validate_widget {
-   my ($self, $widget, $value) = @_;
+   my ($self, $widget, $vars) = @_;
 
-   $value = $self->{VALUES}->{$widget} if $#_ == 1;   # $value not given
-   return undef unless defined $self->{WIDGETS}->{$widget};
-   return $self->get_widget_object($widget)->validate($value) ? 1 : 0;
+   $vars ||= $self->{VALUES};
+   return -1 unless defined $self->{WIDGETS}->{$widget};
+   my @errors = $self->get_widget_object($widget)->validate($vars);
+   return scalar @errors ? [ @errors ] : 1;
 }
 
 
@@ -396,7 +420,7 @@ sub validate_widget {
 sub add_prop {
    my ($self, $prop, $value) = @_;
 
-   $value =~ s/\%([a-z_][a-z0-9_]*)\%/document.$self->{NAME}.$1/gi;
+   $value =~ s/\%([a-z_][a-z0-9_]*)\%/$self->get_js_name($1)/gie;
    $self->{PROPS}->{$prop} .= $value;
 }
 
@@ -434,6 +458,14 @@ sub get_uri_enc_state {
    my ($self) = @_;
    return join("&", map { $_ . "=" . uri_escape($self->{VALUES}->{$_} || "") }
                         @{$self->{STATE_VARS}});
+}
+
+
+## MISC METHODS
+
+sub get_js_name {
+   my ($self, $widget_name) = @_;
+   return "document.$self->{NAME}.$widget_name";
 }
 
 
