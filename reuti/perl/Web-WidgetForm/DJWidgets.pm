@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.14 2005/02/01 17:10:05 zoso Exp $
+# $Id: DJWidgets.pm,v 1.15 2005/03/08 20:32:14 zoso Exp $
 
 =head1 NAME
 
@@ -518,6 +518,8 @@ sub get_uri_enc_state {
 
 sub get_js_name {
    my ($self, $widget_name) = @_;
+   my $w = $self->get_widget_object($widget_name);
+   $widget_name = $w->get_html_name if defined $w;
    return "document.$self->{NAME}.$widget_name";
 }
 
