@@ -17,7 +17,7 @@ my $w = $f->get_widget_object('comp');
 
 
 # Attributes
-my $expected_attrs = 'name="comp" type="check" readonly';
+my $expected_attrs = 'name="comp" type="checkbox" readonly';
 is($w->get_html_attrs, $expected_attrs,               "get_html_attrs");
 
 
@@ -28,14 +28,14 @@ cmp_deeply($f->validate_widget('comp'), [ $one_value_msg ],
 
 
 # Rendering
-my $expected_rendering = '<input name="comp" type="check" readonly>White label';
+my $expected_rendering = '<input name="comp" type="checkbox" readonly>White label';
 my $actual_rendering = $f->srender_widget('comp');
 $actual_rendering =~ s/^\s*//go;
 $actual_rendering =~ s/\s*$//go;
 $actual_rendering =~ s/  +/ /go;
 is($actual_rendering, $expected_rendering,            "render");
 
-$expected_rendering = '<input name="comp" type="check" readonly checked>White label';
+$expected_rendering = '<input name="comp" type="checkbox" readonly checked>White label';
 $actual_rendering = $f->srender_widget('comp', { selected => 1 });
 $actual_rendering =~ s/^\s*//go;
 $actual_rendering =~ s/\s*$//go;
