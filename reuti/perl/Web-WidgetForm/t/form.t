@@ -5,7 +5,7 @@ use Test::More tests => 36;
 use Test::Deep;
 use lib 't';
 
-use Web::WidgetForm;
+use Web::DJWidgets;
 use WWW::FieldValidator;
 
 my $validation_message = 'Please make sure you enter a well formed email address';
@@ -15,7 +15,7 @@ my $v = WWW::FieldValidator->new(WWW::FieldValidator::WELL_FORMED_EMAIL,
 my $regex_v = WWW::FieldValidator->new(WWW::FieldValidator::REGEX_MATCH,
                                        $validation_message2, 'ander');
 
-my $f = Web::WidgetForm->new;
+my $f = Web::DJWidgets->new;
 is ($f, undef,                                   "Form without name");
 
 my $widget_list = { 'testwidget' => { widget_type => 'TextBox',
@@ -26,9 +26,9 @@ my $widget_list = { 'testwidget' => { widget_type => 'TextBox',
                     'trans'      => { widget_type => 'Test' } };
 
 # Data definition
-$f = Web::WidgetForm->new('testform', { action => 'foo.pl' },
+$f = Web::DJWidgets->new('testform', { action => 'foo.pl' },
                                       { readonly => 1 });
-my $f2 = Web::WidgetForm->new('anotherone');
+my $f2 = Web::DJWidgets->new('anotherone');
 is ($f2->define_widgets({'t'  => { widget_type => 'NonExistent' },
                          'tt' => { nonempty => 0 } }), 1,
                                                  " wrong widget definition");

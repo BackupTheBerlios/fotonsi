@@ -6,10 +6,10 @@ use Test::Deep;
 
 use lib 't';
 
-use Web::WidgetForm;
-use Web::Widget;
+use Web::DJWidgets;
+use Web::DJWidgets::Widget;
 
-my $f = Web::WidgetForm->new('f');
+my $f = Web::DJWidgets->new('f');
 $f->define_widgets({'comp' => { focus       => 1,
                                 class       => 'foo',
                                 widget_type => 'Hidden' },

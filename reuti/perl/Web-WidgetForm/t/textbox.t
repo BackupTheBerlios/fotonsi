@@ -4,9 +4,9 @@ use strict;
 use Test::More tests => 5;
 use Test::Deep;
 
-use Web::WidgetForm;
+use Web::DJWidgets;
 
-my $f = Web::WidgetForm->new('f');
+my $f = Web::DJWidgets->new('f');
 my $empty_msg = "You can't leave it empty, fuck!";
 $f->define_widgets({'comp' => { focus => 1,
                                 class => 'foo',
