@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: latin1 -*-
 
-RCS_ID = '$Id: fete.py,v 1.6 2004/10/11 22:35:14 setepo Exp $'
+RCS_ID = '$Id: fete.py,v 1.7 2004/10/11 22:52:05 setepo Exp $'
 
 def dolog(*msg):
     import sys
@@ -239,7 +239,9 @@ class Edit:
         config = self.config
 
         import tempfile, os
-        fd, tmp_path = tempfile.mkstemp(prefix='fete', suffix='.twiki')
+        fd, tmp_path = tempfile.mkstemp(prefix='fete-%s-' % self.parser.get_pagename(), 
+                                        suffix='.twiki')
+
         try:
 
             cf = config.get('system.cabecera_fichero')
@@ -278,7 +280,8 @@ class Edit:
             del p
 
         finally:
-            _safe_unlink(tmp_path)
+            if config.get('system.borrar_temps'):
+                _safe_unlink(tmp_path)
 
         return 'continue'
 

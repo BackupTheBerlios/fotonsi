@@ -1,10 +1,11 @@
 # -*- coding: latin1 -*-
 
-RCS_ID = '$Id: twikiparser.py,v 1.1 2004/10/11 22:35:14 setepo Exp $'
+RCS_ID = '$Id: twikiparser.py,v 1.2 2004/10/11 22:52:05 setepo Exp $'
 
 import re
 RE_editlink = re.compile(r'''<b>(.*?)</b>.*?<a href="javascript:window.open\('(.*?)'\);window.close\(\);">edit</a>''', re.I)
 RE_sign = re.compile(r'<strong>(\*\d{8}-\d{1,2}:\d{1,2}-\w+\*)</strong>', re.M)
+RE_pagename = re.compile(r'/(\w+)/(\w+)(?:\?.*)?$')
 del re
 
 def dolog(*msg):
@@ -43,6 +44,7 @@ class TWiki:
         self.original_content = self.cur_content = None
         self.user_sign = ''
         self.form = None
+        self.pagename = ''
 
     def find(self, text):
         import urllib, urlparse
@@ -156,6 +158,16 @@ class TWiki:
         else:
             self.user_sign = None
 
+        # Para detectar el nombre de la página, damos por hecho que lo podemos encontrar
+        # con RE_pagename sobre la url.
+        m = RE_pagename.search(editlink)
+        if m:
+            self.pagename = '.'.join(m.groups())
+        else:
+            if self.verbose:
+                dolog('No se puede determinar el nombre de la página desde su URL')
+            self.pagename = 'Desconocida.Desconocida'
+
         return True
 
     def save(self):
@@ -185,6 +197,9 @@ class TWiki:
     def set_content(self, data):
         self.cur_content = data
         self.form['text'] = data
+
+    def get_pagename(self):
+        return self.pagename
 
     def get_sign(self):
         return self.user_sign
