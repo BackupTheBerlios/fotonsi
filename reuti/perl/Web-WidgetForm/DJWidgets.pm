@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.2 2004/04/30 10:13:39 zoso Exp $
+# $Id: DJWidgets.pm,v 1.3 2004/05/03 08:53:36 zoso Exp $
 
 =head1 NAME
 
@@ -371,7 +371,7 @@ sub arg {
 
 sub html_escape {
    my ($self, $value) = @_;
-   $value ||= "";
+   $value = "" unless defined $value;
    $value =~ s/&/&amp;/go;
    $value =~ s/"/&quot;/go;
    $value =~ s/'/&#39;/go;
