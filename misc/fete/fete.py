@@ -2,10 +2,65 @@
 # -*- coding: latin1 -*-
 
 VERBOSE = False
-RCS_ID = '$Id: fete.py,v 1.4 2004/09/30 00:35:23 setepo Exp $'
+RCS_ID = '$Id: fete.py,v 1.5 2004/10/05 03:18:54 setepo Exp $'
 
 class DownloadError(Exception):
     pass
+
+class ProgressData:
+
+    def __init__(self, prompt, out = None):
+        import cStringIO, time
+
+        self.total = 0
+        self.last_time = time.time()
+        self.last_size = 0
+        self.prompt = prompt
+        self.data = cStringIO.StringIO()
+
+        if out is None:
+            import sys
+            self.out = sys.stdout
+        else:
+            self.out = out
+
+    def add(self, data):
+        import time
+
+        self.data.write(data)
+        self.total += len(data)
+
+        diff = time.time() - self.last_time
+
+        if diff > 1:
+            inc = (self.total - self.last_size) / 1024
+            self.out.write('\r%s %d bytes (%.2f K/s)\033[K' % 
+                            (self.prompt,
+                             self.total, 
+                             inc / diff))
+            self.out.flush()
+            self.last_time = time.time()
+            self.last_size = self.total
+
+    def end(self):
+        self.out.write('\r\033[K')
+        self.out.flush()
+
+    def get(self):
+        return self.data.getvalue()
+
+def read_response(fp):
+
+    pd = ProgressData('Leidos')
+    while True:
+        new = fp.read(2048)
+        if not new:
+            break
+
+        pd.add(new)
+
+    pd.end()
+    return pd.get()
 
 class Download:
 
@@ -162,7 +217,7 @@ class Edit:
 
                 req = ctl._click(self.form, (1,1), 'request')
                 handle = self.down.open(req)
-                return handle.read()
+                return read_response(handle.fp)
 
         raise RuntimeError, 'No se ha encontrado el botón ' + btn_value
 
@@ -191,16 +246,19 @@ class Edit:
         class ProxyResp:
             def __init__(self, r):
                 self.req = r
-                self.data = ''
+                self.pd = ProgressData('Leidos')
             def read(self, *a):
                 d = self.req.read(*a)
-                self.data += d
+                self.pd.add(d)
                 return d
             def __getattr__(self, at):
                 return getattr(self.req, at)
 
         resp = ProxyResp(down.open(editlink))
         forms = ClientForm.ParseResponse(resp)
+
+        resp.pd.end()
+        resp.data = resp.pd.get()
 
         if len(forms) == 0:
             print 'No se ha encontrado formularios en la página para editar'
@@ -391,7 +449,7 @@ class Edit:
         return 'continue'
 
     def action_preview(self):
-        '''Muesta una vista prelimiar de lo que se ha editado hasta ahora'''
+        '''Muesta una vista preliminar de lo que se ha editado hasta ahora'''
 
         import tempfile, os
 
