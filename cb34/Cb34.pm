@@ -2,7 +2,7 @@ package Cb34;
 
 use strict;
 
-# $Id: Cb34.pm,v 1.2 2003/10/31 20:52:43 zoso Exp $
+# $Id: Cb34.pm,v 1.3 2003/10/31 21:23:12 zoso Exp $
 
 use vars qw(@EXPORT_OK);
 require Exporter;
@@ -129,7 +129,7 @@ sub cb34 {
    foreach my $reg (@{$datos->{registros}}) {
       ($ref_bene, $importe, $ent, $ofi, $cuenta, $g, $c, $dc) =
             (uc($reg->{beneficiario}), $reg->{importe}, $reg->{entidad},
-             $reg->{oficina}, $reg->{cuenta}, $reg->{gastos}, $reg->{c}, $reg->{dc});
+             $reg->{oficina}, $reg->{cuenta}, $reg->{gastos}, $reg->{concepto}, $reg->{dcontrol});
       $n010++;
       $suma += $importe;
       $importe = importe_cb34($importe);
