@@ -2,7 +2,7 @@ package Web::WidgetForm;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.4 2004/02/23 22:40:54 zoso Exp $
+# $Id: WidgetForm.pm,v 1.5 2004/02/26 21:54:21 zoso Exp $
 
 =head1 NAME
 
@@ -217,7 +217,7 @@ sub render_widget {
 sub srender_widget {
    my ($self, $widget, $extra_args) = @_;
    return undef unless exists $self->{WIDGETS}->{$widget};
-   $self->render_widget($extra_args);
+   $self->get_widget_object($widget)->render($extra_args);
 }
 
 sub add_prop {
