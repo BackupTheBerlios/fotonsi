@@ -2,7 +2,7 @@ package Cb34;
 
 use strict;
 
-# $Id: Cb34.pm,v 1.6 2003/11/04 00:47:46 zoso Exp $
+# $Id: Cb34.pm,v 1.7 2003/11/06 04:16:19 eduardo Exp $
 
 use vars qw(@EXPORT_OK);
 require Exporter;
@@ -70,6 +70,10 @@ use POSIX qw(strftime);
 
 sub cb34 {
    my ($fh, $datos) = @_;
+
+   if ((scalar @{$datos->{registros}}) == 0) {
+     return;
+   }
 
    my $o = 56;    # Sólo entendemos transferencias
 
