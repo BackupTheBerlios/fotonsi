@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.9 2004/04/14 11:50:06 zoso Exp $
+# $Id: Widget.pm,v 1.10 2004/04/16 11:15:18 zoso Exp $
 
 =head1 NAME
 
@@ -49,6 +49,7 @@ Fills the associated form properties for the current widget. It's called
 automatically for every widget.
 
 =item arg($name)
+
 =item arg($name, $value)
 
 Returns the value of the argument C<$name>. If C<$value> is given, it's first
@@ -92,7 +93,9 @@ widget loaded.
 =over 4
 
 =item get_html_attrs
+
 =item get_html_attrs($html_attrs_hash)
+
 =item get_html_attrs($html_attrs_hash, $valid_html_attrs_list)
 
 Returns the HTML attributes for the tag, filtering them with the valid HTML
@@ -104,13 +107,8 @@ given, the internal defaults are used.
 Merges the given argument hashes, returning the result. When the same key
 appears more than once, the last value takes precedence.
 
-=item html_escape($value)
-
-Escapes the given characters according to the section "3.2.2 Attributes" of
-the HTML 4 Specification. It's useful for pasting values in HTML, like tag
-attributes enclosed in quotes.
-
 =item get_value
+
 =item get_value($suffix)
 
 Returns a value for the widget, first by looking at the form arguments and
@@ -242,10 +240,7 @@ sub merge_args {
 
 sub html_escape {
    my ($self, $value) = @_;
-   $value =~ s/&/&amp;/go;
-   $value =~ s/"/&quot;/go;
-   $value =~ s/'/&#39;/go;
-   return $value;
+   return $self->{FORM}->html_escape($value);
 }
 
 sub get_value {
