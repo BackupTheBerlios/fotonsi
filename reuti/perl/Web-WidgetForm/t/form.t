@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 38;
+use Test::More tests => 40;
 use Test::Deep;
 use lib 't';
 
@@ -16,7 +16,7 @@ my $regex_v = WWW::FieldValidator->new(WWW::FieldValidator::REGEX_MATCH,
                                        $validation_message2, 'ander');
 
 my $f = Web::DJWidgets->new;
-is ($f, undef,                                   "Form without name");
+is ($f, undef,                                   "new - without name");
 
 my $widget_list = { 'testwidget' => { widget_type => 'TextBox',
                                       focus => 1,
@@ -32,6 +32,8 @@ my $f2 = Web::DJWidgets->new('anotherone');
 is ($f2->define_widgets({'t'  => { widget_type => 'NonExistent' },
                          'tt' => { nonempty => 0 } }), 1,
                                                  " wrong widget definition");
+is ($f->get_name, 'testform',                    "get_name");
+is ($f2->get_name, 'anotherone',                 " f2");
 is ($f->define_widgets($widget_list), scalar keys %$widget_list,
                                                  "define_widgets");
 cmp_deeply($widget_list, $f->get_widgets,        "get_widgets");
