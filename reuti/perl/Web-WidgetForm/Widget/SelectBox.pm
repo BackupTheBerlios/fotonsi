@@ -30,7 +30,8 @@ sub render {
    my ($self, $extra_args) = @_;
 
    $self->SUPER::render;
-   my $extra_attrs = $self->get_html_attrs;
+   my $args = $self->merge_args({ $self->get_args }, $extra_attrs);
+   my $extra_attrs = $self->get_html_attrs($args);
    # A kind of ordered hash
    my @option_list = @{$self->arg('options')};
    my $options     = join("\n", map { "<option value=\"$option_list[$_]\">".
