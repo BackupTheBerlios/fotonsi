@@ -2,7 +2,11 @@ MANIFEST
 Makefile.PL
 WidgetForm.pm
 Widget.pm
+Widget/BaseInput.pm
 Widget/Hidden.pm
-Widget/TextBox.pm
 Widget/JavascriptComponent.pm
+Widget/SelectBox.pm
+Widget/TextBox.pm
 t/form.t
+t/textbox.t
+t/widget.t
