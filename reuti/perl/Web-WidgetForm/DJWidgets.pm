@@ -1,8 +1,8 @@
-package Web::WidgetForm;
+package Web::DJWidgets;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.11 2004/04/29 08:12:20 zoso Exp $
+# $Id: DJWidgets.pm,v 1.1 2004/04/30 09:49:28 zoso Exp $
 
 =head1 NAME
 
@@ -331,7 +331,7 @@ sub get_widget_object {
 
    $self->{WIDGETS}->{$widgetname}->{widget_type} ||= "TextBox";
    my $class = $self->{WIDGETS}->{$widgetname}->{widget_type};
-   my $total_class = "Web::Widget::$class";
+   my $total_class = "Web::DJWidgets::Widget::$class";
    eval "use $total_class";
    if ($@) {
       print STDERR "Can't load Web Widget '$widgetname' (type '$class'): $@";
