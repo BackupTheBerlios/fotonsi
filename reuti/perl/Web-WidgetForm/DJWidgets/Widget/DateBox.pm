@@ -6,6 +6,16 @@ use base qw(Web::DJWidgets::Widget::TextBox);
 
 use POSIX;
 
+sub new {
+    my ($class, $form, $name, $args) = @_;
+
+    $args->{value} = POSIX::strftime '%d/%m/%Y', localtime
+            if $args->{value} eq 'NOW()';
+    $args->{value} = $class->machine_date_to_human($args->{value})
+            if $args->{value} =~ /-/;
+    $class->SUPER::new($form, $name, $args);
+}
+
 sub init {
     my ($self, @args) = @_;
 
@@ -17,16 +27,6 @@ sub init {
       <script type="text/javascript" src="$base_url/calendario.js"></script>
       <script type="text/javascript" src="$base_url/calendar-$idioma.js"></script>
 EOC
-}
-
-sub new {
-    my ($class, $form, $name, $args) = @_;
-
-    $args->{value} = POSIX::strftime '%d/%m/%Y', localtime
-            if $args->{value} eq 'NOW()';
-    $args->{value} = $class->machine_date_to_human($args->{value})
-            if $args->{value} =~ /-/;
-    $class->SUPER::new($form, $name, $args);
 }
 
 sub machine_date_to_human {
@@ -42,7 +42,8 @@ sub human_date_to_machine {
 
 sub widget_data_transform {
     my ($self, $form_values) = @_;
-    $form_values->{$self->get_name} = $self->human_date_to_machine($form_values->{$self->get_name});
+    my $name = $self->get_name . ($self->arg('suffix') || '');
+    $form_values->{$name} = $self->human_date_to_machine($form_values->{$name});
 }
 
 sub validate {
@@ -50,7 +51,9 @@ sub validate {
 
     $vars ||= $self->get_form->get_form_values;
     my @errors = $self->SUPER::validate($vars);
-    my $value = $vars->{$self->get_name};
+    my $value = $vars->{$self->get_name . ($self->arg('suffix') || '')};
+    push @errors, $self->arg('incorrect_date_msg') || 'Incorrect date'
+            unless $value =~ m,\d\d?/\d\d?/\d{4},;
 
     @errors;
 }
