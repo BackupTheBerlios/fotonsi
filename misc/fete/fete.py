@@ -1,9 +1,8 @@
 #!/usr/bin/python
 # -*- coding: latin1 -*-
 
-
 VERBOSE = False
-
+RCS_ID = '$Id: fete.py,v 1.3 2004/09/27 15:54:07 setepo Exp $'
 
 class DownloadError(Exception):
     pass
