@@ -6,9 +6,12 @@
 
 
 <script Language="JavaScript">
+var form;
+var Navegador = new TNavegador();
 
- var documento = new TDocumento ();
- documento.setRoot ();
+var documento = new TDocumento ();
+documento.setRoot ();
+
 
 
 /*****************************************************************************/
@@ -23,6 +26,12 @@ function Test () {
 }//Ayuda
 
 
+/*****************************************************************************/
+function HabilitarBotonDerecho () {
+ alert ('Botón derecho habilitado.');
+ return false;
+}//HabilitarBotonDerecho
+
 
 /*****************************************************************************/
 function ConfigurarCampos () {
@@ -31,7 +40,31 @@ function ConfigurarCampos () {
 // documento.AddAcelerator (CHAR_F2, 0, 0, 0, Test); //CHAR_SHIFT, CHAR_ALT, CHAR_CONTROL);
  documento.AddAcelerator (88, 0, CHAR_ALT, 0, Test); //CHAR_SHIFT, CHAR_ALT, CHAR_CONTROL);
 
+ documento.DisableRightButton ();
+ documento.DisableRightButton ();
+
+ form = document.getElementById ('ejemplo')
+ form = TFormulario (form);
+
+ var objeto = document.getElementById ('txtFecha');
+ objeto = ControlFecha (objeto);
+// objeto.setNull ();
+ form.AddField (objeto);
+
+
+ objeto = document.getElementById ('txtNumero1');
+ objeto = ControlNumero (objeto);
+// objeto.setNull ();
+ form.AddField (objeto);
+
+ objeto = document.getElementById ('txtNumero2');
+ objeto = ControlNumero (objeto);
+// objeto.setNull ();
+ form.AddField (objeto);
+
+
 }//ConfigurarCampos
+
 
 </script>
 
@@ -39,8 +72,25 @@ function ConfigurarCampos () {
 
 <body onLoad="ConfigurarCampos ();">
 
-<form method="POST" name="ejemplo">
+<form id="ejemplo" method="POST" name="ejemplo" action="test.cgi">
 Ejemplo del manejo del objeto TDocumentos.
+
+<input type="button" value="Habilitar Botón Derecho" onClick="documento.EnableRightButton (HabilitarBotonDerecho);">
+<input type="button" value="Desabilitar Botón Derecho" onClick="documento.DisableRightButton ();">
+
+<br>
+
+
+<input type="text" id="txtFecha" name="txtFecha">
+<input type="text" id="txtNumero1" name="txtNumero1">
+<input type="text" id="txtNumero2" name="txtNumero1">
+
+<br>
+<textarea rows="5" cols="30"></textarea>
+
+<br>
+
+<input type="submit" value="Enviar">
 </form>
 
 

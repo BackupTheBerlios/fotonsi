@@ -9,12 +9,49 @@
 
 <table width="95%" border="0" cellpadding="3" cellspacing="0" bgcolor="#F0F0F0">
  <tr>
-  <td class="grande_cabecera_tabla"><b>Objetos Disponibles</b></td>
+  <td class="grande_cabecera_tabla"><b>Objeto Documento</b></td>
  </tr>
 
  <tr>
   <td>
-   <li><b class="cabecera_tabla">BaseFormulario</b>: Es la base de toda la jerarquía de objetos. Aquí se definen los atributos y métodos comunes a todas las instancias de los objetos generados.
+   <li><b class="cabecera_tabla">TDocumento:</b> Representa el comportamiento de una página web de forma global; es decir, en este nivel se pueden tratar los eventos de la página. De esta forma, es posible 'simular' atajos de teclado (algunas combinaciones de teclas no se pueden sobreescribir: F3, ALT-F4...etc.), establecer el comportamiento del ratón (desabilitar el botón derecho, asociarlo a una función de usuario, que aparezca un menú...etc.). 
+    <ul><b>AddAcelerator (tecla, shift, alt, ctrl, acción):</b> Esta función es la encargada de asignar a una combinación de teclas dadas, una función arbitraria. Hay una serie de constantes predefinidas que especifican la tecla shift, alt ó ctrl. Si se pone dicho valor en uno de los parámetros, automáticamente se asocia a la tecla inicial más el modificador/es que se hayan asignados.</ul>
+    <ul><b>setRoot:</b> Establece el documento actual como 'activo'. Solo puede existir un único componente activo en una página, aunque se pueden definir varios y decidir en que momento se activa uno u otro.</ul>
+    <ul><b>EnableRightButton(acción) / DisableRightButton:</b> Habilita/Desabilita el botón derecho del ratón. La función de activación, si se le pasa el parámetro, la ejecuta cuando se pulsa el botón derecho del ratón. <b>NOTA:</b> A nivel de documento, solo funciona en Explorer.</ul>
+   <li><a href="../documento_base.html">Ver ejemplo</a></li>
+   </li>
+  </td>
+ </tr>
+
+ <tr>
+  <td height="20"></td>
+ </tr>
+
+ <tr>
+  <td class="grande_cabecera_tabla"><b>Objeto Formulario</b></td>
+ </tr>
+
+ <tr>
+  <td>
+   <li><b class="cabecera_tabla">TFormulario:</b> Cada formulario existente en la página está representado por un objeto de este tipo. Entre sus cometidos está la comprobación del mismo.
+    <ul><b>AddField (campo):</b> Enlaza el campo de formulario actual con el formulario. De esta forma, se puede comprobar el formulario a la hora de enviar la información al servidor.</ul>
+   </li>
+
+   <li><a href="../documento_base.html">Ver ejemplo</a></li>
+  </td>
+ </tr>
+
+ <tr>
+  <td height="20"></td>
+ </tr>
+
+ <tr>
+  <td class="grande_cabecera_tabla"><b>Objetos Formulario</b></td>
+ </tr>
+
+ <tr>
+  <td>
+   <li><b class="cabecera_tabla">BaseFormulario</b>: Es la base de toda la jerarquía de objetos de formularios. Aquí se definen los atributos y métodos comunes a todas las instancias de los objetos generados.
     <ul><b>setMessageError () / setNoMessageError():</b> Cuando se detecta un error, hace</ul>
     <ul><b>setNull() / setNoNull():</b> El valor del objeto no puede o puede estar vacío.</ul>
     <ul><b>setFocus() / setNoFocus():</b> En caso de error, el campo debe coger el foco o no</ul>
@@ -59,6 +96,14 @@
    </li>
   </td>
  </tr>
+
+
+<tr>
+ <td>
+  <li><a href="../formulario.html">Ver ejemplo</a></li>
+ </td>
+</tr>
+
 
 
 </table>

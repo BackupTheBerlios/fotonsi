@@ -14,6 +14,7 @@ var ERR_BASE_NUMERO = 0x8000;
 var ERR_BASE_FECHA = 0x4000;
 var ERR_COMUN = 0x1000;
 
+var ERR_GENERADO = 0;
 var ERR_OK = 1;
 var ERR_NO_NUMERO = 0x8001;
 var ERR_NO_VACIO = 0x8002;
@@ -44,6 +45,8 @@ var CHAR_F9 = 120;
 var CHAR_F10 = 121;
 var CHAR_F11 = 122;
 var CHAR_F12 = 123;
+var CHAR_TAB = 9;
+var CHAR_ENTER = 13;
 
 var CHAR_SHIFT = 0x01;
 var CHAR_ALT = 0x02;
@@ -53,37 +56,38 @@ var CHAR_CONTROL = 0x04;
 var _documento = null;
 
 
+/*****************************************************************************/
+function TNavegador () {
+ this.es_explorer = navigator.appName.substring(0,1)=='M' ? 1:0;
+ this.es_mozilla = navigator.appName.substring(0,1)=='N' ? 1:0;
+}//TNavegador
+
 
 /*****************************************************************************/
 function _KeyEvent (event) {
  if (!event) event = window.event;
  
  var code = event.keyCode;
- var tecla = String.fromCharCode (code).toUpperCase();
+
+/*
+ switch (code) {
+  case CHAR_TAB: return false; break;
+//  case CHAR_ENTER: return false; break;
+ }//Se trata el código de entrada
+*/
+
+ var tecla = String.fromCharCode (code);
 
  var mode = 0;
  if (event.shiftKey) mode = mode | CHAR_SHIFT;
  if (event.altKey) mode = mode | CHAR_ALT;
  if (event.ctrlKey) mode = mode | CHAR_CONTROL; 
 
-
  if (_documento.key_acelerator[code+mode])
-   _documento.key_acelerator[code+mode]();
+   //Hay un evento para la combinación de teclas actuales
+   _documento.key_acelerator[code+mode](); 
 
-//   alert ('Entra...'+documento.key_acelerator);
-//  alert (this.key_acelerator[tecla+mode]());
-// alert (code+':'+tecla);
-
-// alert (tecla); 
-
-/* var mensaje = '';
- for (var info in event)
-  mensaje += '<b>'+info+':</b> '+event[info]+'<br>\n';
-
- document.getElementById ('CAPA_TEST').innerHTML = mensaje;
-*/
-
- return false;
+ return true;
 }//_KeyEvent
 
 
@@ -100,20 +104,57 @@ function _AddAcelerator (key, shift, alt, control, action) {
 
 
 /*****************************************************************************/
-// ControlDocumento
+// TDocumento: 
 /*****************************************************************************/
-function TDocumento (event) {
- if (event) alert ('OK');
-
+function TDocumento () {
+ this.navegador = new TNavegador();
  this.key_acelerator = new Array();
  this.key_event = _KeyEvent;
  this.AddAcelerator = _AddAcelerator;
  this.setRoot = function () {_documento = this;};
+ this.EnableRightButton = function (exec) {document.body.oncontextmenu= (exec ? exec : new Function('return true;'));};
+ this.DisableRightButton = function () {document.body.oncontextmenu=new Function('return false;');};
 
- document.onkeydown = this.key_event;
 
- window.onhelp = function () {return false;}; //Desabilita F1 en el Explorer
+ document.onkeydown = this.key_event; //Toma control de todos los eventos del teclado
+ if (this.navegador.es_explorer)
+  window.onhelp = function () {return false;}; //Desabilita F1 en el Explorer
 }//TDocumento
+
+
+/*****************************************************************************/
+function _CheckForm (event) {
+ if (!event) event = window.event;
+
+ var lon = this.fields.length;
+ for (var i = 0; i < lon; i++) {
+  if (!this.fields[i].comprobar()) {
+   this.fields[i].Error();
+   return false;
+  }//La comprobación da un error, se muestra el mensaje predefinido
+ }//Se recorren todos los campos del formulario
+
+ return true;
+}//_CheckForm
+
+
+/*****************************************************************************/
+function _AddField (objeto) {
+ this.fields[this.fields.length] = objeto;
+}//_AddField
+
+
+/*****************************************************************************/
+// TFormulario: 
+/*****************************************************************************/
+function TFormulario (objeto) {
+ objeto.fields = new Array();
+
+ objeto.AddField = _AddField;
+ objeto.onsubmit = _CheckForm;
+ 
+ return objeto;
+}//TFormulario
 
 
 
@@ -128,6 +169,14 @@ function _AddEvent (evento, accion, ejecuta) {
  
  return ERR_OK;
 }//_AddEvent
+
+
+/*****************************************************************************/
+function _MostrarMensajeError () {
+ if (!this.comprobar())
+  this.Error();
+}//_MostrarMensajeError
+
 
 
 /*****************************************************************************/
@@ -167,12 +216,8 @@ function _MensajeErrorFecha () {
 /*****************************************************************************/
 function _ComprobarNumero () {
  if (this.vacio && !this.value) {
-  if (this.mostrar_error) {
-   this.error = ERR_NO_VACIO;
-   return this.Error ();
-  }
-  else
-   return ERR_NO_VACIO;
+  this.error = ERR_NO_VACIO;
+  return ERR_GENERADO;
  }//Está vacio y es requerido
 
  if (!this.vacio && !this.value) {
@@ -180,22 +225,14 @@ function _ComprobarNumero () {
  }//No requerido y vacío
 
  if (isNaN (this.value)) {
-  if (this.mostrar_error) {
-   this.error = ERR_NO_NUMERO;
-   return this.Error ();
-  }
-  else
-   return ERR_NO_NUMERO;
+  this.error = ERR_NO_NUMERO;
+  return ERR_GENERADO;
  }//No es un número
  else {
   if (!this.getDecimal()) {
    if (this.value.indexOf ('.') != -1) {
-    if (this.mostrar_error) {
-     this.error = ERR_NO_DECIMAL;
-     return this.Error();  
-    }
-    else
-     return ERR_NO_DECIMAL;
+    this.error = ERR_NO_DECIMAL;
+    return ERR_GENERADO;
    }//Se trata de un número decimal
   }//No puede ser un número negativo
 
@@ -203,12 +240,8 @@ function _ComprobarNumero () {
    var valor = parseFloat (this.value);
 
    if (this.minimo > valor || this.maximo < valor) {
-    if (this.mostrar_error) {
-     this.error = ERR_NO_RANGO;
-     return this.Error ();
-    }
-    else
-     return ERR_NO_RANGO;
+    this.error = ERR_NO_RANGO;
+    return ERR_GENERADO;
    }//Se pasa del rango establecido
   }//Se comprueba el máximo y el mínimo
 
@@ -220,12 +253,8 @@ function _ComprobarNumero () {
 /*****************************************************************************/
 function _ComprobarFecha () {
  if (this.vacio && !this.value) {
-  if (this.mostrar_error) {
-   this.error = ERR_NO_VACIO;
-   return this.Error ();
-  }
-  else
-   return ERR_NO_VACIO;
+  this.error = ERR_NO_VACIO;
+  return ERR_GENERADO;
  }//Está vacio y es requerido
 
  if (!this.vacio && !this.value) return ERR_OK;
@@ -243,51 +272,12 @@ function _ComprobarFecha () {
  var fecha = dia+'/'+mes+'/'+anyo;
 
  if (fecha != this.value) {
-  if (this.mostrar_error) {
-   this.error = ERR_NO_FECHA;
-   return this.Error();
-  }
-  else
-   return ERR_NO_FECHA;
+  this.error = ERR_NO_FECHA;
+  return ERR_GENERADO;
  }
  else
   return ERR_OK;
 }//_ComprobarFecha
-
-
-/*****************************************************************************/
-function _getNull () {
- return this.vacio;
-}//_getNull
-
-
-/*****************************************************************************/
-function _setNull () {
- this.vacio = 1;
-}//_setNull
-
-
-/*****************************************************************************/
-function _setNoNull () {
- this.vacio = 0;
-}//_setNoNull
-
-
-/*****************************************************************************/
-function _getFocus () {
- return this.coger_foco;
-}//_getFocus
-
-/*****************************************************************************/
-function _setFocus () {
- this.coger_foco = 1;
-}//_setNull
-
-
-/*****************************************************************************/
-function _setNoFocus () {
- this.coger_foco = 0;
-}//_setNoNull
 
 
 /*****************************************************************************/
@@ -296,14 +286,13 @@ function _ValorTexto () {
 }//_ValorNumero
 
 
-
 /*****************************************************************************/
 // BaseFormulario:
 /*****************************************************************************/
 function BaseFormulario (objeto, tipo) {
  objeto.evento = new Array();
  objeto.tipo = tipo;
- objeto.mostrar_error = 1;
+ objeto.mostrar_error = 0;
  objeto.error = ERR_OK;
 
  objeto.setMessageError = function () {this.mostrar_error = 1;};
@@ -373,7 +362,7 @@ function ControlNumero (objeto) {
  objeto.getDecimal = function () {return this.es_decimal;};
 
  objeto.comprobar = _ComprobarNumero;
- objeto.onblur = objeto.comprobar;
+ objeto.onblur = _MostrarMensajeError;
 
  return objeto;
 }//ControlNumero
@@ -392,7 +381,7 @@ function ControlFecha (objeto) {
  objeto.valor = _ValorTexto;
 
  objeto.comprobar = _ComprobarFecha;
- objeto.onblur = objeto.comprobar;
+ objeto.onblur = _MostrarMensajeError;
 // objeto.onblur = _MensajeError;
  objeto.Error = _MensajeErrorFecha;
 
@@ -500,6 +489,14 @@ function ControlListaTeclado (objeto) {
 }//ControlListaTeclado
 
 
+
+/*
+//Cancelación de eventos
+if (_documento.navegador.es_mozilla)
+ event.stopPropagation();
+else
+ window.event.cancelBubble = true;
+*/
 
 
 /*
