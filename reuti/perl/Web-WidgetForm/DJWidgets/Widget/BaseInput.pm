@@ -25,7 +25,6 @@ sub setup_form {
    # Common form rules
    $args->{focus} && $form->add_prop('init', "\%$name\%.focus();");
    $args->{nonempty} && $form->add_prop('before_send', "if (\%$name\%.value.match(/^ *\$/)) { alert('$args->{nonempty_msg}'); \%$name\%.focus(); return false; };");
-   $args->{before_send_extra} && $form->add_prop('before_send', $args->{before_send_extra});
 }
 
 sub validate {

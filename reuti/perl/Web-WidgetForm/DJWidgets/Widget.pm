@@ -2,7 +2,7 @@ package Web::DJWidgets::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.2 2004/05/03 08:41:29 zoso Exp $
+# $Id: Widget.pm,v 1.3 2004/05/04 12:03:55 zoso Exp $
 
 =head1 NAME
 
@@ -193,6 +193,10 @@ sub init {
 
 sub setup_form {
    my ($self) = @_;
+
+   # Common form setup
+   my $before_send_extra = $self->arg('before_send_extra');
+   $before_send_extra && $self->get_form->add_prop('before_send', $before_send_extra);
 }
 
 sub get_name {
