@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: latin1 -*-
 
-RCS_ID = '$Id: fete.py,v 1.8 2004/10/24 01:31:59 setepo Exp $'
+RCS_ID = '$Id: fete.py,v 1.9 2004/12/23 02:09:19 setepo Exp $'
 
 def dolog(*msg):
     import sys
@@ -229,7 +229,7 @@ class Edit:
         try:
             self.parser.cancel()
         except RuntimeError, e:
-            dolog(e)
+            dolog(str(e))
             dolog('El programa termina igualmente')
         return 'exit'
 
