@@ -59,7 +59,22 @@ class Edit:
 
     def __init__(self, config):
         self.config = config
-        self.down = Download(config.usuario.nombre, config.usuario.clave)
+
+        # comprobar si se ha elegido algún método para guardar la clave
+        cod = config.usuario.codificada 
+        clave = config.usuario.clave;
+        if len(cod) > 0 and cod not in ('claro', 'base64'):
+            print 'AVISO: El método %s no es válido para guardar la clave. Se mandará tal cual' % cod
+        elif len(clave) > 0:
+            if cod == 'base64':
+                import base64, binascii
+                try:
+                    clave = base64.decodestring(clave) + '\n'
+                except binascii.Error:
+                    print 'AVISO: Error al decodificar la clave en base64'
+                    clave = None
+
+        self.down = Download(config.usuario.nombre, clave)
 
         import re
         self.re_editlink = re.compile(r'''<b>(.*?)</b>.*?<a href="javascript:window.open\('(.*?)'\);window.close\(\);">edit</a>''', re.I)
@@ -82,7 +97,7 @@ class Edit:
     def find(self, text):
         import urllib, urlparse
 
-        url_base = self.config.urls.buscar.replace('%P', urllib.quote(text))
+        url_base = self.config.urls.buscar.replace('%P', urllib.quote_plus(text))
 
         if VERBOSE:
             print 'Buscando en', url_base
@@ -150,10 +165,18 @@ class Edit:
         raise RuntimeError, 'No se ha encontrado el botón ' + btn_value
 
     def create(self, page):
+
+        tp = self.config.command_options.topicparent
+        if len(tp) > 0:
+            url = self.config.urls.crear_padre.replace('%U', tp)
+        else:
+            url = self.config.urls.crear
+
         web, page = page.split('.', 1)
-        url = self.config.urls.crear.replace('%W', web).replace('%P', page)
+        url = url.replace('%W', web).replace('%P', page)
+
         if VERBOSE:
-            print 'Creando %s/%s desde %s' % (web, page, url)
+            print 'Abriendo %s/%s desde %s' % (web, page, url)
 
         return self.edit(url)
 
@@ -178,7 +201,7 @@ class Edit:
         forms = ClientForm.ParseResponse(resp)
 
         if len(forms) == 0:
-            print 'No se han encontrado formularios en página para editar'
+            print 'No se ha encontrado formularios en la página para editar'
             return False
 
         form = None
@@ -294,6 +317,8 @@ class Edit:
             print 'El programa termina igualmente'
         return 'exit'
 
+    action_quit = action_cancel
+
     def action_save(self):
         '''Sube el contenido de la página y sale'''
         # Como medida "preventiva", comparar si realmente hay 
@@ -315,13 +340,27 @@ class Edit:
     def action_edit(self):
         '''Abre el editor con el contenido actual'''
 
+        config = self.config
+
         import tempfile, os
         fd, tmp_path = tempfile.mkstemp(suffix='.twiki')
         try:
-            if self.user_sign is not None and self.config.editor.poner_firma != 'no':
+
+            if config.system.cabecera_fichero:
+                try:
+                    s = open(config.system.cabecera_fichero).read()
+                except IOError, e:
+                    print 'ERROR: No se puede abrir %s: %s' % (e.filename, e.strerror)
+                else:
+                    os.write(fd, s)
+
+            if config.system.cabecera_texto:
+                os.write(fd, config.system.cabecera_texto + '\r\n')
+
+            if self.user_sign is not None and config.editor.poner_firma != 'no':
                 os.write(fd, '#### Su firma para la entrada en el diario es\r\n####     ')
                 os.write(fd, self.user_sign)
-                os.write(fd, '\r\n#### Recuerde que el programa no enviará las líneas que empiecen por ####\r\n')
+                os.write(fd, '\r\n#### Recuerde que el programa no enviará las líneas que empiecen por ####\r\n####\r\n')
 
             os.write(fd, self.cur_content)
             os.close(fd)
@@ -433,12 +472,22 @@ if __name__ == '__main__':
     A('-c', action='store_true', default=False, dest='create', help='Crea una nueva página')
     A('-v', action='store_true', default=False, dest='verbose', help='Modo verboso')
     A('-f', default='config.ini', dest='config_file', help='Fichero de configuración. default=config.ini')
+    A('-p', default='', dest='topicparent', help='Padre de la nueva página a crear')
+    A('-a', default='', metavar='TEXTO', dest='head_str', help='Cabecera. Texto a añadir antes de la página')
+    A('-A', default='', metavar='FICHERO', dest='head_file', help='Cabecera. Fichero a añadir antes de la página')
 
     opts, args = parser.parse_args()
 
     config = BasicConfig(open(opts.config_file))
     if config.system.verbose or opts.verbose:
         VERBOSE = True
+
+    if opts.head_file:
+        config.system.cabecera_fichero = opts.head_file
+    if opts.head_str:
+        config.system.cabecera_texto = opts.head_str
+
+    config.command_options = opts
 
     cmd = ' '.join(args)
     if not cmd:
