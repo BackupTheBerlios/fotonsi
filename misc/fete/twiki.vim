@@ -8,6 +8,8 @@ syn region notify start='##' end='##([^)]*)'
 syn region comentario  start=/\[\w:/ end=+\]+ contains=inicio_cmt
 syn match inicio_cmt '\[\w:' contained
 
+syn region head start='^---\++' end='$'
+
 syn region verbatim  start=/<verbatim>/ end=+</verbatim>+
 syn region verbatim  start=/<pre>/ end=+</pre>+
 syn match verbatim '=[^ ]*='
@@ -36,4 +38,4 @@ hi def urls cterm=underline ctermbg=yellow
 hi def url ctermfg=blue cterm=underline
 hi def url1 ctermfg=blue
 hi def notify ctermbg=blue ctermfg=white
-
+hi def link head Identifier
