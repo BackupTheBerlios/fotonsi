@@ -33,7 +33,7 @@ my $b = { foo => 8, qux => 9 };
 my $c = { foo => 8, bar => 6, qux => 9 };
 cmp_deeply($w->merge_args($a, $b), $c,              "merge_args");
 my $expected_attrs  = 'name="comp" class="foo" type="hidden"';
-my $expected_attrs2 = 'name="comp" class="foo" id="fooid"';
+my $expected_attrs2 = 'name="comp" class="foo" id="fooid" size="4"';
 is($w->get_html_attrs, $expected_attrs,             "get_html_attrs");
 is($w->get_html_attrs({ class => 'foo', id => 'fooid', size => 4 }),
       $expected_attrs2,                             " extra_args");
