@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.5 2004/05/10 08:15:01 zoso Exp $
+# $Id: DJWidgets.pm,v 1.6 2004/06/04 10:12:10 zoso Exp $
 
 =head1 NAME
 
@@ -378,11 +378,12 @@ sub render_widget {
 
 sub srender_widget {
    my ($self, $widget, $extra_args) = @_;
-   defined $self->{WIDGETS}->{$widget} || do {
+   my $w = $self->get_widget_object($widget);
+   defined $w || do {
       print STDERR "srender_widget: Can't find widget $widget";
       return "";
    };
-   $self->get_widget_object($widget)->render($extra_args);
+   $w->render($extra_args);
 }
 
 sub arg {
