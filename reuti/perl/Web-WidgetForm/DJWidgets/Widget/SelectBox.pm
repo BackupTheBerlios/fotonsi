@@ -60,7 +60,7 @@ sub validate {
    my @errors = $self->SUPER::validate($vars);
    # Calculate widget values
    my @values = ();
-   my $value = $vars->{$self->get_name};
+   my $value = $vars->{$self->get_name . ($self->arg('suffix') || '')};
    if (ref $value) {
       @values = @$value;
    } elsif (defined $value) {
