@@ -1,6 +1,6 @@
 # -*- coding: latin1 -*-
 
-RCS_ID = '$Id: twikiparser.py,v 1.3 2004/11/16 12:51:11 setepo Exp $'
+RCS_ID = '$Id: twikiparser.py,v 1.4 2005/01/11 11:41:12 setepo Exp $'
 
 import re
 RE_editlink = re.compile(r'''<b>(.*?)</b>.*?<a href="javascript:window.open\('(.*?)'\);window.close\(\);">edit</a>''', re.I)
@@ -76,7 +76,7 @@ class TWiki:
 
         btn_value = btn_value.lower()
         for ctl in self.form.controls:
-            if ctl.value.lower() == btn_value and ctl.type == 'submit':
+            if str(ctl.value).lower() == btn_value and ctl.type == 'submit':
                 if self.verbose:
                     dolog('Pulsando el botón ' + btn_value + '...')
 
@@ -129,6 +129,10 @@ class TWiki:
 
         if len(forms) == 0:
             dolog('No se ha encontrado formularios en la página para editar')
+            import os
+            p = os.popen('lynx -stdin -dump', 'w')
+            p.write(resp.data)
+            p.close()
             return False
 
         form = None
