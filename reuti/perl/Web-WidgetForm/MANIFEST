@@ -1,0 +1,6 @@
+MANIFEST
+Makefile.PL
+WidgetForm.pm
+Widget.pm
+Widget/TextBox.pm
+t/form.t
