@@ -10,7 +10,7 @@ sub new {
    my $self = $class->SUPER::new(@args);
    push @{$self->{EMPTY_HTML_ATTRS}}, 'readonly', 'checked';
    # Default value
-   $self->arg('type', 'check') unless defined $self->arg('type');
+   $self->arg('type', 'checkbox') unless defined $self->arg('type');
    return $self;
 }
 
