@@ -12,7 +12,7 @@ my $v = WWW::FieldValidator->new(WWW::FieldValidator::WELL_FORMED_EMAIL, 'Please
 my $f = Web::WidgetForm->new;
 is ($f, undef,                                   "Form without name");
 
-my $widget_list = { 'testwidget' => { type => 'TextBox',
+my $widget_list = { 'testwidget' => { widget_type => 'TextBox',
                                       focus => 1,
                                       nonempty => 1 },
                     't2'         => { validators => $v } };
@@ -20,7 +20,7 @@ my $widget_list = { 'testwidget' => { type => 'TextBox',
 # Data definition
 $f = Web::WidgetForm->new('testform');
 my $f2 = Web::WidgetForm->new('anotherone');
-is ($f2->define_widgets({'t'  => { type => 'NonExistent' },
+is ($f2->define_widgets({'t'  => { widget_type => 'NonExistent' },
                          'tt' => { nonempty => 0 } }), 1,
                                                  " wrong widget definition");
 is ($f->define_widgets($widget_list), 2,         "define_widgets");
