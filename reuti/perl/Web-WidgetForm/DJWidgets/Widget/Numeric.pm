@@ -35,6 +35,15 @@ sub init {
 NSBB
 }
 
+sub get_html_attrs
+{
+    my ($self, $args) = @_;
+
+    $args = { %$args };
+    $args->{'value'} = $self->_fmt_mac_to_human($self->arg('value'));
+    return $self->SUPER::get_html_attrs($args);;
+}
+
 
 sub setup_form {
     my ($self, @args) = @_;
@@ -69,7 +78,7 @@ sub widget_data_transform {
 sub get_calc_html_attrs {
     my ($self, $args) = @_;
     return (
-        $self->SUPER::get_calc_html_attrs($args),
+        ($self->SUPER::get_calc_html_attrs($args)),
         onblur => 'djw_numeric_blur(this)',
         onfocus => 'djw_numeric_focus(this)');
 }
@@ -81,7 +90,7 @@ sub validate
     $vars ||= $self->get_form->get_form_values;
     my @errors = $self->SUPER::validate($vars);
 
-    my $val = $self->get_value;
+    my $val = $vars->{$self->get_html_name};
     if (not ($val =~ /^\d+\.?\d*$/)) {
         push @errors, $self->arg('invalid_number_msg'),
     }
