@@ -26,11 +26,23 @@ sub setup_form {
    $args->{before_send_extra} && $form->add_prop('before_send', $args->{before_send_extra});
 }
 
+sub validate {
+   my ($self, $vars) = @_;
+
+   $vars ||= $self->get_form->get_form_values;
+   my @errors = $self->SUPER::validate($vars);
+   # Custom validators
+   push @errors, $self->arg('nonempty_msg')
+         if $self->arg('nonempty') && $vars->{$self->get_name} =~ /^\s*$/;
+   @errors;
+}
+
 sub render {
    my ($self, $extra_args) = @_;
 
-   $self->SUPER::render;
-   my $extra_attrs = $self->get_html_attrs;
+   $self->SUPER::render($extra_args);
+   my $args = $self->merge_args({ $self->get_args }, $extra_args);
+   my $extra_attrs = $self->get_html_attrs($args);
    return <<EOWIDGET;
    <input $extra_attrs>
 EOWIDGET
