@@ -39,7 +39,7 @@ orden = vim %P
 poner_firma = sí
 
 ; Navegador a usar en la vista preliminar
-ver = epiphany %P
+ver = mozilla %P
 
 [system]
 ; Modo verbose
