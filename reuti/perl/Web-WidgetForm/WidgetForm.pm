@@ -2,7 +2,7 @@ package Web::WidgetForm;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.1 2004/02/05 20:15:32 zoso Exp $
+# $Id: WidgetForm.pm,v 1.2 2004/02/12 23:14:24 zoso Exp $
 
 =head1 NAME
 
@@ -12,25 +12,31 @@ Web::WidgetForm - Web Component System
 
  use Web::WidgetForm;
 
- $o = Web::WidgetForm->new($name, { class => 'f' });
- $o->define_widgets({ 'textbox' => { type => 'TextBox', focus => 1,
+ $f = Web::WidgetForm->new($name, { class => 'f' });
+ $f->define_widgets({ 'textbox' => { type => 'TextBox', focus => 1,
                                      length => 10 } });
- $list = $o->get_widgets;
+ $list = $f->get_widgets;
 
  # CGI style
- if ($o->validate_form({ $cgi->Vars }) == 0) { ... }
+ $f->define_widget_values({ $cgi->Vars });
+ if ($f->validate_form({ $cgi->Vars }) == 0) { ... }
  # Mason style
- if ($o->validate_form(\%ARGS) == 0) { ... }
+ $f->define_widget_values(\%ARGS);
+ if ($f->validate_form(\%ARGS) == 0) { ... }
+ # Both styles, if define_widget_values is used first
+ if ($f->validate_form == 0) { ... }
  # Or.... one by one
- if ($o->validate_widget('textbox', $value)) { ... }
+ if ($f->validate_widget('textbox', $value)) { ... }
+ # Only if define_widget_values is called first
+ if ($f->validate_widget('textbox')) { ... }
 
- $o->render_widget('textbox', $extra_args);
- print $o->srender_widget('textbox', $extra_args);
+ $f->render_widget('textbox', $extra_args);
+ print $f->srender_widget('textbox', $extra_args);
 
  # Usually only inside components
- $o->add_prop($property, $value);
+ $f->add_prop($property, $value);
 
- $value = $o->prop($property);
+ $value = $f->prop($property);
 
 =head1 DESCRIPTION
 
@@ -54,20 +60,29 @@ and the values are hashrefs with all the widget arguments.
 
 Returns the number of processed widgets.
 
+=item define_widget_values($values_hashref)
+
+Defines the received values for the widgets. The widgets then take the proper
+value when rendering themselves. Defining the values this way also allows the
+programmer to write filtering routines depending on the widget type.
+
 =item get_widgets
 
 Returns a reference to a list of defined widgets.
 
+=item validate_form
 =item validate_form($vars)
 
-This method validates all the form widgets with the given hashref. Returns the
-list of widget names not validated correctly, or C<0> if everything went fine.
+This method validates all the form widgets with the given hashref (or with the
+registered values if none is given). Returns the list of widget names not
+validated correctly, or C<0> if everything went fine.
 
+=item validate_widget($widgetname)
 =item validate_widget($widgetname, $value)
 
-Validates the widget C<$widgetname> with the value C<$value>. Returns C<1> if
-the widget validated correctly, C<0> if not, and C<undef> if the widget is not
-defined.
+Validates the widget C<$widgetname> with the value C<$value> (or with the
+registered value if only one argument is given). Returns C<1> if the widget
+validated correctly, C<0> if not, and C<undef> if the widget is not defined.
 
 =item render_widget($name, $extra_args)
 
@@ -138,6 +153,11 @@ sub define_widgets {
    $cnt;
 }
 
+sub define_widget_values {
+   my ($self, $values) = @_;
+   $self->{VALUES} = { %$values };
+}
+
 sub get_widgets {
    my ($self) = @_;
    return { %{$self->{WIDGETS}} };
@@ -154,13 +174,13 @@ sub get_widget_object {
    my $class = $self->{WIDGETS}->{$widgetname}->{type};
    eval "use Web::Widget::$class";
    if ($@) {
-      print STDERR "Can't load Web Widget $widgetname (type $class): $@";
-      next ;
+      print STDERR "Can't load Web Widget '$widgetname' (type '$class'): $@";
+      return undef;
    }
    $self->{CACHED_WIDGET_OBJECTS}->{$widgetname} = eval "Web::Widget::$class->new(\$self, \$widgetname, \$self->{WIDGETS}->{\$widgetname})";
    if ($@) {
-      print STDERR "Can't create widget of type $class\: $@";
-      next;
+      print STDERR "Can't create widget of type '$class'\: $@";
+      return undef;
    }
    $self->{CACHED_WIDGET_OBJECTS}->{$widgetname};
 }
@@ -168,6 +188,7 @@ sub get_widget_object {
 sub validate_form {
    my ($self, $vars) = @_;
 
+   $vars = $self->{VALUES} if $#_ == 0;      # $vars not given
    return grep { ! $self->validate_widget($_, $vars->{$_}) } 
                keys %{$self->{WIDGETS}};
 }
@@ -175,6 +196,7 @@ sub validate_form {
 sub validate_widget {
    my ($self, $widget, $value) = @_;
 
+   $value = $self->{VALUES}->{$widget} if $#_ == 1;   # $value not given
    return undef unless defined $self->{WIDGETS}->{$widget};
    return $self->get_widget_object($widget)->validate($value) ? 1 : 0;
 }
