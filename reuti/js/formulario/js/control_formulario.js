@@ -85,7 +85,7 @@ function _KeyEvent (event) {
 
  if (_documento.key_acelerator[code+mode])
    //Hay un evento para la combinación de teclas actuales
-   _documento.key_acelerator[code+mode](); 
+   _documento.key_acelerator[code+mode](event); 
 
  return true;
 }//_KeyEvent
