@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.2 2004/02/12 18:52:37 zoso Exp $
+# $Id: Widget.pm,v 1.3 2004/02/12 23:16:06 zoso Exp $
 
 =head1 NAME
 
@@ -87,31 +87,29 @@ sub new {
 
 sub init {
    my ($self) = @_;
-
-   # Common rules
-   $self->{FORM}->add_prop('init', "\%$self->{NAME}\%.focus")
-         if $self->{ARGS}->{focus};
-   $self->{FORM}->add_prop('before_send', "\%$self->{ARGS}->{depends}\%")
-         if $self->{ARGS}->{depends};
 }
 
 sub setup_form {
    my ($self) = @_;
-}
 
-sub merge_args {
-   my ($self, @arg_list) = @_;
-   my $args = {};
-   foreach my $a (@arg_list) {
-      $args = { %$args, %$a };
-   }
-   $args;
+   my ($form, $name, $args) = ($self->{FORM}, $self->{NAME}, $self->{ARGS});
+
+   # Common rules
+   $form->add_prop('init', "\%$name\%.focus();") if $args->{focus};
+   $form->add_prop('before_send', "if (\%$name\%.value) { alert('".($args->{nonempty_msg} || "Error: empty field. Please fill in.")."'); \%$name\%.focus(); return 0 };")
+         if $args->{nonempty};
+   # $form->add_prop('before_send', "\%$args->{depends}\%;")
+         # if $args->{depends};
 }
 
 sub render {
    my ($self, $opt_args) = @_;
    my $current_args = $self->merge_args($self->{ARGS}, $opt_args);
-   "<input type='hidden' name='$self->{NAME}' value='$current_args->{value}'>";
+   "<input type='hidden' name='".$self->escape("'", $self->{NAME}).
+         "' value='".$self->escape("'", $current_args->{value})."'".
+         (defined $current_args->{class} ?
+               "class='".$self->escape("'", $current_args->{class})."'" : "").
+         ">";
 }
 
 sub validate {
@@ -127,6 +125,22 @@ sub validate {
    };
    return 0 if $value =~ /^\s*$/ && $self->{ARGS}->{nonempty};
    1;
+}
+
+sub merge_args {
+   my ($self, @arg_list) = @_;
+   my $args = {};
+   foreach my $a (@arg_list) {
+      $args = { %$args, %$a };
+   }
+   $args;
+}
+
+sub escape {
+   my ($self, $quote_char, $value) = @_;
+   $value =~ s/\\/\\\\/go;
+   $value =~ s/$quote_char/\\$quote_char/g;
+   return $value;
 }
 
 sub DESTROY {
