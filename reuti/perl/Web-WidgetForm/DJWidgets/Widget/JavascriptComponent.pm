@@ -1,8 +1,8 @@
-package Web::Widget::JavascriptComponent;
+package Web::DJWidgets::Widget::JavascriptComponent;
 
 use strict;
 
-use base qw(Web::Widget);
+use base qw(Web::DJWidgets::Widget);
 
 our @js_event_attrs = ('onfocus', 'onblur', 'onselect', 'onchange', 'onclick',
                        'ondblclick', 'onmousedown', 'onmouseup',

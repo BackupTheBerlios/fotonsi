@@ -1,8 +1,8 @@
-package Web::Widget::Hidden;
+package Web::DJWidgets::Widget::Hidden;
 
 use strict;
 
-use base qw(Web::Widget::BaseInput);
+use base qw(Web::DJWidgets::Widget::BaseInput);
 
 sub new {
    my ($class, @args) = @_;

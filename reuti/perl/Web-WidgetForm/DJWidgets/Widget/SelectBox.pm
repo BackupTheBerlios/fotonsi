@@ -1,8 +1,8 @@
-package Web::Widget::SelectBox;
+package Web::DJWidgets::Widget::SelectBox;
 
 use strict;
 
-use base qw(Web::Widget::JavascriptComponent);
+use base qw(Web::DJWidgets::Widget::JavascriptComponent);
 
 sub new {
    my ($class, @args) = @_;

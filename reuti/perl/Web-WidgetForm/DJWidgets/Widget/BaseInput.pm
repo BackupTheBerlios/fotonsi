@@ -1,8 +1,8 @@
-package Web::Widget::BaseInput;
+package Web::DJWidgets::Widget::BaseInput;
 
 use strict;
 
-use base qw(Web::Widget::JavascriptComponent);
+use base qw(Web::DJWidgets::Widget::JavascriptComponent);
 
 sub new {
    my ($class, @args) = @_;

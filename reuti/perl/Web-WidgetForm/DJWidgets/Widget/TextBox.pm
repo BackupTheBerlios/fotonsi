@@ -1,8 +1,8 @@
-package Web::Widget::TextBox;
+package Web::DJWidgets::Widget::TextBox;
 
 use strict;
 
-use base qw(Web::Widget::BaseInput);
+use base qw(Web::DJWidgets::Widget::BaseInput);
 
 sub new {
    my ($class, @args) = @_;
