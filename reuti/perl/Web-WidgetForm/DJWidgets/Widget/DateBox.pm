@@ -27,17 +27,20 @@ sub init {
       <script type="text/javascript" src="$base_url/calendario.js"></script>
       <script type="text/javascript" src="$base_url/calendar-$idioma.js"></script>
 EOC
-    $self->get_form->add_prop('def', <<'EOC');
-      function MachineDateToHuman (datebox) {
+    my $app_suffix = lc ref $self;
+    $app_suffix =~ s/web::djwidgets::widget:://go;
+    $app_suffix =~ s/::/_/go;
+    $self->get_form->add_prop('def', <<EOC);
+      function MachineDateToHuman_$app_suffix (datebox) {
        var date = datebox.split ('/');
 
        return date[2]+"/"+date[1]+"/"+date[0];
       }//MachineDateToHuman
 
-      function IsDate (datebox) {
+      function IsDate_$app_suffix (datebox) {
        if (!datebox) return true;
 
-       var date = new Date (MachineDateToHuman(datebox));
+       var date = new Date (MachineDateToHuman_$app_suffix(datebox));
 
        var day = date.getDate();
        if (day < 10) day = "0"+day;
@@ -53,8 +56,11 @@ sub setup_form {
     my ($self) = @_;
 
     my $widget_name = $self->get_html_name;
+    my $app_suffix = lc ref $self;
+    $app_suffix =~ s/web::djwidgets::widget:://go;
+    $app_suffix =~ s/::/_/go;
     $self->get_form->add_prop('before_send', <<"EOC");
-      if (!IsDate($widget_name.value)) {
+      if (!IsDate_$app_suffix($widget_name.value)) {
          alert('Invalid date "' + $widget_name.value + '"'); 
          $widget_name.focus();
          return false;
