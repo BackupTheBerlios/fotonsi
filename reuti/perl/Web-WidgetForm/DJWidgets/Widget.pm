@@ -2,7 +2,7 @@ package Web::DJWidgets::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.7 2005/02/23 19:43:01 zoso Exp $
+# $Id: Widget.pm,v 1.8 2005/03/08 19:48:07 zoso Exp $
 
 =head1 NAME
 
@@ -318,7 +318,7 @@ sub html_escape {
 
 sub get_value {
    my ($self, $suffix) = @_;
-   $suffix = "" unless defined $suffix;
+   $suffix = $self->arg('suffix') unless defined $suffix;
 
    my $value = $self->get_form_value($self->{NAME}.$suffix);
    return defined $value ? $value : $self->{ARGS}->{"value$suffix"};
