@@ -1,0 +1,6 @@
+FastPager.pm
+Makefile.PL
+t/Cosa.pm
+t/paging.ini-ejemplo
+t/paging.sql
+t/paging.t
