@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.5 2004/02/23 22:41:56 zoso Exp $
+# $Id: Widget.pm,v 1.6 2004/02/26 21:55:09 zoso Exp $
 
 =head1 NAME
 
@@ -161,7 +161,7 @@ sub render {
    my ($self, $opt_args) = @_;
    my $current_args = $self->merge_args($self->{ARGS}, $opt_args);
    "<input type='hidden' name='".$self->escape("'", $self->{NAME}).
-         "' value='".$self->escape("'", $current_args->{value})."' ".
+         "' value='".$self->escape("'", $current_args->{value} || '')."' ".
          $self->get_html_attrs.
          ">";
 }
@@ -185,7 +185,7 @@ sub merge_args {
    my ($self, @arg_list) = @_;
    my $args = {};
    foreach my $a (@arg_list) {
-      $args = { %$args, %$a };
+      $args = { %$args, %$a } if defined $a;
    }
    $args;
 }
