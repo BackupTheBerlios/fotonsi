@@ -82,25 +82,27 @@ function EstablecerFoco (objeto_actual) {
 }//EstablecerFoco
 
 
-function ControlTeclado (event) {
- if (!event) event = window.event;
-
- alert ('Entra...'+event.keyCode+', '+event.charCode); //event.keyCode);
- return true;
-}//ControlTeclado
-
-
-
 /*****************************************************************************/
 function ConfigurarCampos () {
- var objeto = document.getElementById ('txtNumero');
+ var objeto = document.getElementById ('txtNumero1');
  objeto = ControlNumero (objeto);
- objeto.setNoNull();
+// objeto.setNoNull();
+ objeto.setDecimal();
  objeto.AddEvent ('onClick', 'SeleccionarObjeto');
+
+ 
+ objeto = document.getElementById ('txtNumero2');
+ objeto = ControlNumero (objeto);
+// objeto.setNoNull();
+ objeto.AddEvent ('onClick', 'SeleccionarObjeto');
+
+ objeto.setMinimo (5);
+ objeto.setMaximo (350);
+
 
  objeto = document.getElementById ('txtFecha');
  objeto = ControlFecha (objeto);
- objeto.setNoNull ();
+// objeto.setNoNull ();
  objeto.AddEvent ('onClick', 'SeleccionarObjeto');
 
  objeto = document.getElementById ('lstLista');
@@ -112,9 +114,6 @@ function ConfigurarCampos () {
  objeto = ControlListaTeclado (objeto);
  objeto.AddEvent ('onClick', 'SeleccionarObjeto');
 // objeto.AddEvent ('onKeyDown', '_SeleccionarInicioOpcion'); //ComprobarTecla');
-
-
-// form.lstLista.onkeypress = ComprobarTecla;
 }//ConfigurarCampos
 
 
@@ -139,7 +138,7 @@ function ConfigurarCampos () {
  </td>
 
  <td width="80%">
-  <input type="text" id="txtNumero" name="txtNumero" size="5" maxlength="5">
+  <input type="text" id="txtNumero1" name="txtNumero1" size="5" maxlength="5">
  </td>
 </tr>
 
@@ -230,6 +229,11 @@ function ConfigurarCampos () {
  <option>C5</option>
  <option>F3</option>
 </select>
+
+<br>
+
+
+<input id="txtNumero2" type="text" name="txtNumero2">
 
 </form>
 

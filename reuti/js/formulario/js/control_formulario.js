@@ -10,12 +10,17 @@ var TIPO_NUMERO = 1;
 var TIPO_FECHA = 2;
 var TIPO_LISTA = 4;
 
+var ERR_BASE_NUMERO = 0x8000;
+var ERR_BASE_FECHA = 0x4000;
+var ERR_COMUN = 0x1000;
 
-var ERR_OK = 0;
-var ERR_NO_NUMERO = 1;
-var ERR_NO_VACIO = 2;
-var ERR_NO_FECHA = 4;
-var ERR_NO_EVENTO = 8;
+var ERR_OK = 1;
+var ERR_NO_NUMERO = 0x8001;
+var ERR_NO_VACIO = 0x8002;
+var ERR_NO_DECIMAL = 0x8004;
+var ERR_NO_FECHA = 0x4001;
+var ERR_NO_EVENTO = 0x1001;
+var ERR_NO_RANGO = 0x1002;
 
 
 var eventos_validos = new Array();
@@ -41,49 +46,105 @@ function _AddEvent (evento, accion, ejecuta) {
 }//_AddEvent
 
 
+/*****************************************************************************/
+function _MensajeErrorNumero () {
+ var mensaje = '';
+ switch (this.error) {
+  case ERR_NO_VACIO: mensaje = 'El campo no puede estar vacío.';break; 
+  case ERR_NO_NUMERO: mensaje = 'Se esperaba un número.';break; 
+  case ERR_NO_DECIMAL: mensaje = 'Se esperaba un número entero.';break; 
+  case ERR_NO_RANGO: mensaje = 'El valor se pasa del límite establecido.';break; 
+  default: mensaje = 'Error no reconocido.';
+ }//Tipos de errores
+
+ if (mensaje) alert (mensaje);
+ if (this.getFocus()) this.focus();
+
+ return this.error;
+}//_MensajeErrorNumero
+
 
 /*****************************************************************************/
-function _Error (errno) {
+function _MensajeErrorFecha () {
  var mensaje = '';
- switch (errno) {
-  case ERR_NO_NUMERO:
-   mensaje = 'Se esperaba un número.';
-  break;
+ switch (this.error) {
+  case ERR_NO_VACIO: mensaje = 'El campo no puede estar vacío.';break; 
+  case ERR_NO_FECHA: mensaje = 'El formato de fecha es dd/mm/aaaa.'; break;
+  default: mensaje = 'Error no reconocido.';
+ }//Tipos de errores
 
-  case ERR_NO_VACIO:
-   mensaje = 'El campo no puede estar vacío.';
-  break;
+ if (mensaje) alert (mensaje);
+ if (this.getFocus()) this.focus();
 
-  case ERR_NO_FECHA:
-   mensaje = 'El formato de fecha es: dd/mm/aaaa';
-  break;
- }//Selecciona el tipo de error
-
- if (mensaje) {
-  alert (mensaje);
-  if (this.getFocus()) this.focus();
- }//Hay un error
-
- return true;
-}//_Error
-
+ return this.error;
+}//_MensajeErrorFecha
 
 
 /*****************************************************************************/
 function _ComprobarNumero () {
-// if (this.vacio && !this.value) return false;
+ if (this.vacio && !this.value) {
+  if (this.mostrar_error) {
+   this.error = ERR_NO_VACIO;
+   return this.Error ();
+  }
+  else
+   return ERR_NO_VACIO;
+ }//Está vacio y es requerido
 
- if (isNaN (this.value))
-  return false;
- else
-  return true;
+ if (!this.vacio && !this.value) {
+  return ERR_OK;
+ }//No requerido y vacío
+
+ if (isNaN (this.value)) {
+  if (this.mostrar_error) {
+   this.error = ERR_NO_NUMERO;
+   return this.Error ();
+  }
+  else
+   return ERR_NO_NUMERO;
+ }//No es un número
+ else {
+  if (!this.getDecimal()) {
+   if (this.value.indexOf ('.') != -1) {
+    if (this.mostrar_error) {
+     this.error = ERR_NO_DECIMAL;
+     return this.Error();  
+    }
+    else
+     return ERR_NO_DECIMAL;
+   }//Se trata de un número decimal
+  }//No puede ser un número negativo
+
+  if (this.minimo != this.maximo) {
+   var valor = parseFloat (this.value);
+
+   if (this.minimo > valor || this.maximo < valor) {
+    if (this.mostrar_error) {
+     this.error = ERR_NO_RANGO;
+     return this.Error ();
+    }
+    else
+     return ERR_NO_RANGO;
+   }//Se pasa del rango establecido
+  }//Se comprueba el máximo y el mínimo
+
+  return ERR_OK;
+ }//Se trata de un número
 }//_ComprobarNumero
-
 
 
 /*****************************************************************************/
 function _ComprobarFecha () {
-// if (this.vacio && !this.value) return true;
+ if (this.vacio && !this.value) {
+  if (this.mostrar_error) {
+   this.error = ERR_NO_VACIO;
+   return this.Error ();
+  }
+  else
+   return ERR_NO_VACIO;
+ }//Está vacio y es requerido
+
+ if (!this.vacio && !this.value) return ERR_OK;
 
  var fecha_es = this.value.split ('/');
 
@@ -97,33 +158,17 @@ function _ComprobarFecha () {
 
  var fecha = dia+'/'+mes+'/'+anyo;
 
- if (fecha != this.value)
-  return false;
+ if (fecha != this.value) {
+  if (this.mostrar_error) {
+   this.error = ERR_NO_FECHA;
+   return this.Error();
+  }
+  else
+   return ERR_NO_FECHA;
+ }
  else
-  return true;
+  return ERR_OK;
 }//_ComprobarFecha
-
-
-/*****************************************************************************/
-function _MensajeError () {
-
- if (!this.comprobar()) {
-  var error = 0;
-  switch (this.tipo) {
-   case TIPO_NUMERO: error = ERR_NO_NUMERO; break;
-   case TIPO_FECHA: error = ERR_NO_FECHA; break;
-  }//Selecciona el tipo de ERROR en función del tipo de objeto
-
-  this.error (error);
-  return false;
- }//El valor del campo no es el correcto
- else if (!this.valor() && this.getNull()) {
-  this.error (ERR_NO_VACIO);
-  return false;
- }//El campo no puede estar vacio
-
- return true;
-}//_MensajeError
 
 
 /*****************************************************************************/
@@ -174,17 +219,49 @@ function _ValorTexto () {
 function BaseFormulario (objeto, tipo) {
  objeto.evento = new Array();
  objeto.tipo = tipo;
+ objeto.mostrar_error = 1;
+ objeto.error = ERR_OK;
 
- objeto.setNull = _setNull;
- objeto.setNoNull = _setNoNull;
- objeto.setFocus = _setFocus;
- objeto.setNoFocus = _setNoFocus;
+ objeto.setMessageError = function () {this.mostrar_error = 1;};
+ objeto.setNoMessageError = function () {this.mostrar_error = 0;};
+ objeto.getMessageError = function () {return this.mostrar_error;};
+ objeto.setNull = function () {this.vacio = 1;};//_setNull;
+ objeto.setNoNull = function() {this.vacio = 0;};//_setNoNull;
+ objeto.setFocus = function () {this.coger_foco = 1;}//_setFocus;
+ objeto.setNoFocus = function () {this.coger_foco = 0;}; //_setNoFocus;
  objeto.AddEvent = _AddEvent;
- objeto.getNull = _getNull;
- objeto.getFocus = _getFocus;
+ objeto.getNull = function () {return this.vacio;};//_getNull;
+ objeto.getFocus = function () {return this.coger_foco;};//_getFocus;
+ objeto.Error = function () {return;};//_MensajeErrorNumero;
 
  return objeto;
 }//BaseFormulario
+
+
+/*****************************************************************************/
+function _setMinimo (minimo) {
+ if (!isNaN(minimo))
+  this.minimo = minimo;
+}//_setMinimo
+
+
+/*****************************************************************************/
+function _setMaximo (maximo) {
+ if (!isNaN (maximo))
+  this.maximo = maximo;
+}//_setMaximo
+
+
+/*****************************************************************************/
+function _setRange (min, max) {
+ if (isNaN(minimo) || isNaN(maximo) return ERR_NO_NUMERO;
+ if (parseFloat (min) > parseFloat (max)) return ERR_NO_RANGO;
+
+ this.minimo = min;
+ this.maximo = max;
+
+ return ERR_OK;
+}//_setRange
 
 
 /*****************************************************************************/
@@ -194,15 +271,25 @@ function ControlNumero (objeto) {
  objeto = BaseFormulario (objeto, TIPO_NUMERO);
 
  objeto.requerido = 1;
- objeto.vacio = 1;
+ objeto.vacio = 0;
  objeto.coger_foco = 1;
 
  objeto.valor = _ValorTexto;
+ objeto.minimo = objeto.maximo = 0;
+ objeto.es_decimal = 0;
 
+ objeto.Error = _MensajeErrorNumero;
+
+ objeto.setMinimo = _setMinimo;
+ objeto.setMaximo = _setMaximo;
+ objeto.setNoRange = function () {this.minimo = this.maximo = 0;};
+ objeto.setRange = _setRange;
+ objeto.setDecimal = function () {this.es_decimal = 1;};
+ objeto.setNoDecimal = function () {this.es_decimal = 0;};
+ objeto.getDecimal = function () {return this.es_decimal;};
 
  objeto.comprobar = _ComprobarNumero;
- objeto.onblur = _MensajeError;
- objeto.error = _Error;
+ objeto.onblur = objeto.comprobar;
 
  return objeto;
 }//ControlNumero
@@ -215,14 +302,15 @@ function ControlFecha (objeto) {
  objeto = BaseFormulario (objeto, TIPO_FECHA);
 
  objeto.requerido = 1;
- objeto.vacio = 1;
+ objeto.vacio = 0;
  objeto.coger_foco = 1;
 
  objeto.valor = _ValorTexto;
 
  objeto.comprobar = _ComprobarFecha;
- objeto.onblur = _MensajeError;
- objeto.error = _Error;
+ objeto.onblur = objeto.comprobar;
+// objeto.onblur = _MensajeError;
+ objeto.Error = _MensajeErrorFecha;
 
  return objeto;
 }//ControlFecha
@@ -299,7 +387,7 @@ function ControlLista (objeto) {
  objeto = BaseFormulario (objeto, TIPO_LISTA);
 
  objeto.requerido = 1;
- objeto.vacio = 1;
+ objeto.vacio = 0;
  objeto.coger_foco = 0;
 
  objeto.valor = _ValorLista;
@@ -307,8 +395,8 @@ function ControlLista (objeto) {
  objeto.indice = _IndiceLista;
 
  objeto.comprobar = _ComprobarFecha;
- objeto.onblur = _MensajeError;
- objeto.error = _Error;
+// objeto.onblur = _MensajeError;
+ //objeto.error = _Error;
 
  return objeto;
 }//ControlLista
