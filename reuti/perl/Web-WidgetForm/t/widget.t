@@ -38,7 +38,7 @@ is($w->get_html_attrs, $expected_attrs,             "get_html_attrs");
 is($w->get_html_attrs({ class => 'foo', id => 'fooid', size => 4 }),
       $expected_attrs2,                             " extra_args");
 
-my $expected_attrs3 = 'name="attrs_test" size="20" onchange="document.f.attrs_test.value = &#39;&#39;; " checked';
+my $expected_attrs3 = 'name="attrs_testimportant" size="20" onchange="document.f.attrs_testimportant.value = &#39;&#39;; " checked';
 is($w2->get_html_attrs, $expected_attrs3,           " widget custom attrs");
 
 
@@ -52,19 +52,19 @@ is ($rendering, $expected_rendering,                " additional arguments");
 $rendering = $w2->render({ 'onchange'   => "alert('I have changed!'); " });
 $rendering =~ s/^\s*//go;
 $rendering =~ s/\s*$//go;
-$expected_rendering = '<input name="attrs_test" size="20" onchange="document.f.attrs_test.value = &#39;&#39;; alert(&#39;I have changed!&#39;); " checked>';
+$expected_rendering = '<input name="attrs_testimportant" size="20" onchange="document.f.attrs_testimportant.value = &#39;&#39;; alert(&#39;I have changed!&#39;); " checked>';
 is ($rendering, $expected_rendering,                " add attributes");
 
 $rendering = $w2->render({ '=onchange'   => "alert('I have changed!'); " });
 $rendering =~ s/^\s*//go;
 $rendering =~ s/\s*$//go;
-$expected_rendering = '<input name="attrs_test" size="20" onchange="alert(&#39;I have changed!&#39;); " checked>';
+$expected_rendering = '<input name="attrs_testimportant" size="20" onchange="alert(&#39;I have changed!&#39;); " checked>';
 is ($rendering, $expected_rendering,                " absolute attributes");
 
 # Values
 is($w2->get_value, 'mock',                          "get_value");
 is($w2->get_value('_child'), 'mocking_child',       " suffix");
-$f->define_form_values({ attrs_test => 'real_mock',
+$f->define_form_values({ attrs_testimportant => 'real_mock',
                          attrs_test_child => 'real mocking child' });
 is($w2->get_value, 'real_mock',                     " from form values");
 is($w2->get_value('_child'), 'real mocking child',  " suffix/from form values");
