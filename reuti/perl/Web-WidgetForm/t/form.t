@@ -25,8 +25,8 @@ is ($f2->define_widgets({'t'  => { widget_type => 'NonExistent' },
                                                  " wrong widget definition");
 is ($f->define_widgets($widget_list), 2,         "define_widgets");
 cmp_deeply($widget_list, $f->get_widgets,        "get_widgets");
-$f->define_widget_values({ testwidget => 'a',
-                           t2         => 'jander@mander.fander' });
+$f->define_form_values({ testwidget => 'a',
+                         t2         => 'jander@mander.fander' });
 
 # Properties
 $f->add_prop('testprop', '%widgetname%.value = "foo"');
