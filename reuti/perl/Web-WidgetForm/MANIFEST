@@ -11,3 +11,4 @@ t/form.t
 t/textbox.t
 t/widget.t
 t/Web/DJWidgets/Widget/Test.pm
+META.yml                                 Module meta-data (added by MakeMaker)
