@@ -1,0 +1,67 @@
+<html>
+ <head>
+  <title>Ejemplos de Control de Formularios</title>
+  <link rel="stylesheet" type="text/css" href="formulario.css">
+ </head>
+
+
+<body>
+
+<table width="95%" border="0" cellpadding="3" cellspacing="0" bgcolor="#F0F0F0">
+ <tr>
+  <td class="grande_cabecera_tabla"><b>Objetos Disponibles</b></td>
+ </tr>
+
+ <tr>
+  <td>
+   <li><b class="cabecera_tabla">BaseFormulario</b>: Es la base de toda la jerarquía de objetos. Aquí se definen los atributos y métodos comunes a todas las instancias de los objetos generados.
+    <ul><b>setMessageError () / setNoMessageError():</b> Cuando se detecta un error, hace</ul>
+    <ul><b>setNull() / setNoNull():</b> El valor del objeto no puede o puede estar vacío.</ul>
+    <ul><b>setFocus() / setNoFocus():</b> En caso de error, el campo debe coger el foco o no</ul>
+    <ul><b>getNull() / getFocus() / getMessageError() :</b> Obtener si el objeto es requerido o no / obtener si el foco se coje antes un error o no / obtención del mensaje de error por pantalla o se devuelve un código de error a la función de usuario (gestión propia de errores).</ul>
+    <ul><b>AddEvent()</b>: Esta es la base para el manejo de los eventos de 'forma transparnte'. La idea en un principio, es que los distintos objetos gestionen sus propios eventos.</ul>
+    
+    <b>Métodos comunes a todos los objetos:</b>
+    <ul><b>valor():</b> Valor actual del campo.</ul>
+    <ul><b>comprobar():</b> Comprueba si el valor actual es válido, en función de las restricciones impuestas a cada objeto del formulario.</ul>
+    <ul><b>Error():</b> Muestra el último mensaje de error generado.
+   </li><br><br>
+</td>
+</tr>
+
+<tr>
+<td>
+   <li><b class="cabecera_tabla">ControlNumero</b>: 
+    <ul><b>setMinimo(min) / setMaximo(max):</b> Establece el valor mínimo y máximo del rango válido.</ul>
+    <ul><b>setRange(min, max):</b> Establece el rango completo válido.</ul>
+    <ul><b>setNoRange():</b> Elimina la comprobación de rangos.</ul>
+    <ul><b>setDecimal() / setNoDecimal():</b> Se permiten números reales o solo entero.</ul>
+    <ul><b>getDecimal():</b> Obtiene si el número se define como número real o solo entero.</ul>
+   </li><br>
+</td>
+</tr>
+
+<tr>
+<td>
+   <li><b class="cabecera_tabla">ControlFecha</b>: </li><br><br>
+</td>
+</tr>
+
+<tr>
+<td>
+   <li><b class="cabecera_tabla">ControlLista</b>: 
+     <ul><b>indice()</b>: Devuelve el índice seleccionado actualmente.</ul>
+   </li>
+
+<tr>
+<td>
+     <li><b class="cabecera_tabla">ControlListaTeclado</b>: </li>
+   </li>
+  </td>
+ </tr>
+
+
+</table>
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+<html>
+ <head>
+  <title>Manejo de 'TDocumentos'</title>
+  <script Language="JavaScript" src="js/control_formulario.js"></script>
+ </head>
+
+
+<script Language="JavaScript">
+
+ var documento = new TDocumento ();
+ documento.setRoot ();
+
+
+/*****************************************************************************/
+function Ayuda () {
+ alert ('Esta es la ayuda genérica del documento.');
+}//Ayuda
+
+
+/*****************************************************************************/
+function Test () {
+ alert ('Test Teclado...');
+}//Ayuda
+
+
+
+/*****************************************************************************/
+function ConfigurarCampos () {
+
+ documento.AddAcelerator (CHAR_F1, 0, 0, 0, Ayuda); //CHAR_SHIFT, CHAR_ALT, CHAR_CONTROL);
+// documento.AddAcelerator (CHAR_F2, 0, 0, 0, Test); //CHAR_SHIFT, CHAR_ALT, CHAR_CONTROL);
+ documento.AddAcelerator (88, 0, CHAR_ALT, 0, Test); //CHAR_SHIFT, CHAR_ALT, CHAR_CONTROL);
+
+}//ConfigurarCampos
+
+</script>
+
+
+
+<body onLoad="ConfigurarCampos ();">
+
+<form method="POST" name="ejemplo">
+Ejemplo del manejo del objeto TDocumentos.
+</form>
+
+
+<div id="CAPA_TEST"></div>
+
+</body>
+</html>
