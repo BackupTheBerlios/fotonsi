@@ -8,9 +8,8 @@ sub new {
    my ($class, @args) = @_;
 
    my $self = $class->SUPER::new(@args);
-   push @{$self->{VALUE_HTML_ATTRS}}, 'type', 'value', 'tabindex',
+   push @{$self->{VALUE_HTML_ATTRS}}, 'type', 'value', 'size', 'tabindex',
                                       'accesskey';
-   push @{$self->{EMPTY_HTML_ATTRS}}, 'readonly';
    return $self;
 }
 
