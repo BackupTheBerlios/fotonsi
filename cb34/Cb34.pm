@@ -2,7 +2,7 @@ package Cb34;
 
 use strict;
 
-# $Id: Cb34.pm,v 1.4 2003/11/01 13:51:32 zoso Exp $
+# $Id: Cb34.pm,v 1.5 2003/11/03 12:37:46 zoso Exp $
 
 use vars qw(@EXPORT_OK);
 require Exporter;
@@ -88,6 +88,10 @@ sub cb34 {
                                            $datos->{dcontrol},
                                            $datos->{detalle}
                                           );
+   $ent    = sprintf("%04s",  $ent   );
+   $ofi    = sprintf("%04s",  $ofi   );
+   $cuenta = sprintf("%010s", $cuenta);
+   $dc     = sprintf("%02s",  $dc    );
    # Campos no obligatorios
    $envio ||= strftime("%d%m%y", localtime);
    $emis  ||= strftime("%d%m%y", localtime);
@@ -134,6 +138,11 @@ sub cb34 {
       $n010++;
       $suma += $importe;
       $importe = importe_cb34($importe);
+      $ent    = sprintf("%04s",  $ent   );
+      $ofi    = sprintf("%04s",  $ofi   );
+      $cuenta = sprintf("%010s", $cuenta);
+      $dc     = sprintf("%02s",  $dc    );
+      $importe= sprintf("%012s",  $importe);
       # Comprobaciones
       grep { $_ eq $g } (1, 2) or die "El tipo de gasto es inválido: $g";
       grep { $_ eq $c } (1, 8, 9) or die "El concepto es inválido: $c";
@@ -179,6 +188,7 @@ sub cb34 {
       }
       if (defined $reg->{dni}) {
          ($n, $dni, $nib) = ('018', $reg->{dni}, $reg->{nib});
+         $dni = sprintf("%018s", $dni);
          $fh->format_name("REGISTRO9");
          write $fh;
          $ntotal++;
@@ -187,13 +197,16 @@ sub cb34 {
 
    # Línea de totales --------------------------------------------------------
    $fh->format_name("TOTALES");
-   $suma = importe_cb34($suma);
    $ntotal++;     # Se cuenta también el de totales
+   $suma = importe_cb34($suma);
+   $suma = sprintf("%012s", $suma);
+   $n010 = sprintf("%08s", $n010);
+   $ntotal = sprintf("%010s", $ntotal);
    write $fh;
 
    # Definiciones de formatos ================================================
 format CABECERA1 =
-0356@>>>>>>>>>            001@|||||@|||||@>>>@>>>@0########@   @>@>>>>>>
+0356@>>>>>>>>>            001@|||||@|||||@>>>@>>>@>>>>>>>>>@   @>@>>>>>>
     $ordenante,            $envio,$emis,$ent,$ofi,$cuenta,$det,$dc,$libre
 .
 format CABECERA234 =
@@ -205,7 +218,7 @@ format CABECERA56 =
     $ordenante,           $n,$informacion,                       $libre
 .
 format REGISTRO1 =
-06@>@>>>>>>>>>@<<<<<<<<<<<010@0##########@0##@0##@0########@@  @<@>>>>>>
+06@>@>>>>>>>>>@<<<<<<<<<<<010@>>>>>>>>>>>@>>>@>>>@>>>>>>>>>@@  @<@>>>>>>
   $o,$ordenante,$ref_bene,   $importe,  $ent,$ofi,$cuenta,$g,$c,$dc,$libre
 .
 format REGISTRO28 =
@@ -213,11 +226,11 @@ format REGISTRO28 =
   $o,$ordenante,$ref_bene,$n,$informacion,                       $libre
 .
 format REGISTRO9 =
-06@>@>>>>>>>>>@>>>>>>>>>>>018@0################@>>>>>>>>>>>>>>>>>@>>>>>>
+06@>@>>>>>>>>>@>>>>>>>>>>>018@>>>>>>>>>>>>>>>>>@>>>>>>>>>>>>>>>>>@>>>>>>
   $o,$ordenante,$ref_bene,   $dni,             $nib,             $libre
 .
 format TOTALES =
-0856@>>>>>>>>>               @0##########@0######@0########      @>>>>>>
+0856@>>>>>>>>>               @>>>>>>>>>>>@>>>>>>>@>>>>>>>>>      @>>>>>>
     $ordenante,              $suma,      $n010,  $ntotal,        $libre
 .
 }
