@@ -2,7 +2,7 @@ package Web::DJWidgets::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.5 2004/05/06 09:10:12 zoso Exp $
+# $Id: Widget.pm,v 1.6 2005/01/24 13:22:35 setepo Exp $
 
 =head1 NAME
 
@@ -270,8 +270,8 @@ sub get_html_attrs {
    $value_html_attrs ||= $self->{VALUE_HTML_ATTRS};
    $empty_html_attrs ||= $self->{EMPTY_HTML_ATTRS};
 
-   my %html_attrs = ($self->get_calc_html_attrs($args),
-                     name => $self->{NAME});
+   my %html_attrs = (name => $self->{NAME},
+                     $self->get_calc_html_attrs($args));
 
    # Filter the calculated attribute list to build the final attribute string
    my @r = ();
