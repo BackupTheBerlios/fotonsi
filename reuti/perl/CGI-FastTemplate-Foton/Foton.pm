@@ -65,6 +65,7 @@ sub _valores
   my $self = shift;
   my ($tpl, $templates_ref, $variable_final, $valores_array_ref) = @_;
 
+  $tpl->assign($variable_final => '');
 print STDERR "_valores de: $variable_final\n" if ($self->{DEBUG});
 
   if (defined $valores_array_ref) {
