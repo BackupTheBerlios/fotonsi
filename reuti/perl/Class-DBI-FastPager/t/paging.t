@@ -2,8 +2,8 @@
 
 use strict;
 
-my $pruebas = 3;
-use Test::More tests => 3;
+my $pruebas = 5;
+use Test::More tests => 5;
 use Test::Deep;
 use DBIx::DataSource qw(create_database drop_database);
 use Config::Tiny;
@@ -33,10 +33,16 @@ SKIP: {
     $dbh->disconnect;
 
 
-    # Las pruebas del módulo Foton::CDBI en sí
+    # Las pruebas del módulo en sí
     my @lista = Cosa->paged_search({}, { page => 2, nelems => 3 });
     is (scalar @lista, 3,                     'paged_search');
     is ($lista[0]->cod_cosa, 4,               ' cod_cosa');
+    @lista = Cosa->paged_search({ des_cosa => { 'LIKE' => '%cosa' } },
+                                { page => 3, nelems => 3,
+                                  order_by => 'cod_cosa' });
+    is (scalar @lista, 3,                     ' restricciones');
+    cmp_deeply([ map { $_->cod_cosa } @lista ],
+               [ 7, 8, 9 ],                   ' cod_cosa');
 
 
     # Tenemos que cerrar las conexiones de Class::DBI. Si no, no funcionará
