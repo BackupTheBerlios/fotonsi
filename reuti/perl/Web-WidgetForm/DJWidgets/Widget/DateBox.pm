@@ -53,7 +53,7 @@ sub validate {
     my @errors = $self->SUPER::validate($vars);
     my $value = $vars->{$self->get_name . ($self->arg('suffix') || '')};
     push @errors, $self->arg('incorrect_date_msg') || 'Incorrect date'
-            unless $value =~ m,\d\d?/\d\d?/\d{4},;
+            unless $value =~ /\d{4}-\d\d?-\d\d?/;
 
     @errors;
 }
