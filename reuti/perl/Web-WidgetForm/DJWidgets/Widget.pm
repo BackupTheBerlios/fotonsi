@@ -2,7 +2,7 @@ package Web::DJWidgets::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.8 2005/03/08 19:48:07 zoso Exp $
+# $Id: Widget.pm,v 1.9 2005/03/08 20:28:31 zoso Exp $
 
 =head1 NAME
 
@@ -143,6 +143,8 @@ HTML attributes list ("value" attributes and "empty" attributes). If
 C<$html_attrs_hash>, C<$value_html_attrs_list> or C<$empty_html_attrs_list>
 are not given, the internal defaults are used.
 
+It takes into account the C<suffix> argument to build the C<name> attribute.
+
 =item merge_args($arg_hash1, $arg_hash2, $arg_hash3, ...)
 
 Merges the given argument hashes, returning the result. When the same key
@@ -154,10 +156,11 @@ appears more than once, the last value takes precedence.
 
 Returns a value for the widget, first by looking at the form arguments and
 then, if no value is found, looking at the default value given in the widget
-properties. If no arguments are given, the form key C<$name> (C<$name> being
-the name of the widget) and the widget property C<value> are used (where
-C<$name> is the name of the widget). If C<$suffix> is given, the form key
-C<$name$suffix> and the widget property C<value$suffix> are used.
+properties. If no arguments are given, the form key C<$name$suffix> (C<$name>
+being the name of the widget and C<$suffix> being the C<suffix> widget
+argument, if any) and the widget property C<value> are used. If C<$suffix> is
+given, the form key C<$name$suffix> and the widget property C<value$suffix>
+are used.
 
 =item get_form_value($name)
 
@@ -280,7 +283,7 @@ sub get_html_attrs {
    $value_html_attrs ||= $self->{VALUE_HTML_ATTRS};
    $empty_html_attrs ||= $self->{EMPTY_HTML_ATTRS};
 
-   my %html_attrs = (name => $self->{NAME},
+   my %html_attrs = (name => $self->get_html_name,
                      $self->get_calc_html_attrs($args));
 
    # Filter the calculated attribute list to build the final attribute string
@@ -290,7 +293,8 @@ sub get_html_attrs {
                                        defined $args->{"=$attr"}) {
          my $value = defined $args->{"=$attr"} ? $args->{"=$attr"} :
                                                  $html_attrs{$attr};
-         $value .= ($args->{$attr} || "");      # add to attribute values
+         # add to attribute values
+         $value .= (defined $args->{$attr} ? $args->{$attr} : "");
          push @r, "$attr=\"".$self->html_escape($value)."\"";
       }
    }
@@ -318,10 +322,13 @@ sub html_escape {
 
 sub get_value {
    my ($self, $suffix) = @_;
-   $suffix = $self->arg('suffix') unless defined $suffix;
-
+   my $suffix_arg = $suffix;
+   if (!defined $suffix) {
+       # Look for "<name><suffix>" form value, but for "value" argument
+       ($suffix, $suffix_arg) = ($self->arg('suffix'), '');
+   }
    my $value = $self->get_form_value($self->{NAME}.$suffix);
-   return defined $value ? $value : $self->{ARGS}->{"value$suffix"};
+   return defined $value ? $value : $self->{ARGS}->{"value$suffix_arg"};
 }
 
 sub get_form_value {
