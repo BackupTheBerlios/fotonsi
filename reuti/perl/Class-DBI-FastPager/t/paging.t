@@ -48,7 +48,7 @@ SKIP: {
 
     # Comprobamos que no pete con tablas vacías
     eval { Vacia->paged_search({ cod_vacio => 0 }, { nelems => 5 }); };
-    is ($@, "", 'tabla vacía');
+    is ($@, "",                               'tabla vacía');
 
 
     # Tenemos que cerrar las conexiones de Class::DBI. Si no, no funcionará

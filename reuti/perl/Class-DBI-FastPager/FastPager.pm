@@ -39,7 +39,7 @@ sub paged_search {
         my $page = Data::Page->new($total_elems,
                                    $attr->{nelems}, $attr->{page});
         my ($offset, $limit) = ($page->first - 1, $page->entries_per_page);
-	$offset = 0 if $offset < 0;
+        $offset = 0 if $offset < 0;     # Correct $offset if there's no data
         $phrase .= " LIMIT $limit OFFSET $offset";
     }
     return $class->retrieve_from_sql($phrase, @bind);
