@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 41;
+use Test::More tests => 42;
 use Test::Deep;
 use lib 't';
 
@@ -31,6 +31,9 @@ $f = Web::DJWidgets->new('testform', { action => 'foo.pl' },
 my $f2 = Web::DJWidgets->new('anotherone');
 eval { $f2->define_widgets({ 't'  => { widget_type => 'NonExistent' },
                              'tt' => { nonempty => 0 } }) };
+ok ($@ ne "",                                    " non-existent widget type");
+
+eval { $f2->define_widgets({ 'something' => 'bad attributes' }); };
 ok ($@ ne "",                                    " wrong widget definition");
 
 is ($f->get_name, 'testform',                    "get_name");
