@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 13;
+use Test::More tests => 14;
 use Test::Deep;
 
 use lib 't';
@@ -49,11 +49,17 @@ $rendering =~ s/^\s*//go;
 $rendering =~ s/\s*$//go;
 is ($rendering, $expected_rendering,                " additional arguments");
 
-$rendering = $w2->render({ '.onchange'   => "alert('I have changed!'); " });
+$rendering = $w2->render({ 'onchange'   => "alert('I have changed!'); " });
 $rendering =~ s/^\s*//go;
 $rendering =~ s/\s*$//go;
 $expected_rendering = '<input name="attrs_test" size="20" onchange="document.f.attrs_test.value = &#39;&#39;; alert(&#39;I have changed!&#39;); " checked>';
 is ($rendering, $expected_rendering,                " add attributes");
+
+$rendering = $w2->render({ '=onchange'   => "alert('I have changed!'); " });
+$rendering =~ s/^\s*//go;
+$rendering =~ s/\s*$//go;
+$expected_rendering = '<input name="attrs_test" size="20" onchange="alert(&#39;I have changed!&#39;); " checked>';
+is ($rendering, $expected_rendering,                " absolute attributes");
 
 # Values
 is($w2->get_value, 'mock',                          "get_value");
