@@ -2,7 +2,7 @@ package Web::WidgetForm;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.7 2004/04/14 11:48:18 zoso Exp $
+# $Id: WidgetForm.pm,v 1.8 2004/04/16 11:13:10 zoso Exp $
 
 =head1 NAME
 
@@ -41,10 +41,17 @@ Web::WidgetForm - Web Component System
  $f->render_widget('textbox', $extra_args);
  print $f->srender_widget('textbox', $extra_args);
 
- # Usually only inside components
- $f->add_prop($property, $value);
-
  $value = $f->prop($property);
+ $value = $f->arg($argument);
+ $value = $f->arg($argument, $new_value);
+
+ $f->redirect($url);
+
+Usually only inside components
+
+ $f->add_prop($property, $value);      # Performs special translations
+ $f->register_state_variable('current_folder');
+ $f->unregister_state_variable('current_folder');
 
 =head1 DESCRIPTION
 
@@ -58,7 +65,9 @@ strings with checkings).
 =over 4
 
 =item new($name)
+
 =item new($name, $args)
+
 =item new($name, $args, $base_widget_args)
 
 Returns a new form object with the given name and arguments. The optional
@@ -90,20 +99,6 @@ Returns all the form values as a hash.
 
 Returns a reference to a list of defined widgets.
 
-=item validate_form
-=item validate_form($vars)
-
-This method validates all the form widgets with the given hashref (or with the
-registered values if none is given). Returns the list of widget names not
-validated correctly, or C<0> if everything went fine.
-
-=item validate_widget($widgetname)
-=item validate_widget($widgetname, $value)
-
-Validates the widget C<$widgetname> with the value C<$value> (or with the
-registered value if only one argument is given). Returns C<1> if the widget
-validated correctly, C<0> if not, and C<undef> if the widget is not defined.
-
 =item render_widget($name, $extra_args)
 
 Renders the given widget. If C<$extra_args> is defined, the extra arguments
@@ -113,20 +108,101 @@ hash reference is passed to the widget for that particular rendering.
 
 The same as above, but the rendered widget is returned instead of printed.
 
+=item arg($name)
+
+=item arg($name, $value)
+
+Returns the value of the argument C<$name>. If C<$value> is given, it's first
+assigned to the argument C<$name>.
+
+=item html_escape($value)
+
+Escapes the given characters according to the section "3.2.2 Attributes" of
+the HTML 4 Specification. It's useful for pasting values in HTML, like tag
+attributes enclosed in quotes.
+
+=item redirect($url)
+
+Redirects to the given URL. It takes into account state variables (see below).
+Only works in HTML mode, that is, you can't change the MIME type or output
+garbage before calling this method. If you need to, you'll have to roll your
+own redirection with your own state variable handling.
+
+
+=head1 VALIDATION METHODS
+
+Each widget defines its own server validation code so all data is safe. You
+can validate the entire form (returning the list of widget names not
+validating correctly) or a given widget.
+
+=item validate_form
+
+=item validate_form($vars)
+
+This method validates all the form widgets with the given hashref (or with the
+registered values if none is given). Returns the list of widget names not
+validated correctly, or C<0> if everything went fine.
+
+=item validate_widget($widgetname)
+
+=item validate_widget($widgetname, $value)
+
+Validates the widget C<$widgetname> with the value C<$value> (or with the
+registered value if only one argument is given). Returns C<1> if the widget
+validated correctly, C<0> if not, and C<undef> if the widget is not defined.
+
+
+=head1 PROPERTIES METHODS
+
+Properties are special buffers where values are stored. These values are
+usually Javascript content, compiled from every form widget. The most common
+use is storing Javascript code to initialize the form, check the form before
+submitting, etc.
+
 =item add_prop($prop, $value)
 
 Adds the content C<$value> to the property C<$prop>, using a special
 interpolation to reference other widgets safely.
 
+The problem with Javascript is that you can't write generic code easily,
+because you must know the name of the form the <input> is in. So, a special
+substitution on C<$value> is done, so that you can refer to the HTML control
+C<foo> with C<%foo%>. That will translate as
+C<document.E<lt>I<formname>E<gt>.foo>.
+
 =item prop($prop)
 
 Returns the stored value for the given property C<$prop>.
 
-=item arg($name)
-=item arg($name, $value)
 
-Returns the value of the argument C<$name>. If C<$value> is given, it's first
-assigned to the argument C<$name>.
+=head1 STATE VARIABLES METHODS
+
+State variables are form variables that "define" in some way the form state,
+e.g.: a variable storing the current filter in a search, or the current
+directory or ordering in a web-based file manager. It's useful telling the
+form which ones are state variables because that way the form can perform
+redirections without losing the state values (and other widgets know them too,
+so they can also perform redirections without losing important information).
+
+=item register_state_variable($varname)
+
+=item unregister_state_variable($varname)
+
+Register and unregister state variables. State variables are only counted
+once, so if you try to register one of them more than once, the second try is
+ignored.
+
+=item get_state_variables
+
+Returns the list of state variable names.
+
+=item get_state
+
+Returns a hash with the state variable names and values.
+
+=item get_uri_enc_state
+
+Returns a URI encoded string with the state information.
 
 =back
 
@@ -135,13 +211,15 @@ assigned to the argument C<$name>.
 This class is free. You can redistribute or modify it under the same terms as
 Perl itself.
 
- Copyright 2002 Fotón Sistemas Inteligentes
+ Copyright 2004 Fotón Sistemas Inteligentes
 
 =head1 AUTHORS
 
 This class was written by Esteban Manchado Velázquez <zoso@foton.es>.
 
 =cut
+
+use URI::Escape;
 
 our $VERSION = '0.1';
 
@@ -158,6 +236,7 @@ sub new {
                  CACHED_WIDGET_OBJECTS => {},
                  ARGUMENTS => $args,
                  BASE_WIDGET_ARGS => $base_widget_args,
+                 STATE_VARS => [],
                };
    bless ($self, $class);
    return $self;
@@ -239,6 +318,56 @@ sub get_widget_object {
    $self->{CACHED_WIDGET_OBJECTS}->{$widgetname};
 }
 
+sub render_widget {
+   my ($self, $widget, $extra_args) = @_;
+   return unless defined $self->{WIDGETS}->{$widget};
+   print $self->srender_widget(@_);
+}
+
+sub srender_widget {
+   my ($self, $widget, $extra_args) = @_;
+   return undef unless exists $self->{WIDGETS}->{$widget};
+   $self->get_widget_object($widget)->render($extra_args);
+}
+
+sub arg {
+   my ($self, $name, $value) = @_;
+   $self->{ARGUMENTS}->{$name} = $value if (scalar @_ > 2);
+   $self->{ARGUMENTS}->{$name};
+}
+
+sub html_escape {
+   my ($self, $value) = @_;
+   $value ||= "";
+   $value =~ s/&/&amp;/go;
+   $value =~ s/"/&quot;/go;
+   $value =~ s/'/&#39;/go;
+   return $value;
+}
+
+sub redirect {
+   my ($self, $url) = @_;
+
+   print qq(<form name="webwidgetsredirectform" method="post" action="$url">\n);
+   foreach my $var ($self->get_state_variables) {
+      print qq(<input type="hidden" name="$var" value=").$self->html_escape($self->{VALUES}->{$var}).qq(">\n);
+   }
+   print qq(</form>\n);
+   my $uri_enc_state = $self->get_uri_enc_state;
+   print <<EOFORM;
+   <script>
+      document.webwidgetsredirectform.submit();
+   </script>
+   <noscript>
+      <a href="$url?$uri_enc_state">Click here</a>
+   </noscript>
+EOFORM
+   1;
+}
+
+
+## VALIDATION METHODS
+
 sub validate_form {
    my ($self, $vars) = @_;
 
@@ -255,17 +384,8 @@ sub validate_widget {
    return $self->get_widget_object($widget)->validate($value) ? 1 : 0;
 }
 
-sub render_widget {
-   my ($self, $widget, $extra_args) = @_;
-   return unless defined $self->{WIDGETS}->{$widget};
-   print $self->srender_widget(@_);
-}
 
-sub srender_widget {
-   my ($self, $widget, $extra_args) = @_;
-   return undef unless exists $self->{WIDGETS}->{$widget};
-   $self->get_widget_object($widget)->render($extra_args);
-}
+## PROPERTIES METHODS
 
 sub add_prop {
    my ($self, $prop, $value) = @_;
@@ -279,11 +399,37 @@ sub prop {
    $self->{PROPS}->{$prop};
 }
 
-sub arg {
-   my ($self, $name, $value) = @_;
-   $self->{ARGUMENTS}->{$name} = $value if (scalar @_ > 2);
-   $self->{ARGUMENTS}->{$name};
+
+## STATE VARIABLES METHODS
+
+sub register_state_variable {
+   my ($self, $varname) = @_;
+   push @{$self->{STATE_VARS}}, $varname
+         unless grep { $_ eq $varname } @{$self->{STATE_VARS}};
 }
+
+sub unregister_state_variable {
+   my ($self, $varname) = @_;
+   $self->{STATE_VARS} = [ grep { $_ ne $varname }
+                                @{$self->{STATE_VARS}} ];
+}
+
+sub get_state_variables {
+   my ($self) = @_;
+   return @{$self->{STATE_VARS}};
+}
+
+sub get_state {
+   my ($self) = @_;
+   return map { ($_, $self->{VALUES}->{$_}) } @{$self->{STATE_VARS}};
+}
+
+sub get_uri_enc_state {
+   my ($self) = @_;
+   return join("&", map { $_ . "=" . uri_escape($self->{VALUES}->{$_}) }
+                        @{$self->{STATE_VARS}});
+}
+
 
 sub DESTROY {
    my $self = shift ;
