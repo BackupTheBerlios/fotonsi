@@ -6,6 +6,14 @@
 nombre = 
 clave =
 
+; Indique el método de codificación que ha usado para guardar
+; la clave. Si la contraseña está vacía, este campo se
+; ignora, y fete le pedirá la clave al ejecutarse
+; Los valores que puede tomar son
+;       claro       Sin codificar (por defecto)
+;       base64      Codificada en base64
+codificada = base64
+
 [urls]
 ;  Dirección para buscar la cadena recibida por línea de órdenes. Ponga
 ;  "%P" donde desea insertar el texto buscado
@@ -14,6 +22,10 @@ buscar = https://laser.foton.es/twiki/bin/photonsearch/?topic=%P&type=popup
 ; Dirección para crear nuevas páginas. %W es el nombre de la web y
 ; %P el nombre de la página
 crear = https://laser.foton.es/twiki/bin/edit/%W/%P
+
+; Similar al anterior, pero ésta permite especificar el padre
+; cuando se crea una página
+crear_padre = https://laser.foton.es/twiki/bin/edit/%W/%P?topicparent=%U
 
 [editor]
 ; Programa a ejecutar (usando la shell) para editar las páginas del 
@@ -37,3 +49,12 @@ verbose = sí
 ; interesarle dejarlos sin borrar para que, en caso de petar el 
 ; programa, los datos no se pierda
 borrar_temps = sí
+
+; Especifique un texto a añadir siempre antes de las páginas
+; a editar
+cabecera_texto = #### Fetezando, que es jerúndiho
+
+; O también un fichero a leer. Si pone las dos cabeceras, primero
+; se usará la del fichero
+; Asegúrese de que el fichero usa \r\n como separador de línea.
+cabecera_fichero = 
