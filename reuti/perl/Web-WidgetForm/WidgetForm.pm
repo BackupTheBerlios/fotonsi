@@ -2,7 +2,7 @@ package Web::WidgetForm;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.6 2004/04/01 16:08:47 zoso Exp $
+# $Id: WidgetForm.pm,v 1.7 2004/04/14 11:48:18 zoso Exp $
 
 =head1 NAME
 
@@ -12,7 +12,14 @@ Web::WidgetForm - Web Component System
 
  use Web::WidgetForm;
 
- $f = Web::WidgetForm->new($name, { class => 'f' });
+ # Form creation
+ $f = Web::WidgetForm->new($name, { class  => 'f',
+                                    action => 'somepage.pl' });
+ $f = Web::WidgetForm->new($name, { class  => 'f',
+                                    action => 'somepage.pl' },
+                                  { class    => 'widgetcommonclass',
+                                    readonly => '1' });
+
  $f->define_widgets({ 'textbox' => { widget_type => 'TextBox',
                                      focus => 1,
                                      length => 10 } });
@@ -50,9 +57,12 @@ strings with checkings).
 
 =over 4
 
+=item new($name)
 =item new($name, $args)
+=item new($name, $args, $base_widget_args)
 
-Returns a new form object with the given name and arguments.
+Returns a new form object with the given name and arguments. The optional
+parameter C<$base_widget_args> stores the common widget arguments.
 
 =item define_widgets($widgets_hashref)
 
@@ -64,8 +74,17 @@ Returns the number of processed widgets.
 =item define_form_values($values_hashref)
 
 Defines the received values for the widgets. The widgets then take the proper
-value when rendering themselves. Defining the values this way also allows the
-programmer to write filtering routines depending on the widget type.
+value when rendering themselves. It also calls
+C<$widget-E<gt>type_data_transform> for every widget type loaded, and
+C<$widget-E<gt>widget_data_transform> for every widget loaded.
+
+=item get_form_value($name)
+
+Returns the form value for the variable C<$name>.
+
+=item get_form_values
+
+Returns all the form values as a hash.
 
 =item get_widgets
 
@@ -103,6 +122,12 @@ interpolation to reference other widgets safely.
 
 Returns the stored value for the given property C<$prop>.
 
+=item arg($name)
+=item arg($name, $value)
+
+Returns the value of the argument C<$name>. If C<$value> is given, it's first
+assigned to the argument C<$name>.
+
 =back
 
 =head1 COPYRIGHT
@@ -123,12 +148,16 @@ our $VERSION = '0.1';
 sub new {
    my $proto = shift ;
    my $class = ref($proto) || $proto;
-   my $name = shift || return undef;
+   my $name             = shift || return undef;
+   my $args             = shift || {};
+   my $base_widget_args = shift || {};
    my $self  = { NAME => $name,
                  WIDGETS => {},
                  WIDGET_CLASSES => {},
                  PROPS => {},
                  CACHED_WIDGET_OBJECTS => {},
+                 ARGUMENTS => $args,
+                 BASE_WIDGET_ARGS => $base_widget_args,
                };
    bless ($self, $class);
    return $self;
@@ -158,11 +187,28 @@ sub define_widgets {
 sub define_form_values {
    my ($self, $values) = @_;
    $self->{VALUES} = { %$values };
+
+   # And now, call type_data_transform once for every widget type,
+   # widget_data_transform for every widget
+   my %widget_class = ();
+   foreach my $name (keys %{$self->{WIDGETS}}) {
+      my $w = $self->get_widget_object($name);
+      if (!exists $widget_class{$w->arg('widget_type')}) {
+         $w->type_data_transform($self->{VALUES});
+         $widget_class{$w->arg('widget_type')} = 1;
+      }
+      $w->widget_data_transform($self->{VALUES});
+   }
 }
 
 sub get_form_value {
    my ($self, $name) = @_;
    return $self->{VALUES}->{$name};
+}
+
+sub get_form_values {
+   my ($self) = @_;
+   return %{$self->{VALUES}};
 }
 
 sub get_widgets {
@@ -185,7 +231,7 @@ sub get_widget_object {
       print STDERR "Can't load Web Widget '$widgetname' (type '$class'): $@";
       return undef;
    }
-   $self->{CACHED_WIDGET_OBJECTS}->{$widgetname} = $total_class->new($self, $widgetname, $self->{WIDGETS}->{$widgetname});
+   $self->{CACHED_WIDGET_OBJECTS}->{$widgetname} = $total_class->new($self, $widgetname, { %{$self->{BASE_WIDGET_ARGS}}, %{$self->{WIDGETS}->{$widgetname}} });
    if ($@) {
       print STDERR "Can't create widget of type '$class'\: $@";
       return undef;
@@ -231,6 +277,12 @@ sub add_prop {
 sub prop {
    my ($self, $prop) = @_;
    $self->{PROPS}->{$prop};
+}
+
+sub arg {
+   my ($self, $name, $value) = @_;
+   $self->{ARGUMENTS}->{$name} = $value if (scalar @_ > 2);
+   $self->{ARGUMENTS}->{$name};
 }
 
 sub DESTROY {
