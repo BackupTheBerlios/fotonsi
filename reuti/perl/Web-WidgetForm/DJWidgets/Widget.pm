@@ -2,7 +2,7 @@ package Web::DJWidgets::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.3 2004/05/04 12:03:55 zoso Exp $
+# $Id: Widget.pm,v 1.4 2004/05/04 12:42:47 zoso Exp $
 
 =head1 NAME
 
@@ -16,9 +16,9 @@ Web::DJWidgets::Widget - Base Web Widget
  $o->init;        # Called automatically once for every widget type
  $o->setup_form;  # Called automatically for every widget instance
 
- $o->get_name;
- $o->get_form;
- $o->get_args;
+ $name = $o->get_name;
+ $form = $o->get_form;
+ %args = $o->get_args;
 
  print $o->render;
 
