@@ -147,10 +147,10 @@ CGI::FastTemplate::Foton - Módulo de facilitación de uso de CGI::FastTemplate
 
 =head1 DESCRIPCIÓN
 
-Este paquete es una clase derivada de CGI::FastTemplate que facilita su uso.
+Este paquete es una clase envoltorio de CGI::FastTemplate que facilita su uso.
 
 
-head1 FUNCIONES
+=head1 FUNCIONES
 
 =over 4
 
@@ -166,7 +166,11 @@ valores con CGI::FastTemplate.
 
 =over
 
-=item Esteban Manchado Velazquez <zoso@foton.es>, Javier Arbelo <jarbelo@foton.es>, Eduardo Navarro <eduardo@foton.es>
+=item Esteban Manchado Velázquez <zoso@foton.es>
+
+=item Javier Arbelo <jarbelo@foton.es>
+
+=item Eduardo Navarro <eduardo@foton.es>
 
 =back
 
