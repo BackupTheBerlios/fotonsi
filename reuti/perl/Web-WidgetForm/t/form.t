@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 21;
+use Test::More tests => 32;
 use Test::Deep;
 use lib 't';
 
@@ -69,3 +69,37 @@ is ($f->validate_widget('t2', 'jander@'),   0,   "  another one");
 is ($f->validate_widget('t2', 'jander@mander.com'), 1,
                                                  "  a valid one");
 is ($f->validate_widget('t2'), 1,                "  an implicit valid one");
+
+
+# State variables
+is (scalar $f->get_state_variables, 0,           "initial state variables");
+$f->register_state_variable('thingy');
+cmp_deeply([ $f->get_state_variables ], bag('thingy'),
+                                                 "register_state_variable");
+$f->register_state_variable('thingy');
+cmp_deeply([ $f->get_state_variables ], bag('thingy'),
+                                                 " repeated variables");
+$f->register_state_variable('another_thingy');
+cmp_deeply([ $f->get_state_variables ], bag('another_thingy', 'thingy'),
+                                                 " another variable");
+$f->unregister_state_variable('another_thingy');
+cmp_deeply([ $f->get_state_variables ], bag('thingy'),
+                                                 "unregister_state_variable");
+$f->unregister_state_variable('another_thingy');
+cmp_deeply([ $f->get_state_variables ], bag('thingy'),
+                                                 " unexistent");
+
+$f->register_state_variable('t2');
+cmp_deeply({ $f->get_state }, { t2     => 'jander@mander.fander',
+                                thingy => undef },
+                                                 "get_state");
+cmp_deeply([ split "&", $f->get_uri_enc_state ],
+           bag('t2=jander%40mander.fander', 'thingy='),
+                                                 "get_uri_enc_state");
+
+
+# Other methods
+is($f->html_escape("O'Reilly"), "O&#39;Reilly",       "html_escape");
+is($f->html_escape('"Hi", she said'), '&quot;Hi&quot;, she said',
+                                                      " double quote");
+is($f->html_escape("Back\\slash"), "Back\\slash",     " backslash");
