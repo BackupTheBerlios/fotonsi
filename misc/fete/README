@@ -137,6 +137,17 @@ poniendo sólo la primera letra.
 Poniendo help (o incluso h) en la shell aparecerá una pequeña ayuda
 del programa.
 
+ Editar páginas directamente
+ ===========================
+
+Para abrir páginas directamente, o crear nuevas, se puede usar la
+opción -c. La cadena que recibe -c es Web.NombrePágina
+
+$ fete -c TWiki.DiarioIncidenciasFotonActual
+(edita directamente el diario)
+
+$ fete -c Kuko.SoyUnaNuevaPágina
+(crea una nueva)
 
 
  Ejemplo de sesión con fete
@@ -232,3 +243,5 @@ Pulsando el botón cancelar ...
         editor
     (2) Sale sin guardar. Pulsa el botón cancelar para que borre
         también el bloqueo.
+
+
