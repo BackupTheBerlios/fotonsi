@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: latin1 -*-
 
-RCS_ID = '$Id: fete.py,v 1.7 2004/10/11 22:52:05 setepo Exp $'
+RCS_ID = '$Id: fete.py,v 1.8 2004/10/24 01:31:59 setepo Exp $'
 
 def dolog(*msg):
     import sys
@@ -192,14 +192,34 @@ class Edit:
         os.close(fd1)
         os.close(fd2)
 
+        p_read, p_write = os.pipe()
         pid = os.fork()
+
         if pid == 0:
+            os.close(p_read)
+            os.dup2(p_write, 1)
             os.execv('/usr/bin/diff', ('diff', '-u', tmp_path1, tmp_path2))
+
+        os.close(p_write)
+        res = ''
+        while True:
+            r = os.read(p_read, 1000)
+            if not r: break
+            res += r
+        os.close(p_read)
         os.waitpid(pid, 0)
 
+        import sys
+        for line in res.splitlines():
+            if line[0] == '-':
+                line = '\033[0;31m' + line + '\033[m'
+            elif line[0] == '+':
+                line = '\033[0;32m' + line + '\033[m'
+            sys.stdout.write(line + '\n')
+
         if self.config.get('system.borrar_temps'):
-            os.unlink(tmp_path1)
-            os.unlink(tmp_path2)
+            _safe_unlink(tmp_path1)
+            _safe_unlink(tmp_path2)
 
         return 'continue'
 
@@ -249,7 +269,7 @@ class Edit:
                 try:
                     s = open(cf).read()
                 except IOError, e:
-                    print 'ERROR: No se puede abrir %s: %s' % (e.filename, e.strerror)
+                    dolog('ERROR: No se puede leer %s: %s' % (e.filename, e.strerror))
                 else:
                     os.write(fd, s)
 
