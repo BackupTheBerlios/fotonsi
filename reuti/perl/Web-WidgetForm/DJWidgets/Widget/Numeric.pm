@@ -46,7 +46,18 @@ sub setup_form {
         $self->arg('invalid_number_msg', "Invalid number.");
     }
 
-    $self->arg('value', $self->_fmt_mac_to_human($args->{value} || '0'));
+    my $n = $self->get_html_name;
+    my $m = $self->arg('invalid_number_msg');
+    $self->get_form->add_prop('before_send', <<TAL);
+        var djw_numeric_re_valid = /^[0-9.]+(,\\d+)?\$/;
+        if (! djw_numeric_re_valid.exec($n.value)) {
+            alert('$m: ' + $n.value);
+            $n.focus();
+            return false;
+        }
+TAL
+
+    $self->arg('value', $args->{value});
 }
 
 sub widget_data_transform {
