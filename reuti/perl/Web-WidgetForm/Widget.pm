@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.6 2004/02/26 21:55:09 zoso Exp $
+# $Id: Widget.pm,v 1.7 2004/03/16 23:47:49 zoso Exp $
 
 =head1 NAME
 
@@ -73,10 +73,11 @@ given, the internal defaults are used.
 Merges the given argument hashes, returning the result. When the same key
 appears more than once, the last value takes precedence.
 
-=item escape($quote_char, $value)
+=item html_escape($value)
 
-Escapes with a backslash both the backslash character and C<$quote_char>. It's
-useful for pasting values in HTML, like tag attributes enclosed in quotes.
+Escapes the given characters according to the section "3.2.2 Attributes" of
+the HTML 4 Specification. It's useful for pasting values in HTML, like tag
+attributes enclosed in quotes.
 
 =item get_value
 =item get_value($suffix)
@@ -145,10 +146,9 @@ sub get_html_attrs {
    my %attrs_hash = %$html_attrs;
    my @r = ();
    foreach my $attr (@$html_valid_attrs) {
-      use Data::Dumper;
       if (exists $attrs_hash{$attr}) {
          if (defined $attrs_hash{$attr}) {
-            push @r, "$attr=\"".$self->escape('"', $attrs_hash{$attr})."\"";
+            push @r, "$attr=\"".$self->html_escape($attrs_hash{$attr})."\"";
          } else {
             push @r, $attr;
          }
@@ -160,8 +160,8 @@ sub get_html_attrs {
 sub render {
    my ($self, $opt_args) = @_;
    my $current_args = $self->merge_args($self->{ARGS}, $opt_args);
-   "<input type='hidden' name='".$self->escape("'", $self->{NAME}).
-         "' value='".$self->escape("'", $current_args->{value} || '')."' ".
+   "<input type='hidden' name='".$self->html_escape($self->{NAME}).
+         "' value='".$self->html_escape($current_args->{value} || '')."' ".
          $self->get_html_attrs.
          ">";
 }
@@ -190,10 +190,11 @@ sub merge_args {
    $args;
 }
 
-sub escape {
-   my ($self, $quote_char, $value) = @_;
-   $value =~ s/\\/\\\\/go;
-   $value =~ s/$quote_char/\\$quote_char/g;
+sub html_escape {
+   my ($self, $value) = @_;
+   $value =~ s/&/&amp;/go;
+   $value =~ s/"/&quot;/go;
+   $value =~ s/'/&#39;/go;
    return $value;
 }
 
