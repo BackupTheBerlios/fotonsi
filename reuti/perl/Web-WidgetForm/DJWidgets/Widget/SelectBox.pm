@@ -23,8 +23,6 @@ sub setup_form {
    $self->SUPER::setup_form(@args);
    my ($form, $name, $args) =
       ($self->get_form, $self->get_name, { $self->get_args });
-   $self->arg('nonempty_msg', "Empty list. Please select at least one value.")
-         unless defined $self->arg('nonempty_msg');
 
    $args->{focus} && $form->add_prop('init', "\%$name\%.focus();");
    # Compute numbers of selected items if needed (store in
@@ -34,12 +32,18 @@ sub setup_form {
        $form->add_prop('before_send', "var selectbox_$name\_items = 0; for (i = 0; i < \%$name\%.options.length; ++i) { if (\%$name\%.options[i].selected) { selectbox_$name\_items++ } } ");
    }
    # No selected items
-   $args->{nonempty} && $self->arg('min_selected_items', 1);
+   if ($args->{nonempty}) {
+      $self->arg('nonempty_msg', "Please select at least one value.")
+            unless defined $self->arg('nonempty_msg');
+      $self->arg('min_selected_items_msg', $self->arg('nonempty_msg'));
+      $self->arg('min_selected_items', 1);
+      $args->{min_selected_items} = 1;
+   }
    # Mininum selected items
    if ($args->{min_selected_items}) {
       $self->arg('min_selected_items_msg', "Please select at least ".$args->{min_selected_items}." item(s)")
-            unless defined $args->{min_selected_items_msg};
-      $form->add_prop('before_send', "if (selectbox_$name\_items < $args->{min_selected_items}) { alert('".$self->html_escape($self->args('min_selected_items_msg'))."'); return false } ");
+            unless defined $self->arg('min_selected_items_msg');
+      $form->add_prop('before_send', "if (selectbox_$name\_items < $args->{min_selected_items}) { alert('".$self->html_escape($self->arg('min_selected_items_msg'))."'); return false } ");
    }
    # Maximum selected items
    if ($args->{max_selected_items}) {
@@ -63,9 +67,6 @@ sub validate {
       @values = ($value);
    }
 
-   # Empty selection
-   push @errors, $self->arg('nonempty_msg')
-         if $self->arg('nonempty') && scalar @values == 0;
    # Number of selected items
    push @errors, $self->arg('min_selected_items_msg')
          if defined $self->arg('min_selected_items') &&
