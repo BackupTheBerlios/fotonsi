@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.3 2004/02/12 23:16:06 zoso Exp $
+# $Id: Widget.pm,v 1.4 2004/02/22 00:00:05 zoso Exp $
 
 =head1 NAME
 
@@ -51,7 +51,9 @@ automatically for every widget.
 =item render($opt_args)
 
 Renders the widget and returns the result. If C<$opt_args> is given, those
-arguments are added/replaced for that particular rendering.
+arguments are added/replaced for that particular I<rendering>. B<NOTE:> the
+optional arguments are used only for the rendering, not for setting-up the
+form. Its main use is to support multiple form elements with the same name.
 
 =item validate($value)
 
@@ -79,7 +81,9 @@ sub new {
    my ($form, $name, $args) = @_;
    my $self  = { FORM => $form,
                  NAME => $name,
-                 ARGS => $args
+                 ARGS => $args,
+                 HTML_VALID_ATTRS => ['class', 'id', 'disabled'],
+                 HTML_ATTRS => {},
                };
    bless ($self, $class);
    return $self;
@@ -94,21 +98,43 @@ sub setup_form {
 
    my ($form, $name, $args) = ($self->{FORM}, $self->{NAME}, $self->{ARGS});
 
-   # Common rules
-   $form->add_prop('init', "\%$name\%.focus();") if $args->{focus};
-   $form->add_prop('before_send', "if (\%$name\%.value) { alert('".($args->{nonempty_msg} || "Error: empty field. Please fill in.")."'); \%$name\%.focus(); return 0 };")
-         if $args->{nonempty};
-   # $form->add_prop('before_send', "\%$args->{depends}\%;")
-         # if $args->{depends};
+   # Common HTML attributes
+   $self->{HTML_ATTRS}->{name} = $name;
+   foreach my $empty_attr ('readonly', 'disabled') {
+      $self->{HTML_ATTRS}->{$empty_attr} = undef if $args->{$empty_attr};
+   }
+   foreach my $value_attr ('class', 'id', 'tabindex', 'accesskey',
+                           'src', 'alt', 'size', 'maxlength') {
+      $self->{HTML_ATTRS}->{$value_attr} = $args->{$value_attr}
+            if defined $args->{$value_attr};
+   }
+}
+
+sub get_html_attrs {
+   my ($self, $html_attrs, $html_valid_attrs) = @_;
+   $html_attrs       ||= $self->{HTML_ATTRS};
+   $html_valid_attrs ||= $self->{HTML_VALID_ATTRS};
+   my %attrs_hash = %$html_attrs;
+   my @r = ();
+   foreach my $attr (@$html_valid_attrs) {
+      use Data::Dumper;
+      if (exists $attrs_hash{$attr}) {
+         if (defined $attrs_hash{$attr}) {
+            push @r, "$attr=\"".$self->escape('"', $attrs_hash{$attr})."\"";
+         } else {
+            push @r, $attr;
+         }
+      }
+   }
+   join(" ", @r);
 }
 
 sub render {
    my ($self, $opt_args) = @_;
    my $current_args = $self->merge_args($self->{ARGS}, $opt_args);
    "<input type='hidden' name='".$self->escape("'", $self->{NAME}).
-         "' value='".$self->escape("'", $current_args->{value})."'".
-         (defined $current_args->{class} ?
-               "class='".$self->escape("'", $current_args->{class})."'" : "").
+         "' value='".$self->escape("'", $current_args->{value})."' ".
+         $self->get_html_attrs.
          ">";
 }
 
