@@ -2,7 +2,7 @@
 # -*- coding: latin1 -*-
 
 VERBOSE = False
-RCS_ID = '$Id: fete.py,v 1.3 2004/09/27 15:54:07 setepo Exp $'
+RCS_ID = '$Id: fete.py,v 1.4 2004/09/30 00:35:23 setepo Exp $'
 
 class DownloadError(Exception):
     pass
@@ -133,7 +133,10 @@ class Edit:
             return None, None
         else:
             while True:
-                i = raw_input('Página a editar: ')
+                i = raw_input('Página a editar (q para salir): ')
+                if i == 'q':
+                    return None, None
+
                 try:
                     opt = int(i)
                 except ValueError:
