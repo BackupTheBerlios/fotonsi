@@ -2,7 +2,7 @@ package Web::DJWidgets::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.4 2004/05/04 12:42:47 zoso Exp $
+# $Id: Widget.pm,v 1.5 2004/05/06 09:10:12 zoso Exp $
 
 =head1 NAME
 
@@ -179,9 +179,9 @@ sub new {
    my ($form, $name, $args) = @_;
    my $self  = { FORM => $form,
                  NAME => $name,
-                 ARGS => $args,
+                 ARGS => { %$args },      # Copy arguments
                  EMPTY_HTML_ATTRS => ['disabled'],
-                 VALUE_HTML_ATTRS => ['name', 'class', 'id', 'accesskey'],
+                 VALUE_HTML_ATTRS => ['name', 'class', 'id'],
                };
    bless ($self, $class);
    return $self;
@@ -276,10 +276,11 @@ sub get_html_attrs {
    # Filter the calculated attribute list to build the final attribute string
    my @r = ();
    foreach my $attr (@$value_html_attrs) {
-      if (exists $html_attrs{$attr} || defined $args->{$attr}) {
-         my $value = defined $args->{$attr} ? $args->{$attr} :
-                                              $html_attrs{$attr};
-         $value .= ($args->{".$attr"} || "");      # add .something attributes
+      if (exists $html_attrs{$attr} || defined $args->{$attr} ||
+                                       defined $args->{"=$attr"}) {
+         my $value = defined $args->{"=$attr"} ? $args->{"=$attr"} :
+                                                 $html_attrs{$attr};
+         $value .= ($args->{$attr} || "");      # add to attribute values
          push @r, "$attr=\"".$self->html_escape($value)."\"";
       }
    }
