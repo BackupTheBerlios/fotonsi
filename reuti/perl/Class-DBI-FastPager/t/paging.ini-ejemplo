@@ -1,0 +1,4 @@
+[base_datos]
+nombre = dbi:Pg:dbname=prueba_cdbi_fastpager
+usuario = entrada
+clave = entrada
