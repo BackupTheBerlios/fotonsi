@@ -2,12 +2,12 @@ package Cb34;
 
 use strict;
 
-# $Id: Cb34.pm,v 1.5 2003/11/03 12:37:46 zoso Exp $
+# $Id: Cb34.pm,v 1.6 2003/11/04 00:47:46 zoso Exp $
 
 use vars qw(@EXPORT_OK);
 require Exporter;
 *import = \&Exporter::import;
-@EXPORT_OK = qw(cb34 importe_cb34);
+@EXPORT_OK = qw(cb34 importe_cb34 fecha_cb34);
 
 =head1 NOMBRE
 
@@ -36,6 +36,10 @@ fichero C<FH>.
 =item importe_cb34($importe)
 
 Formatea una cantidad entera para incluirla en un fichero CB34.
+
+=item fecha_cb34($fecha)
+
+Formatea una fecha en formato C<aaaa-mm-dd> en el formato esperado de CB34.
 
 =back
 
@@ -239,6 +243,15 @@ sub importe_cb34 {
    my $importe = shift ;
 
    $importe = sprintf("%.2f", $importe) * 100;
+}
+
+sub fecha_cb34 {
+   my $fecha = shift ;
+
+   my @trozos = split('-', $fecha);
+   $trozos[0] =~ s/^..//go;
+   $trozos[2] =~ s/ .*//go;
+   return sprintf("%02s%02s%02s", $trozos[2], $trozos[1], $trozos[0]);
 }
 
 1;
