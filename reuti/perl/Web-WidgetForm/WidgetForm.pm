@@ -1,0 +1,210 @@
+package Web::WidgetForm;
+
+use strict;
+
+# $Id: WidgetForm.pm,v 1.1 2004/02/05 20:15:32 zoso Exp $
+
+=head1 NAME
+
+Web::WidgetForm - Web Component System
+
+=head1 SYNOPSIS
+
+ use Web::WidgetForm;
+
+ $o = Web::WidgetForm->new($name, { class => 'f' });
+ $o->define_widgets({ 'textbox' => { type => 'TextBox', focus => 1,
+                                     length => 10 } });
+ $list = $o->get_widgets;
+
+ # CGI style
+ if ($o->validate_form({ $cgi->Vars }) == 0) { ... }
+ # Mason style
+ if ($o->validate_form(\%ARGS) == 0) { ... }
+ # Or.... one by one
+ if ($o->validate_widget('textbox', $value)) { ... }
+
+ $o->render_widget('textbox', $extra_args);
+ print $o->srender_widget('textbox', $extra_args);
+
+ # Usually only inside components
+ $o->add_prop($property, $value);
+
+ $value = $o->prop($property);
+
+=head1 DESCRIPTION
+
+Class C<Web::WidgetForm> represents a Web Component System form. By defining
+the widgets inside the form, it allows you to validate them, print them out
+and check the form properties collected over the widgets (usually Javascript
+strings with checkings).
+
+=head1 METHODS
+
+=over 4
+
+=item new($name, $args)
+
+Returns a new form object with the given name and arguments.
+
+=item define_widgets($widgets_hashref)
+
+Defines the form widgets in a hash. The hash keys are the widget form names,
+and the values are hashrefs with all the widget arguments.
+
+Returns the number of processed widgets.
+
+=item get_widgets
+
+Returns a reference to a list of defined widgets.
+
+=item validate_form($vars)
+
+This method validates all the form widgets with the given hashref. Returns the
+list of widget names not validated correctly, or C<0> if everything went fine.
+
+=item validate_widget($widgetname, $value)
+
+Validates the widget C<$widgetname> with the value C<$value>. Returns C<1> if
+the widget validated correctly, C<0> if not, and C<undef> if the widget is not
+defined.
+
+=item render_widget($name, $extra_args)
+
+Renders the given widget. If C<$extra_args> is defined, the extra arguments
+hash reference is passed to the widget for that particular rendering.
+
+=item srender_widget($name, $extra_args)
+
+The same as above, but the rendered widget is returned instead of printed.
+
+=item add_prop($prop, $value)
+
+Adds the content C<$value> to the property C<$prop>, using a special
+interpolation to reference other widgets safely.
+
+=item prop($prop)
+
+Returns the stored value for the given property C<$prop>.
+
+=back
+
+=head1 COPYRIGHT
+
+This class is free. You can redistribute or modify it under the same terms as
+Perl itself.
+
+ Copyright 2002 Fotón Sistemas Inteligentes
+
+=head1 AUTHORS
+
+This class was written by Esteban Manchado Velázquez <zoso@foton.es>.
+
+=cut
+
+our $VERSION = '0.1';
+
+sub new {
+   my $proto = shift ;
+   my $class = ref($proto) || $proto;
+   my $name = shift || return undef;
+   my $self  = { NAME => $name,
+                 WIDGETS => {},
+                 WIDGET_CLASSES => {},
+                 PROPS => {},
+                 CACHED_WIDGET_OBJECTS => {},
+               };
+   bless ($self, $class);
+   return $self;
+}
+
+sub define_widgets {
+   my ($self, $widgets) = @_;
+   my $cnt = 0;
+   foreach my $w (keys %$widgets) {
+      $self->{WIDGETS}->{$w} = $widgets->{$w};
+      my $object = $self->get_widget_object($w);
+      if (defined $object) {
+         $cnt++;
+         my $class = $self->{WIDGETS}->{$w}->{type};
+         if (not defined $self->{WIDGET_CLASSES}->{$class}) {
+            $self->{WIDGET_CLASSES}->{$class} = 1;
+            $object->init;
+         }
+      } else {
+         delete $widgets->{$w};
+      }
+   }
+   $cnt;
+}
+
+sub get_widgets {
+   my ($self) = @_;
+   return { %{$self->{WIDGETS}} };
+}
+
+sub get_widget_object {
+   my ($self, $widgetname) = @_;
+
+   # Cached object
+   return $self->{CACHED_WIDGET_OBJECTS}->{$widgetname}
+         if defined $self->{CACHED_WIDGET_OBJECTS}->{$widgetname};
+
+   $self->{WIDGETS}->{$widgetname}->{type} ||= "TextBox";
+   my $class = $self->{WIDGETS}->{$widgetname}->{type};
+   eval "use Web::Widget::$class";
+   if ($@) {
+      print STDERR "Can't load Web Widget $widgetname (type $class): $@";
+      next ;
+   }
+   $self->{CACHED_WIDGET_OBJECTS}->{$widgetname} = eval "Web::Widget::$class->new(\$self, \$widgetname, \$self->{WIDGETS}->{\$widgetname})";
+   if ($@) {
+      print STDERR "Can't create widget of type $class\: $@";
+      next;
+   }
+   $self->{CACHED_WIDGET_OBJECTS}->{$widgetname};
+}
+
+sub validate_form {
+   my ($self, $vars) = @_;
+
+   return grep { ! $self->validate_widget($_, $vars->{$_}) } 
+               keys %{$self->{WIDGETS}};
+}
+
+sub validate_widget {
+   my ($self, $widget, $value) = @_;
+
+   return undef unless defined $self->{WIDGETS}->{$widget};
+   return $self->get_widget_object($widget)->validate($value) ? 1 : 0;
+}
+
+sub render_widget {
+   my ($self, $widget, $extra_args) = @_;
+   return unless exists $self->{WIDGETS}->{$widget};
+   print $self->srender_widget(@_);
+}
+
+sub srender_widget {
+   my ($self, $widget, $extra_args) = @_;
+   return undef unless exists $self->{WIDGETS}->{$widget};
+   $self->render($extra_args);
+}
+
+sub add_prop {
+   my ($self, $prop, $value) = @_;
+
+   $value =~ s/\%([a-z_][a-z0-9_]*)\%/document.$self->{NAME}.$1/gi;
+   $self->{PROPS}->{$prop} .= $value;
+}
+
+sub prop {
+   my ($self, $prop) = @_;
+   $self->{PROPS}->{$prop};
+}
+
+sub DESTROY {
+   my $self = shift ;
+}
+
+1;
