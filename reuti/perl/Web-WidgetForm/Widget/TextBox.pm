@@ -31,6 +31,7 @@ sub render {
    $self->SUPER::render;
    my ($name,         $value,           $extra_attrs) =
       ($self->{NAME}, $self->get_value, $self->get_html_attrs);
+   $value ||= "";
    return <<EOWIDGET;
    <input type="text" name="$name" value="$value" $extra_attrs>
 EOWIDGET
