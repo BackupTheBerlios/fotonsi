@@ -21,27 +21,32 @@ sub setup_form {
    my ($self, @args) = @_;
 
    $self->SUPER::setup_form(@args);
-   my ($form, $name, $args) = ($self->{FORM}, $self->{NAME}, $self->{ARGS});
+   my ($form, $name, $args) =
+      ($self->get_form, $self->get_name, { $self->get_args });
    $self->arg('nonempty_msg', "Empty list. Please select at least one value.")
          unless defined $self->arg('nonempty_msg');
 
    $args->{focus} && $form->add_prop('init', "\%$name\%.focus();");
    # Compute numbers of selected items if needed (store in
    # selectbox_NAME_items)
-   if ($self->arg('nonempty') || $self->arg('min_selected_items') ||
-       $self->arg('max_selected_items')) {
+   if ($args->{nonempty} || $args->{min_selected_items} ||
+       $args->{max_selected_items}) {
        $form->add_prop('before_send', "var selectbox_$name\_items = 0; for (i = 0; i < \%$name\%.options.length; ++i) { if (\%$name\%.options[i].selected) { selectbox_$name\_items++ } } ");
    }
    # No selected items
-   $self->arg('nonempty') && $self->arg('min_selected_items', 1);
+   $args->{nonempty} && $self->arg('min_selected_items', 1);
    # Mininum selected items
-   $self->arg('min_selected_items_msg', "Please select at least $args->{min_selected_items} item(s)")
-         unless defined $self->arg('min_selected_items_msg');
-   $args->{min_selected_items} && $form->add_prop('before_send', "if (selectbox_$name\_items < $args->{min_selected_items}) { alert('".$self->html_escape($args->{min_selected_items_msg})."'); return false } ");
+   if ($args->{min_selected_items}) {
+      $self->arg('min_selected_items_msg', "Please select at least ".$args->{min_selected_items}." item(s)")
+            unless defined $args->{min_selected_items_msg};
+      $form->add_prop('before_send', "if (selectbox_$name\_items < $args->{min_selected_items}) { alert('".$self->html_escape($self->args('min_selected_items_msg'))."'); return false } ");
+   }
    # Maximum selected items
-   $self->arg('max_selected_items_msg', "Please select at most $args->{max_selected_items} item(s)")
-         unless defined $self->arg('max_selected_items_msg');
-   $args->{max_selected_items} && $form->add_prop('before_send', "if (selectbox_$name\_items > $args->{max_selected_items}) { alert('".$self->html_escape($args->{max_selected_items_msg})."'); return false } ");
+   if ($args->{max_selected_items}) {
+      $self->arg('max_selected_items_msg', "Please select at most $args->{max_selected_items} item(s)")
+            unless defined $args->{max_selected_items_msg};
+      $form->add_prop('before_send', "if (selectbox_$name\_items > $args->{max_selected_items}) { alert('".$self->html_escape($self->arg('max_selected_items_msg'))."'); return false } ");
+   }
 }
 
 sub validate {
