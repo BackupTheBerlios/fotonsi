@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: latin1 -*-
 
-RCS_ID = '$Id: fete.py,v 1.9 2004/12/23 02:09:19 setepo Exp $'
+RCS_ID = '$Id: fete.py,v 1.10 2005/01/11 11:44:14 setepo Exp $'
 
 def dolog(*msg):
     import sys
@@ -275,12 +275,12 @@ class Edit:
 
             ct = config.get('system.cabecera_texto')
             if ct:
-                os.write(fd, ct + '\r\n')
+                os.write(fd, ct + '\n')
 
             if self.parser.get_sign() is not None and config.get('editor.poner_firma'):
-                os.write(fd, '#### Su firma para la entrada en el diario es\r\n####     ')
+                os.write(fd, '#### Su firma para la entrada en el diario es\n####     ')
                 os.write(fd, self.parser.get_sign())
-                os.write(fd, '\r\n#### Recuerde que el programa no enviará las líneas que empiecen por ####\r\n####\r\n')
+                os.write(fd, '\n#### Recuerde que el programa no enviará las líneas que empiecen por ####\n####\n')
 
             os.write(fd, self.parser.get_content())
             os.close(fd)
