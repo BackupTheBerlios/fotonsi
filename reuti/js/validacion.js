@@ -146,9 +146,11 @@ function Validar(valor,opcion)
       break;
     case '15': //email: opcional, @ 1 vez ni al principio ni al final
 //      var re = /^[\w\W^@]+@[\w\W^@]+$/
-      var re = /^[^@]+@[^@]+$/;
+//      var re = /^[^@]+@[^@]+$/;
+      var re = /^.+@.+\..+$/;
       if ((valor=="") || re.exec(valor))
         return true;
+      alert('Formato de correo electrónico no válido.');
       break;
     case '16': //teléfono1
       var re = /^[\d]{8,9}$/

@@ -26,6 +26,9 @@ var form;
 Número: <input type="text" name="txtNumero" size="10" maxlength="10" onBlur="txtLetra.value = ObtenerLetra(this.value);">,
 Letra: <input type="text" name="txtLetra" size="1" maxlength="1">
 
+<p><b>Correo electrónico:</b>
+<input type="text" name="txtemail" size="10" maxlength="10" onChange="return Validar(this.value, '15');">
+
 </form>
 
 </body>
