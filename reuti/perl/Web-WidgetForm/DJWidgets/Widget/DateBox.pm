@@ -27,6 +27,39 @@ sub init {
       <script type="text/javascript" src="$base_url/calendario.js"></script>
       <script type="text/javascript" src="$base_url/calendar-$idioma.js"></script>
 EOC
+    $self->get_form->add_prop('def', <<'EOC');
+      function MachineDateToHuman (datebox) {
+       var date = datebox.split ('/');
+
+       return date[2]+"/"+date[1]+"/"+date[0];
+      }//MachineDateToHuman
+
+      function IsDate (datebox) {
+       if (!datebox) return true;
+
+       var date = new Date (MachineDateToHuman(datebox));
+
+       var day = date.getDate();
+       if (day < 10) day = "0"+day;
+       var mon = date.getMonth()+1;
+       if (mon < 10) mon = "0"+mon;
+
+       return (day+"/"+mon+"/"+date.getFullYear() == datebox) ? true:false;
+      }//IsDate
+EOC
+}
+
+sub setup_form {
+    my ($self) = @_;
+
+    my $widget_name = $self->get_html_name;
+    $self->get_form->add_prop('before_send', <<"EOC");
+      if (!IsDate($widget_name.value)) {
+         alert('Invalid date "' + $widget_name.value + '"'); 
+         $widget_name.focus();
+         return false;
+      }
+EOC
 }
 
 sub machine_date_to_human {
@@ -42,7 +75,7 @@ sub human_date_to_machine {
 
 sub widget_data_transform {
     my ($self, $form_values) = @_;
-    my $name = $self->get_name . ($self->arg('suffix') || '');
+    my $name = $self->get_html_name;
     $form_values->{$name} = $self->human_date_to_machine($form_values->{$name});
 }
 
