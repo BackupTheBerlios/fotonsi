@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Test::Deep;
 
 use Web::DJWidgets;
@@ -21,6 +21,9 @@ is($date_machine, $w->human_date_to_machine($date_human),
 is($date_human, $w->machine_date_to_human($date_machine),
                                                       "machine_date_to_human");
 
-# Validation
+# Data transform
 $f->define_form_values({ comp => $date_human });
-is($f->get_form_value('comp'), $date_machine,         "");
+is($f->get_form_value('comp'), $date_machine,         "widget_data_transform");
+
+# Validation
+is($f->validate_form, 0,                              "validate");
