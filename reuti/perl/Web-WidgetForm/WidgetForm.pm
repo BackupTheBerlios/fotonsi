@@ -2,7 +2,7 @@ package Web::WidgetForm;
 
 use strict;
 
-# $Id: WidgetForm.pm,v 1.8 2004/04/16 11:13:10 zoso Exp $
+# $Id: WidgetForm.pm,v 1.9 2004/04/20 10:23:42 zoso Exp $
 
 =head1 NAME
 
@@ -320,13 +320,19 @@ sub get_widget_object {
 
 sub render_widget {
    my ($self, $widget, $extra_args) = @_;
-   return unless defined $self->{WIDGETS}->{$widget};
-   print $self->srender_widget(@_);
+   defined $self->{WIDGETS}->{$widget} || do {
+      print STDERR "render_widget: Can't find widget $widget";
+      return;
+   };
+   print srender_widget(@_);
 }
 
 sub srender_widget {
    my ($self, $widget, $extra_args) = @_;
-   return undef unless exists $self->{WIDGETS}->{$widget};
+   defined $self->{WIDGETS}->{$widget} || do {
+      print STDERR "srender_widget: Can't find widget $widget";
+      return "";
+   };
    $self->get_widget_object($widget)->render($extra_args);
 }
 
@@ -426,7 +432,7 @@ sub get_state {
 
 sub get_uri_enc_state {
    my ($self) = @_;
-   return join("&", map { $_ . "=" . uri_escape($self->{VALUES}->{$_}) }
+   return join("&", map { $_ . "=" . uri_escape($self->{VALUES}->{$_} || "") }
                         @{$self->{STATE_VARS}});
 }
 
