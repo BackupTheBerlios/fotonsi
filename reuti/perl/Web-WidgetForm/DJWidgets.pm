@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.9 2005/01/18 13:00:41 zoso Exp $
+# $Id: DJWidgets.pm,v 1.10 2005/01/20 13:52:14 zoso Exp $
 
 =head1 NAME
 
@@ -307,7 +307,7 @@ sub define_widgets {
    foreach my $w (keys %$widgets) {
       $self->{WIDGETS}->{$w} = $widgets->{$w};
       my $object = $self->get_widget_object($w);
-      defined $object || die "Widget $w does not exit\n";
+      defined $object || die "Can't define widget '$w' (is widget type '$widgets->{$w}->{widget_type}' defined?)\n";
       my $class = $object->arg('widget_type');
       if (not defined $self->{WIDGET_CLASSES}->{$class}) {
          $self->{WIDGET_CLASSES}->{$class} = 1;
