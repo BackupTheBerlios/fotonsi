@@ -13,7 +13,7 @@ sub new {
    my ($class, @args) = @_;
 
    my $self = $class->SUPER::new(@args);
-   push @{$self->{HTML_VALID_ATTRS}}, @js_event_attrs;
+   push @{$self->{VALUE_HTML_ATTRS}}, @js_event_attrs;
    return $self;
 }
 
