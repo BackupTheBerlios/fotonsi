@@ -1,0 +1,234 @@
+
+            ==============================
+
+          ==============================
+
+        Fete - Federico's TWiki Editor
+
+      ==============================
+
+    ==============================
+
+
+Éste programa simplón (el nombre lo dice todo) es para facilitar la edición de
+páginas del TWiki de Fotón sin tener que recurrir a un navegador y poder usar
+un editor como $deity manda.
+
+
+
+
+ Instalación
+ ===========
+
+No precisa de instalación. Bastará con ejecutarlo desde el mismo
+directorio donde están los archivos.
+
+Se ha desarrollado bajo python 2.3. Para funcionar con el 2.2 es
+necesario copiar 3 módulos desde la distribución del 2.3: 
+    * optparse.py   una versión muy mejorada del típico getopt
+    * textwrap.py   necesitado por optparse. para "wrapper" textos
+    * tempfile.py   para usar mkstemp, una versión más segura de mktemp
+Copiando esos 3 ficheros al mismo directorio donde está el ejecutable
+funcionará sin problemas en un 2.2.
+
+Para funcionar en un 2.1 los cambios son bastante numerosos, así que
+no lo he tenido en cuenta O=)
+
+Para ejecutarlo fácilmente, se puede poner un script como este en
+algún lugar del PATH:
+
+====<====
+#!/bin/sh
+
+export ROOT=/ruta/al/directorio/
+python $ROOT/fete.py -f $ROOT/config.ini $@
+====>====
+
+El programa sólo depende de ClientForm (licencia BSD). Se puede pillar
+de http://wwwsearch.sf.net/ClientForm/, pero también, por comodidad,
+se añade en la distribución de Fete.
+
+
+
+
+ Configuración
+ =============
+
+Se añade un fichero de configuración autodocumentado como este:
+
+===============<===============
+; Fichero de configuración para Fete (Federico's TWiki Editor)
+
+[usuario]
+; Puede dejar cualquier de los campos vacíos, de modo que
+; el programa los preguntará cuando le hagan falta
+nombre = 
+clave =
+
+[urls]
+;  Dirección para buscar la cadena recibida por línea de órdenes. Ponga
+;  "%P" donde desea insertar el texto buscado
+buscar = https://laser.foton.es/twiki/bin/photonsearch/?topic=%P&type=popup
+
+; Dirección para crear nuevas páginas. %W es el nombre de la web y
+; %P el nombre de la página
+crear = https://laser.foton.es/twiki/bin/edit/%W/%P
+
+[editor]
+; Programa a ejecutar (usando la shell) para editar las páginas del 
+; twiki. Use %P para indicar dónde poner la ruta del archivo (temporal) 
+; a abrir
+orden = vim %P
+
+; Ponga si desea que el programa inserte automáticamente la firma
+; para los diarios. Si pone "sí", el programa la insertará al 
+; principio del fichero para que la pueda copiar.
+poner_firma = sí
+
+; Navegador a usar en la vista preliminar
+ver = epiphany %P
+
+[system]
+; Modo verbose
+verbose = sí
+
+; Indica si borrar los ficheros temporales después de usarse. Puede
+; interesarle dejarlos sin borrar para que, en caso de petar el 
+; programa, los datos no se pierda
+borrar_temps = sí
+===============>===============
+
+
+
+
+ Uso
+ ===
+
+El uso es muy simple. Normalmente, ejecutará el programa con
+
+    $ fete cadena a buscar
+
+Lo primero que hará es intentar autentificarse con el servidor (si el
+servidor pide autentificación). Fete preguntará los datos que no estén
+en la configuración. Si después de introducirlos intenta
+autentificarse y sigue sin poder, pedirá los dos cada vez, hasta 10
+intentos.
+
+Fete buscará (a través de photonsearch) las páginas que continen la
+cadena buscada. Si sólo encuentra una, pasará a editarla directamente.
+Si hay varias, mostrará una lista enumerada con todas las páginas
+encontradas, y le pedirá cuál de ellas editar.
+
+En la parte de editar, se añadirá la firma automáticamente al
+principio del fichero (a menos que deshabilite esa opción en el
+fichero de configuración) para que pueda copiar y pegarla en el nuevo
+texto. Las líneas que empiecen por #### serán interpretadas como
+comentarios por fete, de modo que será borradas cada vez que salga del
+programa de edición.
+
+Después del programa editor, se muestra una minishell. Los comandos no
+reciben parámetros, y sus nombres pueden ser acortados escribiendo el
+inicio de cada uno. Si hay más de un comando que empiece por la cadena
+escrita, fete no ejecutará ninguno, sino que mostrará cuáles son, para
+que pueda concretar más. En la versión 0.1 todos los comandos empiezan
+con letras diferentes, así que puede ejecutar cualquier de ellos
+poniendo sólo la primera letra.
+
+Poniendo help (o incluso h) en la shell aparecerá una pequeña ayuda
+del programa.
+
+
+
+ Ejemplo de sesión con fete
+ ==========================
+
+$ fete sandbox
+Buscando en https://laser.foton.es/twiki/bin/photonsearch/?topic=sandbox&type=popup
+Clave para setepo:                                                                      (1)
+Enlaces encontrados
+     1. CNA.ProyectoTWikiDiario
+     2. CNA.TwikiVim
+     3. CNA.IdeasPresentacionTareas
+     4. Main.EstherPerezVerdu
+     5. Main.AntonioGarciaRio
+     6. Main.MiguelArmasRio
+     7. Sandbox.WebHome
+     8. Sandbox.WebPreferences
+     9. Sandbox.PruebaParaAlguien
+    10. TWiki.AppendixFileSystem
+    11. TWiki.TWikiHistory
+    12. TWiki.TWikiPlugins
+    13. TWiki.TWikiPreferences
+    14. TWiki.TWikiTemplates
+    15. TWiki.TWikiTutorial
+    16. TWiki.TWikiUpgradeGuide
+    17. TWiki.TareasGonso
+    18. TWiki.WelcomeGuest
+    19. TWiki.WikiSyntax
+    20. TWiki.TWikiAdminCookBook
+    21. TWiki.TWikiFuncModule
+    22. TWiki.TWikiCustomPreferences
+    23. Test.WebHome
+Página a editar: 9                                                                      (2)
+Orden (help para ayuda): h
+     cancel - Sale sin guardar.
+       diff - Muestra un diff entre el contenido original y el actual
+       edit - Abre el editor con el contenido actual
+       help - Muestra ayuda de comandos
+    preview - Muesta una vista prelimiar de lo que se ha editado hasta ahora
+       save - Sube el contenido de la página y sale
+Orden (help para ayuda): p                                                              (3)
+Pulsando el botón ver ...
+Ejecutando epiphany /tmp/tmpwwfhUz.html
+Orden (help para ayuda): e                                                              (4)
+Orden (help para ayuda): p
+Pulsando el botón ver ...
+Ejecutando epiphany /tmp/tmpyZiF7q.html
+Orden (help para ayuda): sa                                                             (5)
+Pulsando el botón guardar ...
+
+
+    Notas
+
+    (1) No pide el usuario porque se ha puesto por configuración.
+    (2) Después de elegir la página, se abre directamente el programa
+        de editar
+    (3) Se abre un navegador (elegido en la config) con el resultado
+        del botón «Ver» del formulario
+    (4) Abre otra vez el editor, con el contenido cambiado
+    (5) Guarda la página y sale del programa.
+
+
+
+
+
+$ fete ayosecazorla
+Buscando en https://laser.foton.es/twiki/bin/photonsearch/?topic=ayosecazorla&type=popup
+Clave para setepo: 
+Enlaces encontrados
+     1. Main.AyoseCazorlaLeon
+Un enlace encontrado: Main.AyoseCazorlaLeon https://laser.foton.es/twiki/bin/edit/Main/AyoseCazorlaLeon
+Orden (help para ayuda): d                                                                      (1)
+--- /tmp/tmpzuXhAN  2004-09-27 10:28:42.673815992 +0100
++++ /tmp/tmpUih_cC  2004-09-27 10:28:42.674815840 +0100
+@@ -16,6 +16,9 @@
+    * Optionally write protect your home page: (set it to your %TWIKIWEB%.WikiName)
+       * Set ALLOWTOPICCHANGE =
+ 
++
++un texto de prueba
++
+ __Related topics__
+    * %TWIKIWEB%.%WIKIPREFSTOPIC% has site-level preferences of %WIKITOOLNAME%.
+    * %WEBPREFSTOPIC% has preferences of the %WIKITOOLNAME%.%WEB% web.
+Orden (help para ayuda): c                                                                      (2)
+Pulsando el botón cancelar ...
+
+
+
+    Notas
+
+    (1) Ejecuta diff entre el texto bajado y el que se escribió en el
+        editor
+    (2) Sale sin guardar. Pulsa el botón cancelar para que borre
+        también el bloqueo.

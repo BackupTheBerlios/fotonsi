@@ -1,0 +1,39 @@
+; Fichero de configuración para Fete (Federico's TWiki Editor)
+
+[usuario]
+; Puede dejar cualquier de los campos vacíos, de modo que
+; el programa los preguntará cuando le hagan falta
+nombre = 
+clave =
+
+[urls]
+;  Dirección para buscar la cadena recibida por línea de órdenes. Ponga
+;  "%P" donde desea insertar el texto buscado
+buscar = https://laser.foton.es/twiki/bin/photonsearch/?topic=%P&type=popup
+
+; Dirección para crear nuevas páginas. %W es el nombre de la web y
+; %P el nombre de la página
+crear = https://laser.foton.es/twiki/bin/edit/%W/%P
+
+[editor]
+; Programa a ejecutar (usando la shell) para editar las páginas del 
+; twiki. Use %P para indicar dónde poner la ruta del archivo (temporal) 
+; a abrir
+orden = vim %P
+
+; Ponga si desea que el programa inserte automáticamente la firma
+; para los diarios. Si pone "sí", el programa la insertará al 
+; principio del fichero para que la pueda copiar.
+poner_firma = sí
+
+; Navegador a usar en la vista preliminar
+ver = epiphany %P
+
+[system]
+; Modo verbose
+verbose = sí
+
+; Indica si borrar los ficheros temporales después de usarse. Puede
+; interesarle dejarlos sin borrar para que, en caso de petar el 
+; programa, los datos no se pierda
+borrar_temps = sí
