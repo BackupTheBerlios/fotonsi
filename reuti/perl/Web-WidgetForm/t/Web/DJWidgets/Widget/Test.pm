@@ -1,6 +1,6 @@
-package Web::Widget::Test;
+package Web::DJWidgets::Widget::Test;
 
-use base qw(Web::Widget);
+use base qw(Web::DJWidgets::Widget);
 
 sub new {
    my ($self, @args) = @_;
