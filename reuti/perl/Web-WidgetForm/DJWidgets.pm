@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.7 2004/08/09 16:55:23 zoso Exp $
+# $Id: DJWidgets.pm,v 1.8 2004/11/18 11:00:51 zoso Exp $
 
 =head1 NAME
 
@@ -118,7 +118,8 @@ Returns all the form values as a hash.
 
 =item get_widgets
 
-Returns a reference to a list of defined widgets.
+Returns a reference to a hash of defined widgets. The structure is the same as
+in C<define_widgets>.
 
 =item render_widget($name, $extra_args)
 
