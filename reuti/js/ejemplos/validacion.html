@@ -18,13 +18,12 @@ var form;
 
 <b>NIF:</b>
 <input type="text" name="txtNIF" size="10" maxlength="10" onChange="return Validar(this.value, '6');">
-<!-- <input type="text" name="txtNIF" size="10" maxlength="10" onChange="javaspcript:alert('3');"> -->
 
 <p>
 
 <b>NIF:</b>
 <br>
-Número: <input type="text" name="txtNumero" size="10" maxlength="10" onBlur="form.txtLetra.value = ValidarLetra(this.value);">,
+Número: <input type="text" name="txtNumero" size="10" maxlength="10" onBlur="txtLetra.value = ObtenerLetra(this.value);">,
 Letra: <input type="text" name="txtLetra" size="1" maxlength="1">
 
 </form>

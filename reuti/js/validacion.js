@@ -97,87 +97,87 @@ function Validar(valor,opcion)
 {
   switch (opcion)
   {
-    case 1: //nombre: obligatorio, alfabético
-    case 2: //apellido1: obligatorio, alfabético
-    case 4: //nacionalidad: obligatorio, alfabético
+    case '1': //nombre: obligatorio, alfabético
+    case '2': //apellido1: obligatorio, alfabético
+    case '4': //nacionalidad: obligatorio, alfabético
 //      var re = /^[A-Z][a-z]+$/;
       var re = /^[A-Za-zÑñÁÉÍÓÚáéíóú ]+$/;
       if (re.exec(valor))
         return true;
       break;
-    case 3: //apellido2: opcional, alfabético
+    case '3': //apellido2: opcional, alfabético
 //      var re = /^[A-Z][a-z]+$/;
       var re = /^[A-Za-zÑñÁÉÍÓÚáéíóú ]+$/;
       if ((valor=="") || re.exec(valor))
         return true;    
       break;
-    case 6: //documento_numero
+    case '6': //documento_numero
       var re = /^[\d]{6,8}[A-Za-zÑñ]$/
       if (re.exec(valor))
         if (ValidarLetra(valor))
           return true;    
       break;      
-    case 8: //nombre_via: obligatorio, alfanumérico
-    case 14: //localidad: obligatorio, alfanumérico
+    case '8': //nombre_via: obligatorio, alfanumérico
+    case '14': //localidad: obligatorio, alfanumérico
 //      var re = /^[A-Za-z0-9ÑñÁÉÍÓÚáéíóú \.,;:-ºª]+$/;
       var re = /^[A-Za-z0-9ÑñÁÉÍÓÚáéíóú .,;:-]+$/;
       if (re.exec(valor))
         return true;    
       break;    
-    case 9: //numero: obligatorio, alfanumérico 
-    case 0: //documento_numero: obligatorio, alfanumérico
+    case '9': //numero: obligatorio, alfanumérico 
+    case '0': //documento_numero: obligatorio, alfanumérico
 //      var re = /^[A-Za-z0-9]+$/;
       var re = /^[A-Za-z0-9ÑñÁÉÍÓÚáéíóú ]+$/;
       if (re.exec(valor))
         return true;    
       break;
-    case 10: //piso: opcional, alfanumérico
-    case 11: //puerta: opcional, alfanumérico
-    case 12: //escalera: opcional, alfanumérico
+    case '10': //piso: opcional, alfanumérico
+    case '11': //puerta: opcional, alfanumérico
+    case '12': //escalera: opcional, alfanumérico
 //      var re = /^[A-Za-z0-9]+$/;
       var re = /^[A-Za-z0-9ÑñÁÉÍÓÚáéíóú ]+$/;
       if ((valor=="") || re.exec(valor))
         return true;        
       break;
-    case 13: //cpostal: obligatorio, numérico, máx_car=5, mín_car=4
+    case '13': //cpostal: obligatorio, numérico, máx_car=5, mín_car=4
       var re = /^[\d]{4,5}$/;
       if (re.exec(valor))
         return true;
       break;
-    case 15: //email: opcional, @ 1 vez ni al principio ni al final
+    case '15': //email: opcional, @ 1 vez ni al principio ni al final
 //      var re = /^[\w\W^@]+@[\w\W^@]+$/
       var re = /^[^@]+@[^@]+$/;
       if ((valor=="") || re.exec(valor))
         return true;
       break;
-    case 16: //teléfono1
+    case '16': //teléfono1
       var re = /^[\d]{8,9}$/
       if (re.exec(valor))
         return true;
       break;
-    case 19: //teléfono2
+    case '19': //teléfono2
       var re = /^[\d]{8,9}$/
       if ((valor=="") || re.exec(valor))
         return true;
       break;
-    case 23: //oficina
+    case '23': //oficina
       var re = /^8[\d]{3}$/
       if (re.exec(valor))
         return true;
       break;
-    case 5: //D.C.
+    case '5': //D.C.
       var re = /^[\d]{2}$/
       if (re.exec(valor))
         return true;
       break;      
-    case 25: //número de cuenta
+    case '25': //número de cuenta
 //      var re = /^[23|30|33|35|38|39|43|44|45|47|48|49|50][\d]{8}$/
       var re = /^00|23|30|33|35|38|39|43|44|45|47|48|49|50[\d]{8}$/
       if (re.exec(valor))
         return true;
       break;
 /*      
-    case 22: //entidad
+    case '22': //entidad
       var re = /^[\d]{4}$/;
       if (re.exec(valor))
         return true;
@@ -216,6 +216,37 @@ function ValidarLetra(valor)
   Letra[22] = "E";
   Letra[23] = "O";
 
-  return toUpperCase(valor.substr(valor.length-1, 1)) ==
-               Letra[parseFloat(valor) mod 23];
+  return valor.substr(valor.length-1, 1).toUpperCase() == Letra[parseFloat(valor) % 23];
+}
+
+function ObtenerLetra(valor)
+{
+  var Letra = new Array();
+
+  Letra[0] = "T";
+  Letra[1] = "R";
+  Letra[2] = "W";
+  Letra[3] = "A";
+  Letra[4] = "G";
+  Letra[5] = "M";
+  Letra[6] = "Y";
+  Letra[7] = "F";
+  Letra[8] = "P";
+  Letra[9] = "D";
+  Letra[10] = "X";
+  Letra[11] = "B";
+  Letra[12] = "N";
+  Letra[13] = "J";
+  Letra[14] = "Z";
+  Letra[15] = "S";
+  Letra[16] = "Q";
+  Letra[17] = "V";
+  Letra[18] = "H";
+  Letra[19] = "L";
+  Letra[20] = "C";
+  Letra[21] = "K";
+  Letra[22] = "E";
+  Letra[23] = "O";
+
+  return Letra[parseFloat(valor) % 23];
 }
