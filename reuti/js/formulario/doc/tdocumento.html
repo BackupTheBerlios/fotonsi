@@ -1,0 +1,58 @@
+<html>
+ <head>
+  <title>Manejo de 'TDocumentos'</title>
+  <script Language="JavaScript" src="../js/control_formulario.js"></script>
+ </head>
+
+
+<script Language="JavaScript">
+var form;
+var Navegador = new TNavegador();
+
+var documento = new TDocumento ();
+documento.setRoot ();
+
+
+
+/*****************************************************************************/
+function Ayuda () {
+ alert ('Esta es la ayuda genérica del documento.');
+}//Ayuda
+
+
+/*****************************************************************************/
+function Test () {
+ alert ('Test Teclado...');
+}//Ayuda
+
+
+/*****************************************************************************/
+function HabilitarBotonDerecho () {
+ alert ('Botón derecho habilitado.');
+ return false;
+}//HabilitarBotonDerecho
+
+
+/*****************************************************************************/
+function ConfigurarCampos () {
+
+ documento.AddAcelerator (CHAR_F1, 0, 0, 0, Ayuda); //CHAR_SHIFT, CHAR_ALT, CHAR_CONTROL);
+// documento.AddAcelerator (CHAR_F2, 0, 0, 0, Test); //CHAR_SHIFT, CHAR_ALT, CHAR_CONTROL);
+ documento.AddAcelerator (88, 0, CHAR_ALT, 0, Test); //CHAR_SHIFT, CHAR_ALT, CHAR_CONTROL);
+
+ documento.DisableRightButton ();
+ documento.DisableRightButton ();
+}//ConfigurarCampos
+
+
+</script>
+
+
+
+<body onLoad="ConfigurarCampos ();">
+
+<h1>Ejemplo TDocumento</h1>
+<li>Se pueden activar 'atajos' de teclado: ALT + x, F1.</li>
+<li>Se desabilita el botón derecho del ratón.</li>
+</body>
+</html>
