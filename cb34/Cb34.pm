@@ -2,12 +2,12 @@ package Cb34;
 
 use strict;
 
-# $Id: Cb34.pm,v 1.1 2003/10/30 21:25:07 zoso Exp $
+# $Id: Cb34.pm,v 1.2 2003/10/31 20:52:43 zoso Exp $
 
 use vars qw(@EXPORT_OK);
 require Exporter;
 *import = \&Exporter::import;
-@EXPORT_OK = qw(cb34);
+@EXPORT_OK = qw(cb34 importe_cb34);
 
 =head1 NOMBRE
 
@@ -17,7 +17,7 @@ Cb34 - Impresión de ficheros CB34
 
  use Cb34;
 
- cb34('par1', $s);
+ cb34(\*STDOUT, {ordenante => '12345678X', ...});
 
 =head1 DESCRIPCIÓN
 
@@ -28,10 +28,14 @@ norma CB34.
 
 =over 4
 
-=item cb34(FH, $datos,...)
+=item cb34(FH, $datos)
 
 Imprime un fichero de la norma CB34 con los datos dados en el manejador de
 fichero C<FH>.
+
+=item importe_cb34($importe)
+
+Formatea una cantidad entera para incluirla en un fichero CB34.
 
 =back
 
@@ -40,6 +44,9 @@ fichero C<FH>.
 Por ahora, la función C<cb34> sólo imprime registro de transferencias, no de
 cheques. En principio, debería ser bastante fácil modificarlo para imprimir
 también cheques.
+
+Los importes siempre se truncan, no se redondean. Para redondearlos, hay que
+modificar la función C<importe_cb34>.
 
 =head1 DERECHOS
 
@@ -68,7 +75,7 @@ sub cb34 {
    my ($suma, $n010, $ntotal) = (0, 0, 0);      # Para los totales
 
    # Datos generales
-   my $ordenante = $datos->{ordenante};
+   my $ordenante = uc($datos->{ordenante});
 
    # Cabecera 1 --------------------------------------------------------------
    my ($envio, $emis,
@@ -85,34 +92,66 @@ sub cb34 {
    $emis  ||= strftime("%d%m%y", localtime);
    $fh->format_name("CABECERA1");
    write $fh;
+   $ntotal++;
 
    # Cabecera 2 --------------------------------------------------------------
-   ($n, $informacion) = ('002', $datos->{nombre_ordenante});
+   ($n, $informacion) = ('002', uc($datos->{nombre_ordenante}));
    $fh->format_name("CABECERA234");
    write $fh;
+   $ntotal++;
 
    # Cabecera 3 --------------------------------------------------------------
-   ($n, $informacion) = ('003', $datos->{domicilio_ordenante});
+   ($n, $informacion) = ('003', uc($datos->{domicilio_ordenante}));
    $fh->format_name("CABECERA234");
    write $fh;
+   $ntotal++;
 
    # Cabecera 4 --------------------------------------------------------------
-   ($n, $informacion) = ('004', $datos->{plaza_ordenante});
+   ($n, $informacion) = ('004', uc($datos->{plaza_ordenante}));
    $fh->format_name("CABECERA234");
    write $fh;
+   $ntotal++;
 
    # Cabeceras 5 y 6 (optativas) ---------------------------------------------
    if (defined $datos->{nombre_por_cuenta}) {
-      ($n, $informacion) = ('007', $datos->{nombre_por_cuenta});
+      ($n, $informacion) = ('007', uc($datos->{nombre_por_cuenta}));
       $fh->format_name("CABECERA56");
       write $fh;
+      $ntotal++;
 
-      ($n, $informacion) = ('008', $datos->{domicilio_por_cuenta});
+      ($n, $informacion) = ('008', uc($datos->{domicilio_por_cuenta}));
       $fh->format_name("CABECERA56");
       write $fh;
+      $ntotal++;
    }
 
-   # Registros
+   # Registros ---------------------------------------------------------------
+   foreach my $reg (@{$datos->{registros}}) {
+      ($ref_bene, $importe, $ent, $ofi, $cuenta, $g, $c, $dc) =
+            (uc($reg->{beneficiario}), $reg->{importe}, $reg->{entidad},
+             $reg->{oficina}, $reg->{cuenta}, $reg->{gastos}, $reg->{c}, $reg->{dc});
+      $n010++;
+      $suma += $importe;
+      $importe = importe_cb34($importe);
+      # Comprobaciones
+      grep { $_ eq $g } (1, 2) or die "El tipo de gasto es inválido: $g";
+      grep { $_ eq $c } (1, 8, 9) or die "El concepto es inválido: $c";
+
+      $fh->format_name("REGISTRO1");
+      write $fh;
+      $ntotal++;
+      # ----------------------------------------------------------------------
+      ($n, $informacion) = ('011', $reg->{nombre_beneficiario});
+      $fh->format_name("REGISTRO28");
+      write $fh;
+      $ntotal++;
+      # ----------------------------------------------------------------------
+   }
+
+   # Línea de totales --------------------------------------------------------
+   $fh->format_name("TOTALES");
+   $suma = importe_cb34($suma);
+   write $fh;
 
    # Definiciones de formatos ================================================
 format CABECERA1 =
@@ -143,6 +182,12 @@ format TOTALES =
 0856@>>>>>>>>>               @<<<<<<<<<<<@<<<<<<<@<<<<<<<<<      @||||||
     $ordenante,              $suma,      $n010,  $ntotal,        ""
 .
+}
+
+sub importe_cb34 {
+   my $importe = shift ;
+
+   $importe = int($importe) * 100;
 }
 
 1;
