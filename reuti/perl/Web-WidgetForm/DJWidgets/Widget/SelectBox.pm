@@ -75,8 +75,8 @@ sub validate {
          if defined $self->arg('max_selected_items') &&
             scalar @values > $self->arg('max_selected_items');
    # Correct selection
+   my @option_list = @{$self->arg('options')  || []};
    foreach my $v (@values) {
-      my @option_list = @{$self->arg('options')  || []};
       push @errors, $self->arg('incorrect_selection_msg') ||
                     "Incorrect selection"
             unless scalar grep { $_ eq $v }
