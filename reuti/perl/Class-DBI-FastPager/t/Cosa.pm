@@ -18,6 +18,7 @@ sub import {
 }
 
 Cosa->table('tcosa');
-Cosa->columns(All => qw(cod_cosa des_cosa));
+Cosa->columns(Primary => qw(cod_cosa));
+Cosa->columns(Essential => qw(des_cosa obs_cosa));
 
 1;
