@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 7;
+use Test::More tests => 8;
 use Test::Deep;
 
 use lib 't';
@@ -30,11 +30,17 @@ my $a = { foo => 1, bar => 6 };
 my $b = { foo => 8, qux => 9 };
 my $c = { foo => 8, bar => 6, qux => 9 };
 cmp_deeply($w->merge_args($a, $b), $c,              "merge_args");
-my $expected_attrs = 'name="comp" class="foo" type="hidden"';
-my $expected_attrs2 = 'class="foo" id="fooid"';
+my $expected_attrs  = 'name="comp" class="foo" type="hidden"';
+my $expected_attrs2 = 'name="comp" class="foo" id="fooid"';
 is($w->get_html_attrs, $expected_attrs,             "get_html_attrs");
 is($w->get_html_attrs({ class => 'foo', id => 'fooid', size => 4 }),
       $expected_attrs2,                             " extra_args");
 
-my $expected_attrs3 = 'name="attrs_test" size="20" checked';
+my $expected_attrs3 = 'name="attrs_test" size="20" onchange="document.f.attrs_test.value = &#39;&#39;; " checked';
 is($w2->get_html_attrs, $expected_attrs3,           " widget custom attrs");
+
+my $rendering = $w->render({ class => 'bar' });
+my $expected_rendering = '<input name="comp" class="bar" type="hidden">';
+$rendering =~ s/^\s*//go;
+$rendering =~ s/\s*$//go;
+is ($rendering, $expected_rendering,                " additional arguments");
