@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.12 2004/04/28 08:35:56 zoso Exp $
+# $Id: Widget.pm,v 1.13 2004/04/29 08:14:15 zoso Exp $
 
 =head1 NAME
 
@@ -28,6 +28,11 @@ Web::Widget - Base Web Widget
  } else {
     # Do something useful
  }
+
+ $o->get_value;            # Get widget value
+ $o->get_value($suffix);   # Get form value NAME$suffix or arg(value$suffix)
+
+ $o->get_form_value($varname);
 
 =head1 DESCRIPTION
 
@@ -144,10 +149,14 @@ appears more than once, the last value takes precedence.
 
 Returns a value for the widget, first by looking at the form arguments and
 then, if no value is found, looking at the default value given in the widget
-properties. If no arguments are given, the form key C<$name> and the widget
-property C<value> are used (where C<$name> is the name of the widget). On the
-other hand, if C<$suffix> is given, the form key C<$name$suffix> and the
-widget property C<value$suffix> are used.
+properties. If no arguments are given, the form key C<$name> (C<$name> being
+the name of the widget) and the widget property C<value> are used (where
+C<$name> is the name of the widget). If C<$suffix> is given, the form key
+C<$name$suffix> and the widget property C<value$suffix> are used.
+
+=item get_form_value($name)
+
+Returns the value for the form variable C<$name>.
 
 =back
 
@@ -296,10 +305,15 @@ sub html_escape {
 
 sub get_value {
    my ($self, $suffix) = @_;
-   $suffix ||= "";
+   $suffix = "" unless defined $suffix;
 
-   my $value = $self->{FORM}->get_form_value($self->{NAME}.$suffix);
+   my $value = $self->get_form_value($self->{NAME}.$suffix);
    return defined $value ? $value : $self->{ARGS}->{"value$suffix"};
+}
+
+sub get_form_value {
+   my ($self, $varname) = @_;
+   return $self->get_form->get_form_value($varname);
 }
 
 sub DESTROY {
