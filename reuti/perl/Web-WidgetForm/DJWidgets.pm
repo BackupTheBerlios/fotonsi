@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.4 2004/05/04 12:04:29 zoso Exp $
+# $Id: DJWidgets.pm,v 1.5 2004/05/10 08:15:01 zoso Exp $
 
 =head1 NAME
 
@@ -50,8 +50,14 @@ Web::DJWidgets - Web Component System
 Usually only inside components
 
  $f->add_prop($property, $value);      # Performs special translations
+
  $f->register_state_variable('current_folder');
  $f->unregister_state_variable('current_folder');
+
+ @varnames = $f->get_state_variables;  # Only names
+ %state = $f->get_state;               # Names & values
+ $url_chunk = $f->get_uri_enc_state;
+ $url_chunk = $f->get_uri_enc_state(variable => 'new value', othervar => 25);
 
  # Returns "document.my_form_name.some_widget_name"
  $f->get_js_name('some_widget_name');
