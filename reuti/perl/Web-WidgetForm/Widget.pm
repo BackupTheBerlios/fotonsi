@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.4 2004/02/22 00:00:05 zoso Exp $
+# $Id: Widget.pm,v 1.5 2004/02/23 22:41:56 zoso Exp $
 
 =head1 NAME
 
@@ -59,6 +59,34 @@ form. Its main use is to support multiple form elements with the same name.
 
 Validates the widget with the given value. This validation is a "server
 validation", of course, when the actual data have arrived.
+
+=item get_html_attrs
+=item get_html_attrs($html_attrs_hash)
+=item get_html_attrs($html_attrs_hash, $valid_html_attrs_list)
+
+Returns the HTML attributes for the tag, filtering them with the valid HTML
+attributes list. If C<$html_attrs_hash> or C<$valid_html_attrs_list> are not
+given, the internal defaults are used.
+
+=item merge_args($arg_hash1, $arg_hash2, $arg_hash3, ...)
+
+Merges the given argument hashes, returning the result. When the same key
+appears more than once, the last value takes precedence.
+
+=item escape($quote_char, $value)
+
+Escapes with a backslash both the backslash character and C<$quote_char>. It's
+useful for pasting values in HTML, like tag attributes enclosed in quotes.
+
+=item get_value
+=item get_value($suffix)
+
+Returns a value for the widget, first by looking at the form arguments and
+then, if no value is found, looking at the default value given in the widget
+properties. If no arguments are given, the form key C<$name> and the widget
+property C<value> are used (where C<$name> is the name of the widget). On the
+other hand, if C<$suffix> is given, the form key C<$name$suffix> and the
+widget property C<value$suffix> are used.
 
 =back
 
@@ -167,6 +195,14 @@ sub escape {
    $value =~ s/\\/\\\\/go;
    $value =~ s/$quote_char/\\$quote_char/g;
    return $value;
+}
+
+sub get_value {
+   my ($self, $suffix) = @_;
+   $suffix ||= "";
+
+   my $value = $self->{FORM}->get_form_value($self->{NAME}.$suffix);
+   return defined $value ? $value : $self->{ARGS}->{"value$suffix"};
 }
 
 sub DESTROY {
