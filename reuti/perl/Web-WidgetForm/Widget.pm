@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.1 2004/02/05 20:15:43 zoso Exp $
+# $Id: Widget.pm,v 1.2 2004/02/12 18:52:37 zoso Exp $
 
 =head1 NAME
 
@@ -117,6 +117,14 @@ sub render {
 sub validate {
    my ($self, $value) = @_;
 
+   # First of all, test with given validators
+   defined $self->{ARGS}->{validators} && do {
+      $self->{ARGS}->{validators} = [ $self->{ARGS}->{validators} ]
+            unless ref $self->{ARGS}->{validators} eq 'ARRAY';
+      foreach my $v (@{$self->{ARGS}->{validators}}) {
+         $v->validate($value) || return 0;
+      }
+   };
    return 0 if $value =~ /^\s*$/ && $self->{ARGS}->{nonempty};
    1;
 }
