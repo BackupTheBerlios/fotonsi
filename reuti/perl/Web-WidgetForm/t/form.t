@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 35;
+use Test::More tests => 36;
 use Test::Deep;
 use lib 't';
 
@@ -117,6 +117,9 @@ cmp_deeply({ $f->get_state }, { t2     => 'jander@mander.fander',
 cmp_deeply([ split "&", $f->get_uri_enc_state ],
            bag('t2=jander%40mander.fander', 'thingy='),
                                                  "get_uri_enc_state");
+cmp_deeply([ split "&", $f->get_uri_enc_state({ thingy => '30' }) ],
+           bag('t2=jander%40mander.fander', 'thingy=30'),
+                                                 " with new state");
 
 
 # Other methods
