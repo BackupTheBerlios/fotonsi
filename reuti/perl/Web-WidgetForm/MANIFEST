@@ -5,6 +5,7 @@ DJWidgets/Widget.pm
 DJWidgets/Widget/BaseInput.pm
 DJWidgets/Widget/Button.pm
 DJWidgets/Widget/CheckButton.pm
+DJWidgets/Widget/DateBox.pm
 DJWidgets/Widget/FileBox.pm
 DJWidgets/Widget/Hidden.pm
 DJWidgets/Widget/ImageButton.pm
