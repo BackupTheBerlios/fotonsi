@@ -51,7 +51,7 @@ function valida_ccc(obj_entidad, obj_oficina, obj_dc, obj_ncuenta) {
     D_C_1 = D_C_1 + parseInt(tmp) * peso[7-i];
   }
   
-  D_C_1 = 11 - (D_C_1 - (11 * parseInt(D_C_1 / 11)));
+  D_C_1 = 11 - D_C_1 % 11;
   
   if (D_C_1 == 10) {
     D_C_1 = 1
@@ -73,7 +73,7 @@ function valida_ccc(obj_entidad, obj_oficina, obj_dc, obj_ncuenta) {
     D_C_2 = D_C_2 + parseInt(tmp) * peso[9-i];
   }
   
-  D_C_2 = 11 - (D_C_2 - (11 * parseInt(D_C_2 / 11)));
+  D_C_2 = 11 - D_C_2 % 11;
   
   if (D_C_2 == 10) {
     D_C_2 = 1
