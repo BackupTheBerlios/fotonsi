@@ -2,7 +2,7 @@ package Web::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.10 2004/04/16 11:15:18 zoso Exp $
+# $Id: Widget.pm,v 1.11 2004/04/20 10:25:13 zoso Exp $
 
 =head1 NAME
 
@@ -96,11 +96,14 @@ widget loaded.
 
 =item get_html_attrs($html_attrs_hash)
 
-=item get_html_attrs($html_attrs_hash, $valid_html_attrs_list)
+=item get_html_attrs($html_attrs_hash, $value_html_attrs_list)
 
-Returns the HTML attributes for the tag, filtering them with the valid HTML
-attributes list. If C<$html_attrs_hash> or C<$valid_html_attrs_list> are not
-given, the internal defaults are used.
+=item get_html_attrs($html_attrs_hash, $value_html_attrs_list, $empty_html_attrs_list)
+
+Returns the HTML attributes for the component, filtering them with the valid
+HTML attributes list ("value" attributes and "empty" attributes). If
+C<$html_attrs_hash>, C<$value_html_attrs_list> or C<$empty_html_attrs_list>
+are not given, the internal defaults are used.
 
 =item merge_args($arg_hash1, $arg_hash2, $arg_hash3, ...)
 
@@ -140,8 +143,9 @@ sub new {
    my $self  = { FORM => $form,
                  NAME => $name,
                  ARGS => $args,
-                 HTML_VALID_ATTRS => ['class', 'id', 'disabled'],
-                 HTML_ATTRS => {},
+                 EMPTY_HTML_ATTRS => ['disabled'],
+                 VALUE_HTML_ATTRS => ['name', 'class', 'id', 'accesskey'],
+                 COMPILED_HTML_ATTRS => {},
                };
    bless ($self, $class);
    return $self;
@@ -157,13 +161,12 @@ sub setup_form {
    my ($form, $name, $args) = ($self->{FORM}, $self->{NAME}, $self->{ARGS});
 
    # Common HTML attributes
-   $self->{HTML_ATTRS}->{name} = $name;
-   foreach my $empty_attr ('readonly', 'disabled', 'selected', 'checked') {
-      $self->{HTML_ATTRS}->{$empty_attr} = undef if $args->{$empty_attr};
+   $self->{COMPILED_HTML_ATTRS}->{name} = $name;
+   foreach my $empty_attr (@{$self->{EMPTY_HTML_ATTRS}}) {
+      $self->{COMPILED_HTML_ATTRS}->{$empty_attr} = undef if $args->{$empty_attr};
    }
-   foreach my $value_attr ('class', 'id', 'tabindex', 'accesskey',
-                           'src', 'alt', 'size', 'maxlength') {
-      $self->{HTML_ATTRS}->{$value_attr} = $args->{$value_attr}
+   foreach my $value_attr (@{$self->{VALUE_HTML_ATTRS}}) {
+      $self->{COMPILED_HTML_ATTRS}->{$value_attr} = $args->{$value_attr}
             if defined $args->{$value_attr};
    }
 }
@@ -194,6 +197,7 @@ sub validate {
          $v->validate($value) || return 0;
       }
    };
+   # Custom, programatic, validators
    return 0 if $value =~ /^\s*$/ && $self->{ARGS}->{nonempty};
    1;
 }
@@ -212,18 +216,20 @@ sub widget_data_transform {
 
 
 sub get_html_attrs {
-   my ($self, $html_attrs, $html_valid_attrs) = @_;
-   $html_attrs       ||= $self->{HTML_ATTRS};
-   $html_valid_attrs ||= $self->{HTML_VALID_ATTRS};
+   my ($self, $html_attrs, $value_html_attrs, $empty_html_attrs) = @_;
+   $html_attrs       ||= $self->{COMPILED_HTML_ATTRS};
+   $value_html_attrs ||= $self->{VALUE_HTML_ATTRS};
+   $empty_html_attrs ||= $self->{EMPTY_HTML_ATTRS};
    my %attrs_hash = %$html_attrs;
    my @r = ();
-   foreach my $attr (@$html_valid_attrs) {
+   foreach my $attr (@$value_html_attrs) {
       if (exists $attrs_hash{$attr}) {
-         if (defined $attrs_hash{$attr}) {
-            push @r, "$attr=\"".$self->html_escape($attrs_hash{$attr})."\"";
-         } else {
-            push @r, $attr;
-         }
+         push @r, "$attr=\"".$self->html_escape($attrs_hash{$attr})."\"";
+      }
+   }
+   foreach my $attr (@$empty_html_attrs) {
+      if (exists $attrs_hash{$attr}) {
+         push @r, $attr;
       }
    }
    join(" ", @r);
