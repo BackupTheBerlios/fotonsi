@@ -13,6 +13,6 @@ $f->define_widgets({'comp' => { focus => 1,
                                 nonempty => 1 } });
 my $w = $f->get_widget_object('comp');
 
-ok($f->prop('before_send') =~ /if \(document.f.comp.value =~ \/\^ \*\$\/\) { alert\('Error: empty field. Please fill in.'\); document.f.comp.focus\(\); return 0 };/,
+ok($f->prop('before_send') =~ /if \(document.f.comp.value.match\(\/\^ \*\$\/\)\) { alert\('Error: empty field. Please fill in.'\); document.f.comp.focus\(\); return false; };/,
                                                       "nonempty");
 ok($f->prop('init') =~ /document.f.comp.focus()/,     "focus");
