@@ -1,144 +1,30 @@
 #!/usr/bin/python
 # -*- coding: latin1 -*-
 
-VERBOSE = False
-RCS_ID = '$Id: fete.py,v 1.5 2004/10/05 03:18:54 setepo Exp $'
+RCS_ID = '$Id: fete.py,v 1.6 2004/10/11 22:35:14 setepo Exp $'
 
-class DownloadError(Exception):
-    pass
+def dolog(*msg):
+    import sys
+    sys.stderr.write(' '.join(msg) + '\n')
 
-class ProgressData:
+def _safe_unlink(path):
+    import os
+    try:
+        os.unlink(path)
+    except OSError, e:
+        dolog('No se pudo borrar el fichero temporal %s: %s' % (e.filename, e.strerror))
 
-    def __init__(self, prompt, out = None):
-        import cStringIO, time
-
-        self.total = 0
-        self.last_time = time.time()
-        self.last_size = 0
-        self.prompt = prompt
-        self.data = cStringIO.StringIO()
-
-        if out is None:
-            import sys
-            self.out = sys.stdout
-        else:
-            self.out = out
-
-    def add(self, data):
-        import time
-
-        self.data.write(data)
-        self.total += len(data)
-
-        diff = time.time() - self.last_time
-
-        if diff > 1:
-            inc = (self.total - self.last_size) / 1024
-            self.out.write('\r%s %d bytes (%.2f K/s)\033[K' % 
-                            (self.prompt,
-                             self.total, 
-                             inc / diff))
-            self.out.flush()
-            self.last_time = time.time()
-            self.last_size = self.total
-
-    def end(self):
-        self.out.write('\r\033[K')
-        self.out.flush()
-
-    def get(self):
-        return self.data.getvalue()
-
-def read_response(fp):
-
-    pd = ProgressData('Leidos')
-    while True:
-        new = fp.read(2048)
-        if not new:
-            break
-
-        pd.add(new)
-
-    pd.end()
-    return pd.get()
-
-class Download:
-
-    def __init__(self, usuario=None, clave=None, maxintentos = 10):
-        self.usuario = usuario
-        self.clave = clave
-        self.maxintentos = maxintentos
-
-    def open(self, req):
-        import urllib2
-
-        #print 'DEBUG: Abriendo', url
-
-        if isinstance(req, str):
-            req = urllib2.Request(req)
-
-        intento = 0
-        handle = None
-        while handle is None:
-            intento += 1
-            try:
-                handle = urllib2.urlopen(req)
-            except urllib2.URLError, e:
-                if intento > self.maxintentos:
-                    raise DownloadError, ('Máximo número de intentos excedido', None)
-
-                if not hasattr(e, 'code'):
-                    raise DownloadError, ('No se pudo conectar al servidor', e)
-
-                if e.code == 401:
-                    if intento > 1:
-                        self.usuario = self.clave = None
-                        print ' - Intento #%d' % intento
-
-                    if not self.usuario:
-                        self.usuario = raw_input('Usuario: ')
-                    if not self.clave:
-                        import getpass
-                        self.clave = getpass.getpass('Clave para %s: ' % self.usuario)
-
-                    from base64 import encodestring as es
-                    req.add_header("Authorization",  "Basic " + es('%s:%s' % (self.usuario, self.clave)).strip())
-                else:
-                    raise DownloadError, ('No se pudo descargar la url', e)
-
-        return handle
-
+class NeedUserInput(Exception):
+    'Situación que no se puede resolver automáticamente, y está en modo no interactivo'
 
 class Edit:
 
     def __init__(self, config):
         self.config = config
+        self.verbose = config.get('system.verbose')
 
-        # comprobar si se ha elegido algún método para guardar la clave
-        cod = config.usuario.codificada 
-        clave = config.usuario.clave;
-        if len(cod) > 0 and cod not in ('claro', 'base64'):
-            print 'AVISO: El método %s no es válido para guardar la clave. Se mandará tal cual' % cod
-        elif len(clave) > 0:
-            if cod == 'base64':
-                import base64, binascii
-                try:
-                    clave = base64.decodestring(clave) + '\n'
-                except binascii.Error:
-                    print 'AVISO: Error al decodificar la clave en base64'
-                    clave = None
-
-        self.down = Download(config.usuario.nombre, clave)
-
-        import re
-        self.re_editlink = re.compile(r'''<b>(.*?)</b>.*?<a href="javascript:window.open\('(.*?)'\);window.close\(\);">edit</a>''', re.I)
-        self.re_sign = re.compile(r'<strong>(\*\d{8}-\d{1,2}:\d{1,2}-\w+\*)</strong>', re.M)
-
-        # atributos que se establecen cuando se ha cargado una página para editar
-        self.original_content = self.cur_content = None
-        self.user_sign = ''
-        self.form = None
-
+        # Obtener la lista de comandos a partir de todos los métodos que 
+        # comiencen por "action_"
         commands = []
         for at in dir(self):
             if at.startswith('action_'):
@@ -148,47 +34,55 @@ class Edit:
         commands.sort()
         self.shell_commands = commands
 
+        # crear el parser de las páginas, el objeto principal para 
+        # bajar y subir las páginas del twiki
+        import twikiparser
+        self.parser = twikiparser.TWiki(config)
+
     def find(self, text):
-        import urllib, urlparse
-
-        url_base = self.config.urls.buscar.replace('%P', urllib.quote_plus(text))
-
-        if VERBOSE:
-            print 'Buscando en', url_base
-
-        handle = self.down.open(url_base)
-
-        el = self.re_editlink
+        interactive = self.config.get('system.interactivo')
         links = []
+        show_head = interactive
 
-        print 'Enlaces encontrados'
+        for name, url in self.parser.find(text):
+            if show_head:
+                print 'Enlaces encontrados'
+                show_head = False
 
-        while True:
-            line = handle.readline()
-            if not line: break
+            links.append( (name, url) )
 
-            m = el.search(line)
-            if m:
-                name, link = m.groups()
-                links.append( (name, urlparse.urljoin(url_base, link)) )
-
-                # mostrar los enlaces a medida que lleguen para 
-                # indicar que hay actividad
+            if interactive:
                 print '   %3d. %s' % (len(links), name)
+            elif len(links) > 1:
+                # en modo no-interactivo no se pueden tener más de un enlace
+                raise NeedUserInput, 'Se ha encontrado más de un enlace'
 
-        del handle
-
+        # Comrpobar cuántos enlaces se han encontrado.
+        # Si no se ha encontrado ninguno, se sale directamente
+        # Si se ha encontrado uno, se devuelve ése
+        # Si hay más, se listan y se pregunta cuál se quiere usar.
         if len(links) == 1:
             name, link = links[0]
-            if VERBOSE:
-                print 'Un enlace encontrado:', name, link
+            if self.verbose:
+                dolog('Un enlace encontrado: %s <%s>' % (name, link))
             return name, link
         elif len(links) == 0:
-            print 'Ningún enlace encontrado'
+            if not interactive:
+                raise NeedUserInput, 'No se ha encontrado ningún enlace'
+            dolog('Ningún enlace encontrado')
             return None, None
         else:
+
+            if not interactive:
+                raise NeedUserInput, 'Se ha encontrado más de un enlace'
+
             while True:
-                i = raw_input('Página a editar (q para salir): ')
+                try:
+                    i = raw_input('Página a editar (q para salir): ')
+                except KeyboardInterrupt:
+                    print '^C'
+                    return None, None
+
                 if i == 'q':
                     return None, None
 
@@ -202,105 +96,42 @@ class Edit:
 
             return links[opt-1]
 
-    def click_on(self, btn_value):
-        # ClientForm no permite hacer búsquedas de controles por su 
-        # valor (lo que pone dentro del botón), y ésa es la única forma
-        # de diferenciar los botones que aparecen en el formulario del
-        # twiki, así que hacemos la búqueda manualmente.
-        # Si no se encuentra, salta un RuntimeError
-
-        btn_value = btn_value.lower()
-        for ctl in self.form.controls:
-            if ctl.value.lower() == btn_value and ctl.type == 'submit':
-                if VERBOSE:
-                    print 'Pulsando el botón', btn_value, '...'
-
-                req = ctl._click(self.form, (1,1), 'request')
-                handle = self.down.open(req)
-                return read_response(handle.fp)
-
-        raise RuntimeError, 'No se ha encontrado el botón ' + btn_value
 
     def create(self, page):
-
-        tp = self.config.command_options.topicparent
-        if len(tp) > 0:
-            url = self.config.urls.crear_padre.replace('%U', tp)
-        else:
-            url = self.config.urls.crear
-
-        web, page = page.split('.', 1)
-        url = url.replace('%W', web).replace('%P', page)
-
-        if VERBOSE:
-            print 'Abriendo %s/%s desde %s' % (web, page, url)
-
-        return self.edit(url)
+        self.parser.createpage(page)
+        return self.run_shell()
 
     def edit(self, editlink):
-        down = self.down
+        self.parser.openlink(editlink)
+        return self.run_shell()
 
-        # Abrir la página de edición
-        import ClientForm
+    def run_shell(self):
+        if not self.config.get('system.interactivo'):
+            opts = self.config.get('system.cmd_opts')
 
-        class ProxyResp:
-            def __init__(self, r):
-                self.req = r
-                self.pd = ProgressData('Leidos')
-            def read(self, *a):
-                d = self.req.read(*a)
-                self.pd.add(d)
-                return d
-            def __getattr__(self, at):
-                return getattr(self.req, at)
+            import sys
+            if opts.script_get:
+                sys.stdout.write(self.parser.get_content())
+                self.parser.cancel()
+            elif opts.script_set:
+                self.parser.set_content(sys.stdin.read())
+                self.parser.save()
+            else:
+                return False
 
-        resp = ProxyResp(down.open(editlink))
-        forms = ClientForm.ParseResponse(resp)
+            return True
 
-        resp.pd.end()
-        resp.data = resp.pd.get()
-
-        if len(forms) == 0:
-            print 'No se ha encontrado formularios en la página para editar'
-            return False
-
-        form = None
-        for f in forms:
-            if f.name == 'main':
-                form = f
-                break
-
-        if form is None:
-            print 'No se ha encontrado el formuario "main"'
-            return False
-
-        self.form = form 
-        content = 'Textarea no encontrado =('
-        for control in form.controls:
-            if control.type == 'textarea':
-                content = control.value
-
-        self.original_content = content
-        self.cur_content = content
-
-        # buscar la "firma" dentro del HTML generado, 
-        # para insertarla en el texto
-        m = self.re_sign.search(resp.data)
-        if m:
-            self.user_sign = m.group(1)
-        else:
-            self.user_sign = None
-
-        self.action_edit()
 
         # Parte "interactiva"... una super shell para decir qué hacer con esto
+        self.action_edit()
+
         while True:
             try:
                 opt = raw_input('Orden (help para ayuda): ').strip()
             except EOFError:
-                if VERBOSE:
+                if self.verbose:
                     print 'Cancelando la edición del formulario'
-                self.click_on('cancelar')
+                self.parser.click_on('cancelar')
                 return
             except KeyboardInterrupt:
                 print 
@@ -321,15 +152,19 @@ class Edit:
                 self.action_help(candidates)
             else:
                 # un único candidato
-                fn = candidates[0][1]
-                res = fn()
+                try:
+                    fn = candidates[0][1]
+                    res = fn()
 
-                if res == 'exit':
-                    return True
-                elif res == 'continue':
-                    pass
-                else:
-                    print 'ERROR Interno: Valor desconocido devuelto por la función. Continúa ek programa'
+                    if res == 'exit':
+                        return True
+                    elif res == 'continue':
+                        pass
+                    else:
+                        print 'ERROR Interno: Valor desconocido devuelto por la función. Continúa ek programa'
+
+                except KeyboardInterrupt:
+                    print '\nAcción cancelada'
 
         return True
 
@@ -348,11 +183,12 @@ class Edit:
     def action_diff(self):
         '''Muestra un diff entre el contenido original y el actual'''
         import tempfile, os
-        fd1, tmp_path1 = tempfile.mkstemp()
-        fd2, tmp_path2 = tempfile.mkstemp()
+        fd1, tmp_path1 = tempfile.mkstemp(prefix='fete-diff1')
+        fd2, tmp_path2 = tempfile.mkstemp(prefix='fete-diff2')
 
-        os.write(fd1, self.original_content)
-        os.write(fd2, self.cur_content)
+        p = self.parser
+        os.write(fd1, p.get_orig_content())
+        os.write(fd2, p.get_content())
         os.close(fd1)
         os.close(fd2)
 
@@ -361,7 +197,7 @@ class Edit:
             os.execv('/usr/bin/diff', ('diff', '-u', tmp_path1, tmp_path2))
         os.waitpid(pid, 0)
 
-        if self.config.system.borrar_temps != 'no':
+        if self.config.get('system.borrar_temps'):
             os.unlink(tmp_path1)
             os.unlink(tmp_path2)
 
@@ -371,10 +207,10 @@ class Edit:
         '''Sale sin guardar.'''
 
         try:
-            self.click_on('cancelar')
+            self.parser.cancel()
         except RuntimeError, e:
-            print e
-            print 'El programa termina igualmente'
+            dolog(e)
+            dolog('El programa termina igualmente')
         return 'exit'
 
     action_quit = action_cancel
@@ -384,13 +220,13 @@ class Edit:
         # Como medida "preventiva", comparar si realmente hay 
         # algún cambio que subir. Si no lo hay, no se sube nada
         # y se sigue en el programa.
-        if self.cur_content == self.original_content:
-            if VERBOSE:
+        if self.parser.get_content() == self.parser.get_orig_content():
+            if self.verbose:
                 print 'No ha habido cambios aún. No se sube nada'
             return 'continue'
 
         try:
-            self.click_on('guardar')
+            self.parser.save()
         except RuntimeError, e:
             print e
             return 'continue'
@@ -403,31 +239,33 @@ class Edit:
         config = self.config
 
         import tempfile, os
-        fd, tmp_path = tempfile.mkstemp(suffix='.twiki')
+        fd, tmp_path = tempfile.mkstemp(prefix='fete', suffix='.twiki')
         try:
 
-            if config.system.cabecera_fichero:
+            cf = config.get('system.cabecera_fichero')
+            if cf:
                 try:
-                    s = open(config.system.cabecera_fichero).read()
+                    s = open(cf).read()
                 except IOError, e:
                     print 'ERROR: No se puede abrir %s: %s' % (e.filename, e.strerror)
                 else:
                     os.write(fd, s)
 
-            if config.system.cabecera_texto:
-                os.write(fd, config.system.cabecera_texto + '\r\n')
+            ct = config.get('system.cabecera_texto')
+            if ct:
+                os.write(fd, ct + '\r\n')
 
-            if self.user_sign is not None and config.editor.poner_firma != 'no':
+            if self.parser.get_sign() is not None and config.get('editor.poner_firma'):
                 os.write(fd, '#### Su firma para la entrada en el diario es\r\n####     ')
-                os.write(fd, self.user_sign)
+                os.write(fd, self.parser.get_sign())
                 os.write(fd, '\r\n#### Recuerde que el programa no enviará las líneas que empiecen por ####\r\n####\r\n')
 
-            os.write(fd, self.cur_content)
+            os.write(fd, self.parser.get_content())
             os.close(fd)
 
             #if config.use_system
             old_mtime = os.path.getmtime(tmp_path)
-            os.system(self.config.editor.orden.replace('%P', tmp_path))
+            os.system(self.config.get('editor.orden').replace('%P', tmp_path))
 
             if os.path.getmtime(tmp_path) == old_mtime:
                 print 'Sin cambios.'
@@ -435,16 +273,12 @@ class Edit:
 
             # nuevo contenido. Filtrar las líneas que empiezan por '####'
             p = open(tmp_path).readlines()
-            self.cur_content = ''.join([x for x in p if not x.startswith('####')])
-            self.form['text'] = self.cur_content
+            data = ''.join([x for x in p if not x.startswith('####')])
+            self.parser.set_content(data)
             del p
 
         finally:
-            if self.config.system.borrar_temps != 'no':
-                try:
-                    os.unlink(tmp_path)
-                except OSError, e:
-                    print 'No se pudo borrar el fichero temporal %s: %s' % (e.filename, e.strerror)
+            _safe_unlink(tmp_path)
 
         return 'continue'
 
@@ -453,112 +287,140 @@ class Edit:
 
         import tempfile, os
 
-        fd, path = tempfile.mkstemp(suffix = '.html')
-        os.write(fd, self.click_on('ver'))
+        fd, path = tempfile.mkstemp(prefix='fete-preview', suffix = '.html')
+        os.write(fd, self.parser.click_on('ver'))
         os.close(fd)
 
-        cmd = self.config.editor.ver.replace('%P', path)
-        if VERBOSE:
+        cmd = self.config.get('editor.ver').replace('%P', path)
+        if self.verbose:
             print 'Ejecutando', cmd
 
         os.system(cmd)
 
-        if self.config.system.borrar_temps != 'no':
-            os.unlink(path)
+        if self.config.get('system.borrar_temps'):
+            _safe_unlink(path)
 
         return 'continue'
 
-class ConfigError(Exception):
-    pass
+class SystemConfig:
 
-class BasicConfig(object):
-    # Prescindimos del módulo ConfigParser por ahora, ya que éste 
-    # trabaja sólo con diccionaciorios
+    def __init__(self, cmd_opts):
 
-    def __init__(self, fileobj = None):
+        import miscfete
+        config_file = miscfete.BasicConfig(open(cmd_opts.config_file))
 
-        self._values = {}
+        v = self.__vals = {}
 
-        if fileobj is None:
-            return
+        #
+        # system
+        #
 
-        import re
-        syntax = [
-             (re.compile(r'\s*[;#].*'), lambda: None),
-             (re.compile(r'\s*'), lambda: None),
-             (re.compile(r'\s*\[\s*(\w+)\s*\]\s*'), self._add_section),
-             (re.compile(r'\s*(\w+)\s*=\s*(.*)\s*'), self._add_value)
-        ]
+        v['system.cmd_opts'] = cmd_opts
 
-        self._numline = 0
-        self._cursect = None
+        # Modo verboso
+        verbose = False
+        if config_file.system.verbose or cmd_opts.verbose:
+            verbose = True
+        if cmd_opts.silent:
+            verbose = False
+        v['system.verbose'] = verbose
 
-        for line in fileobj.xreadlines():
-            self._numline += 1
-            line = line.strip()
-            valid = False
+        # Modo interactivo
+        v['system.interactivo'] = not bool(cmd_opts.script_set or cmd_opts.script_get or cmd_opts.script_run)
 
-            for regex, fn in syntax:
-                m = regex.match(line)
-                if m:
-                    fn(*m.groups())
-                    valid = True
+        # Contenido a poner al principio
+        if cmd_opts.head_file: f = cmd_opts.head_file
+        else:                  f = config_file.system.cabecera_fichero
+        v['system.cabecera_fichero'] = f
 
-            if not valid:
-                raise ConfigError, ('Línea no reconocida', self._numline)
+        if cmd_opts.head_str: f = cmd_opts.head_str
+        else:                 f= config_file.system.cabecera_texto
+        v['system.cabecera_texto'] = f
 
-        del self._numline
-        del self._cursect
+        v['system.borrar_temps'] = config_file.borrar_temps == 'sí'
 
-    def _add_section(self, section):
-        self._cursect = BasicConfig()
-        self._values[section] = self._cursect
-        return self._cursect
+        v['system.topic_parent'] = cmd_opts.topicparent
 
-    def _add_value(self, key, value):
-        if self._cursect is None:
-            raise ConfigError, ('No se puede establecer un valor antes de abrir una sección', self._numline)
+        #
+        # usuario
+        #
 
-        self._cursect._values[key] = value
+        # Comprobar si se ha escogido algún medio para "disimular" la clave
+        # dentro del fichero de configuración
+        cod = config_file.usuario.codificada 
+        clave = config_file.usuario.clave;
+        if len(cod) > 0 and cod not in ('claro', 'base64'):
+            dolog('AVISO: El método %s no es válido para guardar la clave. Se mandará tal cual' % cod)
+        elif len(clave) > 0:
+            if cod == 'base64':
+                import base64, binascii
+                try:
+                    clave = base64.decodestring(clave)
+                except binascii.Error:
+                    dolog('AVISO: Error al decodificar la clave en base64')
+                    clave = None
 
-    def __getattr__(self, key):
-        return self._values.get(key, '')
+        v['usuario.nombre'] = config_file.usuario.nombre
+        v['usuario.clave'] = clave
 
-if __name__ == '__main__':
+        #
+        # urls
+        #
+        v['urls.buscar'] = config_file.urls.buscar
+        v['urls.crear'] = config_file.urls.crear
+        v['urls.crear_padre'] = config_file.urls.crear_padre
 
+        #
+        # editor
+        #
+        v['editor.orden'] = config_file.editor.orden
+        v['editor.poner_firma'] = config_file.editor.poner_firma != 'no'
+        v['editor.ver'] = config_file.editor.ver
+
+    def get(self, key):
+         return self.__vals[key]
+
+    def __str__(self):
+        import pprint
+        return pprint.pformat(self.__vals)
+
+
+def _build_optsparser():
     import optparse
     parser = optparse.OptionParser()
     A = parser.add_option
     A('-c', action='store_true', default=False, dest='create', help='Crea una nueva página')
     A('-v', action='store_true', default=False, dest='verbose', help='Modo verboso')
+    A('-q', action='store_true', default=False, dest='silent', help='Modo silencioso')
     A('-f', default='config.ini', dest='config_file', help='Fichero de configuración. default=config.ini')
     A('-p', default='', dest='topicparent', help='Padre de la nueva página a crear')
     A('-a', default='', metavar='TEXTO', dest='head_str', help='Cabecera. Texto a añadir antes de la página')
     A('-A', default='', metavar='FICHERO', dest='head_file', help='Cabecera. Fichero a añadir antes de la página')
+    A('-g', action='store_true', default=False, dest='script_get', help='Devuelve por stdout el código fuente de la página y sale')
+    A('-s', action='store_true', default=False, dest='script_set', help='Lee de stdin el nuevo código, lo sube, y sale.')
+    A('-r', default=None, dest='script_run', help='Programa (filtro) a ejecutar para modificar el fuente')
 
-    opts, args = parser.parse_args()
+    return parser
 
-    config = BasicConfig(open(opts.config_file))
-    if config.system.verbose or opts.verbose:
-        VERBOSE = True
+if __name__ == '__main__':
 
-    if opts.head_file:
-        config.system.cabecera_fichero = opts.head_file
-    if opts.head_str:
-        config.system.cabecera_texto = opts.head_str
-
-    config.command_options = opts
+    opts, args = _build_optsparser().parse_args()
+    config = SystemConfig(opts)
 
     cmd = ' '.join(args)
     if not cmd:
-        print 'Debe especificar en la línea de órdenes una cadena a buscar'
+        dolog('Debe especificar en la línea de órdenes una cadena a buscar')
     else:
         e = Edit(config)
 
-        if opts.create:
-            e.create(cmd)
-        else:
-            name, link = e.find(cmd)
-            if link is not None:
-                e.edit(link)
-
+        try:
+            if opts.create:
+                e.create(cmd)
+            else:
+                name, link = e.find(cmd)
+                if link is not None:
+                    e.edit(link)
+        except NeedUserInput, (msg,):
+            dolog('ERROR: ' + msg)
+            import sys
+            sys.exit(1)
