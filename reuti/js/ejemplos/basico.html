@@ -47,13 +47,13 @@ function PonerFecha (fecha) {
 <b>Sólo número:</b>
 <input type="text" name="txtNumero" size="10" maxlength="15" onBlur="this.value = ComprobarNumero (this.value);">
 
-<br>
+<p>
 
 <b>Fecha:</b>
 <input type="text" name="txtFechaActual" size="10" maxlength="10" onBlur="form.txtFechaSiguiente.value = PonerFecha(this.value);">
 -- <b>Fecha siguiente:</b><input type="text" name="txtFechaSiguiente" size="10" maxlength="10">
 
-<br>
+<p>
 
 <b>Pasar parámetros a otra página:<b>
 <input type="text" name="txtEnlace" value="?nombre=Fco&ape1=Arbelo&ape2=Robaina" onBlur="AbrirVentana ('param.html'+form.txtEnlace.value,400,250);">
