@@ -32,6 +32,90 @@ eventos_validos['onKeyUp'] = 16;
 eventos_validos['onKeyPress'] = 32;
 
 
+var CHAR_F1 = 112;
+var CHAR_F2 = 113;
+var CHAR_F3 = 114;
+var CHAR_F4 = 115;
+var CHAR_F5 = 116;
+var CHAR_F6 = 117;
+var CHAR_F7 = 118;
+var CHAR_F8 = 119;
+var CHAR_F9 = 120;
+var CHAR_F10 = 121;
+var CHAR_F11 = 122;
+var CHAR_F12 = 123;
+
+var CHAR_SHIFT = 0x01;
+var CHAR_ALT = 0x02;
+var CHAR_CONTROL = 0x04;
+
+
+var _documento = null;
+
+
+
+/*****************************************************************************/
+function _KeyEvent (event) {
+ if (!event) event = window.event;
+ 
+ var code = event.keyCode;
+ var tecla = String.fromCharCode (code).toUpperCase();
+
+ var mode = 0;
+ if (event.shiftKey) mode = mode | CHAR_SHIFT;
+ if (event.altKey) mode = mode | CHAR_ALT;
+ if (event.ctrlKey) mode = mode | CHAR_CONTROL; 
+
+
+ if (_documento.key_acelerator[code+mode])
+   _documento.key_acelerator[code+mode]();
+
+//   alert ('Entra...'+documento.key_acelerator);
+//  alert (this.key_acelerator[tecla+mode]());
+// alert (code+':'+tecla);
+
+// alert (tecla); 
+
+/* var mensaje = '';
+ for (var info in event)
+  mensaje += '<b>'+info+':</b> '+event[info]+'<br>\n';
+
+ document.getElementById ('CAPA_TEST').innerHTML = mensaje;
+*/
+
+ return false;
+}//_KeyEvent
+
+
+/*****************************************************************************/
+function _AddAcelerator (key, shift, alt, control, action) {
+ var mode = 0;
+ if (shift) mode = mode | CHAR_SHIFT;
+ if (alt) mode = mode | CHAR_ALT;
+ if (control) mode = mode | CHAR_CONTROL; 
+
+// this.key_acelerator['CHAR_'+key+String(mode)] = action; 
+ this.key_acelerator[key+mode] = action;
+}//_AddAcelerator
+
+
+/*****************************************************************************/
+// ControlDocumento
+/*****************************************************************************/
+function TDocumento (event) {
+ if (event) alert ('OK');
+
+ this.key_acelerator = new Array();
+ this.key_event = _KeyEvent;
+ this.AddAcelerator = _AddAcelerator;
+ this.setRoot = function () {_documento = this;};
+
+ document.onkeydown = this.key_event;
+
+ window.onhelp = function () {return false;}; //Desabilita F1 en el Explorer
+}//TDocumento
+
+
 
 /*****************************************************************************/
 function _AddEvent (evento, accion, ejecuta) {
