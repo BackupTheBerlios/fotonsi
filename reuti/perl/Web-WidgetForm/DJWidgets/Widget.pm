@@ -2,7 +2,7 @@ package Web::DJWidgets::Widget;
 
 use strict;
 
-# $Id: Widget.pm,v 1.1 2004/04/30 10:13:17 zoso Exp $
+# $Id: Widget.pm,v 1.2 2004/05/03 08:41:29 zoso Exp $
 
 =head1 NAME
 
@@ -220,10 +220,7 @@ sub render {
                                { $self->get_args });
    $args = $self->merge_args($args, $opt_args);
 
-   "<input type='hidden' name='".$self->html_escape($name).
-         "' value='".$self->html_escape($args->{value} || '')."' ".
-         $self->get_html_attrs($args).
-         ">";
+   "<input ".$self->get_html_attrs($args).">";
 }
 
 sub validate {
@@ -275,10 +272,11 @@ sub get_html_attrs {
    # Filter the calculated attribute list to build the final attribute string
    my @r = ();
    foreach my $attr (@$value_html_attrs) {
-      if (exists $html_attrs{$attr} || $args->{$attr}) {
-         push @r, "$attr=\"".
-                  $self->html_escape(exists $html_attrs{$attr} ? $html_attrs{$attr} : $args->{$attr}).
-                  "\"";
+      if (exists $html_attrs{$attr} || defined $args->{$attr}) {
+         my $value = defined $args->{$attr} ? $args->{$attr} :
+                                              $html_attrs{$attr};
+         $value .= ($args->{".$attr"} || "");      # add .something attributes
+         push @r, "$attr=\"".$self->html_escape($value)."\"";
       }
    }
    foreach my $attr (@$empty_html_attrs) {
