@@ -10,7 +10,7 @@
     ==============================
 
 
-Éste programa simplón (el nombre lo dice todo) es para facilitar la edición de
+Este programa simplón (el nombre lo dice todo) es para facilitar la edición de
 páginas del TWiki de Fotón sin tener que recurrir a un navegador y poder usar
 un editor como $deity manda.
 
@@ -26,7 +26,7 @@ directorio donde están los archivos.
 Se ha desarrollado bajo python 2.3. Para funcionar con el 2.2 es
 necesario copiar 3 módulos desde la distribución del 2.3: 
     * optparse.py   una versión muy mejorada del típico getopt
-    * textwrap.py   necesitado por optparse. para "wrapper" textos
+    * textwrap.py   necesitado por optparse. para "wrappear" textos
     * tempfile.py   para usar mkstemp, una versión más segura de mktemp
 Copiando esos 3 ficheros al mismo directorio donde está el ejecutable
 funcionará sin problemas en un 2.2.
