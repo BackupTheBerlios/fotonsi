@@ -24,7 +24,7 @@ my $w2 = $f->get_widget_object('attrs_test');
 
 # Arguments
 is($w->arg('class'), 'foo',                           "arg (get)");
-ok(!defined $w->arg('disabled'),                      "arg (set)");
+ok(!defined $w->arg('disabled'),                      " undefined value");
 is($w->arg('disabled'), undef,                        " get set value");
 
 # Convenience methods
