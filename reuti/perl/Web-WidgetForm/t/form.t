@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 36;
+use Test::More tests => 37;
 use Test::Deep;
 use lib 't';
 
@@ -127,3 +127,5 @@ is($f->html_escape("O'Reilly"), "O&#39;Reilly",       "html_escape");
 is($f->html_escape('"Hi", she said'), '&quot;Hi&quot;, she said',
                                                       " double quote");
 is($f->html_escape("Back\\slash"), "Back\\slash",     " backslash");
+$f->define_widgets({ 'unknown_type' => { widget_type => 'NonExistent' } });
+is($f->srender_widget('unknown_type'), "",            "srender_widget/bad widget");
