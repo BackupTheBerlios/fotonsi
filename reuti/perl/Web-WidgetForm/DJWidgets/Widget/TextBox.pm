@@ -8,7 +8,8 @@ sub new {
    my ($class, @args) = @_;
 
    my $self = $class->SUPER::new(@args);
-   push @{$self->{VALUE_HTML_ATTRS}}, 'size', 'maxlength';
+   push @{$self->{VALUE_HTML_ATTRS}}, 'maxlength';
+   push @{$self->{EMPTY_HTML_ATTRS}}, 'readonly';
    # Default value
    $self->arg('type', 'text') unless defined $self->arg('type');
    return $self;
