@@ -2,7 +2,7 @@ package Web::DJWidgets;
 
 use strict;
 
-# $Id: DJWidgets.pm,v 1.15 2005/03/08 20:32:14 zoso Exp $
+# $Id: DJWidgets.pm,v 1.16 2005/04/14 19:10:18 zoso Exp $
 
 =head1 NAME
 
@@ -348,11 +348,13 @@ sub define_form_values {
 
 sub get_form_value {
    my ($self, $name) = @_;
+   ref $self->{VALUES} eq 'HASH' || die "No form values defined";
    return $self->{VALUES}->{$name};
 }
 
 sub get_form_values {
    my ($self) = @_;
+   ref $self->{VALUES} eq 'HASH' || die "No form values defined";
    return %{$self->{VALUES}};
 }
 
@@ -443,6 +445,7 @@ sub validate_form {
    my ($self, $vars) = @_;
 
    $vars ||= $self->{VALUES};
+   ref $vars eq 'HASH' || die "Can't validate without values";
    my %errors = ();
    foreach my $w (keys %{$self->{WIDGETS}}) {
       my $result = $self->validate_widget($w, $vars);
