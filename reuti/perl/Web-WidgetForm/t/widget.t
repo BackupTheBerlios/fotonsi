@@ -65,6 +65,7 @@ $rendering = $w2->render({ 'size'   => 0 });
 like ($rendering, qr/size="0"/,                     " attribute=0");
 
 # Values
+$f->define_form_values({});
 is($w2->get_value, 'mock',                          "get_value");
 is($w2->get_value('_child'), 'mocking_child',       " suffix");
 $f->define_form_values({ attrs_testimportant => 'real_mock',
