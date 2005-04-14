@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 43;
+use Test::More tests => 47;
 use Test::Deep;
 use lib 't';
 
@@ -44,6 +44,17 @@ cmp_deeply($widget_list, $f->get_widgets,        "get_widgets");
 my $form_values = { testwidget => 'a',
                     t2         => 'jander@mander.fander',
                     t3         => 'jander@test.com' };
+
+# No values definition
+eval { $f->get_form_values };
+ok ($@ ne '',                                    "get_form_values without data");
+eval { $f->get_form_value('something') };
+ok ($@ ne '',                                    " get_form_value");
+eval { $f->validate_form() };
+ok ($@ ne '',                                    " validate_form");
+eval { $f->validate_form({}) };
+is ($@, '',                                      "validate_form with data");
+
 $f->define_form_values($form_values);
 
 # Data transform
