@@ -10,8 +10,10 @@ DJWidgets/Widget/FileBox.pm
 DJWidgets/Widget/Hidden.pm
 DJWidgets/Widget/ImageButton.pm
 DJWidgets/Widget/JavascriptComponent.pm
+DJWidgets/Widget/MultiColList.pm
 DJWidgets/Widget/RadioButton.pm
 DJWidgets/Widget/SelectBox.pm
+DJWidgets/Widget/SortableMCList.pm
 DJWidgets/Widget/TextArea.pm
 DJWidgets/Widget/TextBox.pm
 DJWidgets/Widget/Numeric.pm
