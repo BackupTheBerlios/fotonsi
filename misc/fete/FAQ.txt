@@ -1,0 +1,4 @@
+
+- ¿Como se crea la contraseña en base 64?
+
+perl -MDigest::MD5 -we 'print Digest::MD5::md5_base64("miclave"), "\n";'
