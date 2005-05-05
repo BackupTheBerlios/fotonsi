@@ -9,8 +9,8 @@ sub render {
 
     my $sort_col = $self->_get_sort_col;
     my $sort_idx = ($sort_col < 0 ? -$sort_col : $sort_col)-1;
-    ref $self->arg('cols') eq 'ARRAY' || die "No columns defined (incorrect 'cols' argument)";
-    my $sort_key = $self->arg('cols')->[$sort_idx]->{key};
+    ref $args->{'cols'} eq 'ARRAY' || die "No columns defined (incorrect 'cols' argument)";
+    my $sort_key = $args->{'cols'}->[$sort_idx]->{key};
     my $name = $self->get_name;
     my ($asc_order_img, $desc_order_img) = ($args->{asc_order_img},
                                             $args->{desc_order_img});
@@ -25,7 +25,7 @@ sub render {
 
     my $sort_sub = $sort_col > 0 ? sub { $a->{$sort_key} cmp $b->{$sort_key} } :
                                    sub { $b->{$sort_key} cmp $a->{$sort_key} };
-    my @sorted_data = sort $sort_sub @{$self->arg('data')};
+    my @sorted_data = sort $sort_sub @{$args->{'data'}};
     $self->SUPER::render({ %$args, data => \@sorted_data,
                                    cols => \@new_cols }) . "<input type=\"hidden\" name=\"$name\_sort\" value=\"$sort_col\">"
 }
