@@ -27,13 +27,13 @@ sub render {
     my $data_row_attrs = $self->get_html_attrs($args->{'data_row_attrs'} || {},
                                                ['class']);
 
-    $cnt = 0;
     my $data = join("\n", map {
-                                  $cnt++;
                                   my $row = $_;
+                                  $cnt = 0;
                                   "<tr $data_row_attrs>\n".
                                   (join("\n",
                                         map {
+                                            $cnt++;
                                             defined $_->{closure} ||
                                                     defined $_->{key} || die "Can't retrieve value for column $cnt (define either 'key' or 'closure')";
                                             defined $_->{closure} ? "<td>".$_->{closure}->($row)."</td>" : "<td>$row->{$_->{key}}</td>"
