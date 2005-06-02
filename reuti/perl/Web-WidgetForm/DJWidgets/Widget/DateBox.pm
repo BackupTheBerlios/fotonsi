@@ -31,24 +31,17 @@ EOC
     $app_suffix =~ s/web::djwidgets::widget:://go;
     $app_suffix =~ s/::/_/go;
     $self->get_form->add_prop('def', <<EOC);
-      function MachineDateToHuman_$app_suffix (datebox) {
-       var date = datebox.split ('/');
-
-       return date[2]+"/"+date[1]+"/"+date[0];
-      }//MachineDateToHuman
-
       function IsDate_$app_suffix (datebox) {
-       if (!datebox) return true;
+        if (!datebox) 
+            return true;
 
-       var date = new Date (MachineDateToHuman_$app_suffix(datebox));
+        var arraydate = datebox.split ('/');
+        var date = new Date (arraydate[2]+"/"+arraydate[1]+"/"+arraydate[0]);
 
-       var day = date.getDate();
-       if (day < 10) day = "0"+day;
-       var mon = date.getMonth()+1;
-       if (mon < 10) mon = "0"+mon;
-
-       return (day+"/"+mon+"/"+date.getFullYear() == datebox) ? true:false;
-      }//IsDate
+        return (date.getDate() == parseInt(arraydate[0])) && 
+               ((date.getMonth()+1) == parseInt(arraydate[1])) &&
+               (date.getFullYear() == parseInt(arraydate[2]));
+    }
 EOC
 }
 
