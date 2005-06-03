@@ -1,7 +1,8 @@
 " Sintaxis (más o menos) para el TWiki
 " Language: 	Twiki
 " Maintainer:	Ayose Cazorla <ayose.cazorla@hispalinux.es>
-" Last Change:	2004 nov 20
+"               Ignacio Aliende <ialiende@foton.es>
+" Last Change:	2005 jun 3
 
 syn region notify start='##' end='##'
 
@@ -70,3 +71,31 @@ hi def url1 ctermfg=blue guifg=blue
 hi def url2 ctermfg=blue cterm=underline guifg=blue gui=underline
 hi def notify ctermbg=blue ctermfg=white gui=italic guibg=#aff
 hi def link head Identifier
+
+"Ayuda para generación de tareas:
+"- Se pueden poner los valores en el .vimrc de cada uno como 'let b:proj =
+"  "valor"'. Si no los encuentra pone los por defecto.
+"- Una vez dentro se pueden cargar ejecutando 'call TaskDefaults()'
+"- Para usarlo se puede seleccionar el texto con visual y pulsar ';k'
+"  o empezar el texto con '##' y al acabar pulsar '<esc>;k' con lo que añadirá
+"  los '##' que faltan y el resto.
+"  (si se quiere cambiar la tecla se puede sustituir lo que pone abajo en los
+"  *map ;k)
+if !exists("b:proj")
+    let b:proj = "PROJ"
+endif
+if !exists("b:prio")
+    let b:prio = "PRIO"
+endif
+if !exists("b:login")
+    let b:login = "LOGIN"
+endif
+
+function! TaskDefaults()
+    let b:proj = input("Project: ", b:proj)
+    let b:prio = input("Priority: ", b:prio)
+    let b:login = input("Login: ", b:login)
+endfunction
+
+vnoremap ;k "tda##<c-r>t##(task: <c-r>=b:proj <c-r>=b:prio <c-r>=b:login)<esc>15<left>
+nnoremap ;k a##(task: <c-r>=b:proj <c-r>=b:prio <c-r>=b:login)<esc>15<left>
