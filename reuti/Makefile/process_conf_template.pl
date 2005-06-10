@@ -29,7 +29,7 @@ close F;
 # Open template file, and write to stdout after substituting
 open F, $inputTemplate or die "Can't open '$inputTemplate' for reading\n";
 while (<F>) {
-   s/%\(([a-z]+)\)/exists $vars{$1} ? $vars{$1} : $1/goie;
+   s/%\(([a-z_]+)\)/exists $vars{$1} ? $vars{$1} : $1/goie;
    print ;
 }
 close F;
