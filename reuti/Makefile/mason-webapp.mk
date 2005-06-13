@@ -51,6 +51,10 @@ WEB_GROUP ?= $(shell if getent group www-data; then echo www-data; else echo apa
 
 # INSTALLATION RULES =========================================================
 
+# Main installation rule -----------------------------------------------------
+install:: install_conf install_sql install_perl install_mason
+
+
 # Configuration installation -------------------------------------------------
 install_conf:: $(APACHE_CONF_DIR)/$(MAIN_APACHE_CONF_FILE) $(APP_CONF_DIR)/$(APP_CONF_FILE)
 
@@ -95,4 +99,4 @@ install_mason::
 	for i in $(EMPTY_DIRS); do dir=$(INSTALLATION_DIR)/$$i; mkdir $$dir; chown $(WEB_USER).$(WEB_GROUP) $$dir; chmod 770 $$dir; done
 
 
-.PHONY: install_conf install_perl install_mason
+.PHONY: install install_conf install_db install_sql install_perl install_mason
