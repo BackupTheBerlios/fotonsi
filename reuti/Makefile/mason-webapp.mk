@@ -39,8 +39,8 @@ EMPTY_DIRS            ?= sesiones
 INSTALLATION_SQL_FILES ?= $(SQL_DIR)/*.sql_install
 SQL_FILES              ?= $(SQL_DIR)/*.sql
 # Misc. installation info
-WEB_USER  ?= $(shell if getent passwd www-data; then echo www-data; else echo apache; fi)
-WEB_GROUP ?= $(shell if getent group www-data; then echo www-data; else echo apache; fi)
+WEB_USER  ?= $(shell if getent passwd www-data >/dev/null; then echo www-data; else echo apache; fi)
+WEB_GROUP ?= $(shell if getent group www-data >/dev/null; then echo www-data; else echo apache; fi)
 
 
 # GENERIC RULES ==============================================================
@@ -59,6 +59,9 @@ install:: install_conf install_sql install_perl install_mason
 install_conf:: $(APACHE_CONF_DIR)/$(MAIN_APACHE_CONF_FILE) $(APP_CONF_DIR)/$(APP_CONF_FILE)
 
 # Apache configuration
+$(INSTALLATION_ID)-apache.conf: apache.conf
+	cp $< $@
+
 $(APACHE_CONF_DIR)/$(MAIN_APACHE_CONF_FILE): $(INSTALLATION_ID)-apache.conf
 	mkdir -p `dirname $@`
 	cp $< $@
