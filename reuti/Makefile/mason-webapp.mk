@@ -20,7 +20,7 @@ endif
 include $(VARS_FILE)
 
 # Included Makefile snippets -------------------------------------------------
-include /home/zoso/src/foton/reuti/Makefile/sql_defaults.mk
+include /usr/local/share/scf/sql_defaults.mk
 
 # Optional variables ---------------------------------------------------------
 TEMPLATE_PROCESSOR    ?= process_conf_template

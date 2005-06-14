@@ -1,6 +1,6 @@
 # Makefile-installer Makefile :-)
 
-MAKEFILES_DIR=/usr/local/share/foton
+MAKEFILES_DIR=/usr/local/share/scf
 BIN_DIR=/usr/local/bin
 
 all:
