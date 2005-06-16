@@ -23,7 +23,9 @@ include $(VARS_FILE)
 include /usr/local/share/scf/sql_defaults.mk
 
 # Optional variables ---------------------------------------------------------
-TEMPLATE_PROCESSOR    ?= process_conf_template
+TEMPLATE_PROCESSOR      ?= process_conf_template
+MAIN_APACHE_SOURCE_CONF ?= $(shell if [ -r $(INSTALLATION_ID)-apache.conf ]; then echo $(INSTALLATION_ID)-apache.conf; else echo apache.conf; fi )
+GENERATED_VARS_FILE     ?= vars-tmp
 # Important project subdirs
 MODULES_DIR           ?= perl
 MASON_DIR             ?= mason
@@ -44,9 +46,17 @@ WEB_GROUP ?= $(shell if getent group www-data >/dev/null; then echo www-data; el
 
 
 # GENERIC RULES ==============================================================
+# Default rule
+all:
+
 # "Compile" files from templates and the vars file
-%: %.in $(VARS_FILE)
-	$(TEMPLATE_PROCESSOR) $< $(VARS_FILE) >$@
+%: %.in $(GENERATED_VARS_FILE)
+	$(TEMPLATE_PROCESSOR) $< $(GENERATED_VARS_FILE) >$@ || rm -f $(GENERATED_VARS_FILE)
+
+# Generate an "extended" vars file
+$(GENERATED_VARS_FILE): $(VARS_FILE) Makefile
+	0>$(GENERATED_VARS_FILE)
+	@$(foreach var,$(.VARIABLES),$(if $(findstring file,$(origin $(var))),echo '$(var) = $($(var))' >>$(GENERATED_VARS_FILE);))
 
 
 # INSTALLATION RULES =========================================================
@@ -59,7 +69,7 @@ install:: install_conf install_sql install_perl install_mason
 install_conf:: $(APACHE_CONF_DIR)/$(MAIN_APACHE_CONF_FILE) $(APP_CONF_DIR)/$(APP_CONF_FILE)
 
 # Apache configuration
-$(INSTALLATION_ID)-apache.conf: apache.conf
+$(MAIN_APACHE_SOURCE_CONF):
 	cp $< $@
 
 $(APACHE_CONF_DIR)/$(MAIN_APACHE_CONF_FILE): $(INSTALLATION_ID)-apache.conf
