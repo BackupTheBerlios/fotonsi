@@ -69,10 +69,7 @@ install:: install_conf install_sql install_perl install_mason
 install_conf:: $(APACHE_CONF_DIR)/$(MAIN_APACHE_CONF_FILE) $(APP_CONF_DIR)/$(APP_CONF_FILE)
 
 # Apache configuration
-$(MAIN_APACHE_SOURCE_CONF):
-	cp $< $@
-
-$(APACHE_CONF_DIR)/$(MAIN_APACHE_CONF_FILE): $(INSTALLATION_ID)-apache.conf
+$(APACHE_CONF_DIR)/$(MAIN_APACHE_CONF_FILE): $(MAIN_APACHE_SOURCE_CONF)
 	mkdir -p `dirname $@`
 	cp $< $@
 
