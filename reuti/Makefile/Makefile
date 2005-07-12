@@ -1,5 +1,6 @@
 # Makefile-installer Makefile :-)
 
+# If you change this, CHANGE IT ALSO IN *.mk
 MAKEFILES_DIR=/usr/local/share/scf
 BIN_DIR=/usr/local/bin
 
