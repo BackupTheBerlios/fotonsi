@@ -3,7 +3,7 @@
 # VARIABLE DEFINITION ========================================================
 
 # Don't change this unless you know what you're doing
-SCF_INSTALL_DIR=/usr/local/share/scf
+MAKEFILES_DIR=/usr/local/share/scf
 
 # Application id
 ifndef APPLICATION_ID
@@ -23,7 +23,7 @@ endif
 include $(VARS_FILE)
 
 # Included Makefile snippets -------------------------------------------------
-include $(SCF_INSTALL_DIR)/sql_defaults.mk
+include $(MAKEFILES_DIR)/sql_defaults.mk
 
 # Optional variables ---------------------------------------------------------
 TEMPLATE_PROCESSOR      ?= process_conf_template
