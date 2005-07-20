@@ -6,6 +6,12 @@ DB_CREATOR_PASSWORD   ?=
 DB_NAME               ?= $(APPLICATION_ID)
 DB_TYPE               ?= postgresql
 
+# SQL files/dirs
+SQL_DIR                ?= sql
+SQL_FILES              ?= $(SQL_DIR)/*.sql
+INSTALLATION_SQL_FILES_DIR ?= $(SQL_DIR)
+INSTALLATION_SQL_FILES ?= $(INSTALLATION_SQL_FILES)/*.sql_install
+
 # Database dependant variables/macros ----------------------------------------
 # PostgreSQL
 DB_HOST_postgresql       ?= 
