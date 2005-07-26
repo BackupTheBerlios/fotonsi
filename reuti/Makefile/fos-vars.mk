@@ -1,9 +1,6 @@
 
 include scf/db-vars.mk
 
-ifndef FOS_FILE
-$(error The FOS_FILE variable is mandatory)
-endif
 
 FOSC_BIN 		?= fosc
 FOSC_PLUGIN		?= pg
