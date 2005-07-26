@@ -5,12 +5,14 @@ DB_CREATOR_USER       ?= root
 DB_CREATOR_PASSWORD   ?= 
 DB_NAME               ?= $(APPLICATION_ID)
 DB_TYPE               ?= postgresql
+DB_ENCODING           ?= latin9
 
 # SQL files/dirs
 SQL_DIR                ?= sql
 SQL_FILES              ?= $(SQL_DIR)/*.sql
 INSTALLATION_SQL_FILES_DIR ?= $(SQL_DIR)
 INSTALLATION_SQL_FILES ?= $(INSTALLATION_SQL_FILES_DIR)/*.sql_install
+DB_DUMP_DATA           ?= $(SQL_DIR)/99_db-data-dump.sql
 
 # Database dependant variables/macros ----------------------------------------
 # PostgreSQL
