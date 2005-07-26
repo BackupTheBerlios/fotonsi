@@ -17,12 +17,13 @@ WEBWARE_CONF_FILE     ?= $(WEBWARE_CONF_DIR)/Application.config
 
 # Check if Application.config has this context
 CONFIGURED_DIR_FOR_CONTEXT=$(shell python -c "exec 'k='+open('$(WEBWARE_CONF_FILE)').read(); print k['Contexts']['$(WEBWARE_CONTEXT)']" 2> /dev/null)
-EXPECTED_DIR_FOR_CONTEXT=$(shell pwd)/$(WEBWARE_DIR)
+EXPECTED_DIR_FOR_CONTEXT=$(shell pwd)/$(WEBWARE_DIR)/$(APPLICATION_ID)
 ifeq ($(CONFIGURED_DIR_FOR_CONTEXT),)
 $(warning THERE SEEMS TO BE NO CONTEXT DEFINED FOR $(WEBWARE_CONTEXT).)
 $(warning MAKE SURE WEBWARE IS CONFIGURED TO RUN THE APPLICATION!)
+$(warning SHOULD BE '$(EXPECTED_DIR_FOR_CONTEXT)')
 else
-    ifneq ($(CONFIGURED_DIR_FOR_CONTEXT),$(WEBWARE_DIR))
+    ifneq ($(CONFIGURED_DIR_FOR_CONTEXT),$(EXPECTED_DIR_FOR_CONTEXT))
 $(warning IT SEEMS THAT THERE'S AN INCONSISTENCY IN THE)  # ')$( <- VIM SYNTAX
 $(warning WEBWARE CONTEXT CONFIGURATION:) 		  #)
 $(warning FOUND '$(CONFIGURED_DIR_FOR_CONTEXT)' IN)
@@ -32,10 +33,10 @@ $(warning SHOULD BE '$(EXPECTED_DIR_FOR_CONTEXT)')
 endif
 
 include scf/opt-vars.mk
-include scf/db-vars.mk
+include scf/fos-vars.mk
 
 
 # INSTALLATION RULES =========================================================
 
 include scf/std-rules.mk
-include scf/db-rules.mk
+include scf/fos-rules.mk
