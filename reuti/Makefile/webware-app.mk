@@ -14,6 +14,7 @@ ifeq ($(strip $(WEBWARE_CONF_DIR)),)
 $(error Can\'t guess WebWare config dir. Please set WEBWARE_CONF_DIR.)
 endif
 WEBWARE_CONF_FILE     ?= $(WEBWARE_CONF_DIR)/Application.config
+WEBWARE_STATIC_FILES  ?= $(shell pwd)/$(WEBWARE_DIR)/static
 
 # Check if Application.config has this context
 CONFIGURED_DIR_FOR_CONTEXT=$(shell python -c "exec 'k='+open('$(WEBWARE_CONF_FILE)').read(); print k['Contexts']['$(WEBWARE_CONTEXT)']" 2> /dev/null)
