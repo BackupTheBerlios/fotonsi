@@ -9,7 +9,7 @@ $(FOS_INTEGRITY):: $(FOS_SOURCE)
 install_db:: $(FOS_STRUCTURE) $(FOS_INTEGRITY) 
 
 clean::
-	rm $(FOS_INTEGRITY) $(FOS_STRUCTURE)
+	rm -f $(FOS_INTEGRITY) $(FOS_STRUCTURE)
 
 include scf/db-vars.mk
 
