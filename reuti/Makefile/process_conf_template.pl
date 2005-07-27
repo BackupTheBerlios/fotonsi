@@ -11,7 +11,7 @@ my $varsFile      = shift;
 if (!defined $inputTemplate or !defined $varsFile) {
    print STDERR "Usage: process_conf_template <input_template> <vars_file>\n";
    print STDERR "Where input_template is a file with macros like %(SOME_VAR)\n";
-   print STDERR 'and vars_file is a file with lines like "SOME_VAR = some value"\n';
+   print STDERR "and vars_file is a file with lines like 'SOME_VAR = some value'\n";
    exit(1);
 }
 
