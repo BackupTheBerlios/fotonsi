@@ -18,7 +18,7 @@ DB_DUMP_DATA           ?= $(SQL_DIR)/99_db-data-dump.sql
 # PostgreSQL
 DB_HOST_postgresql       ?= 
 DB_PORT_postgresql       ?= 
-load_sql_file_postgresql ?= psql -U $(3) $(if $(5),-h $(5),) $(if $(6),-p $(6),) $(2) -f $(1) >$(7) || rm -f $(7)
+load_sql_file_postgresql ?= psql -U $(3) $(if $(5),-h $(5),) $(if $(6),-p $(6),) $(2) -f $(1) > $(7) || rm -f $(7)
 # MySQL
 DB_HOST_mysql         ?= 
 DB_PORT_mysql         ?= 
