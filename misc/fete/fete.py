@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: latin1 -*-
 
-RCS_ID = '$Id: fete.py,v 1.10 2005/01/11 11:44:14 setepo Exp $'
+RCS_ID = '$Id: fete.py,v 1.11 2005/08/05 10:32:21 zoso Exp $'
 
 def dolog(*msg):
     import sys
@@ -16,6 +16,9 @@ def _safe_unlink(path):
 
 class NeedUserInput(Exception):
     'Situación que no se puede resolver automáticamente, y está en modo no interactivo'
+
+class ConfigurationError(Exception):
+    'Cuando hay problemas con la configuración'
 
 class Edit:
 
@@ -161,7 +164,7 @@ class Edit:
                     elif res == 'continue':
                         pass
                     else:
-                        print 'ERROR Interno: Valor desconocido devuelto por la función. Continúa ek programa'
+                        print 'ERROR Interno: Valor desconocido devuelto por la función. Continúa el programa'
 
                 except KeyboardInterrupt:
                     print '\nAcción cancelada'
@@ -329,8 +332,16 @@ class SystemConfig:
 
     def __init__(self, cmd_opts):
 
+        # Buscamos el fichero de configuración
+        import os.path
+        fich_conf = cmd_opts.config_file
+        if not os.path.isfile(fich_conf):
+            fich_conf = os.path.join(os.environ.get('HOME', ''), '.fete', fich_conf)
+            if not os.path.isfile(fich_conf):
+               from string import join
+               raise ConfigurationError, "No encuentro el fichero de configuración. He buscado en las siguientes rutas: "+(', '.join([fich_conf, cmd_opts.config_file]))
         import miscfete
-        config_file = miscfete.BasicConfig(open(cmd_opts.config_file))
+        config_file = miscfete.BasicConfig(open(fich_conf))
 
         v = self.__vals = {}
 
@@ -428,7 +439,13 @@ def _build_optsparser():
 if __name__ == '__main__':
 
     opts, args = _build_optsparser().parse_args()
-    config = SystemConfig(opts)
+    try:
+        config = SystemConfig(opts)
+    except ConfigurationError, args:
+        from string import join
+        dolog('ERROR: '+args[0])
+        import sys
+        sys.exit(1)
 
     cmd = ' '.join(args)
     if not cmd:
