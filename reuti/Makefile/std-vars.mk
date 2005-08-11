@@ -21,4 +21,4 @@ include $(VARS_FILE)
 
 # Optional variables ---------------------------------------------------------
 TEMPLATE_PROCESSOR      ?= process_conf_template
-GENERATED_VARS_FILE     ?= vars-tmp
+GENERATED_VARS_FILE     ?= $(VARS_FILE).tmp
