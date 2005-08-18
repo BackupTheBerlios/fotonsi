@@ -1,12 +1,12 @@
 # DB RULES ===================================================================
 
-install:: install_db install_sql
+install:: install_sql
 
-GEN_INSTALL_SQL_FILES =$(addsuffix .sql_output,$(wildcard $(SQL_FILES)))
-GEN_SQL_FILES = $(addsuffix .sql_install_output,$(wildcard $(INSTALLATION_SQL_FILES)))
+GEN_INSTALL_SQL_FILES = $(addsuffix .sql_install_output,$(INSTALLATION_SQL_FILES))
+GEN_SQL_FILES = $(addsuffix .sql_output,$(SQL_FILES))
 
 # Database creation ----------------------------------------------------------
-install_db:: $(GEN_SQL_FILES)
+install_db:: $(GEN_INSTALL_SQL_FILES)
 
 %.sql_install_output: %
 	$(call load_sql_file,$<,$(DB_NAME),$(DB_USER),$(DB_PASSWORD),$(DB_HOST),$(DB_PORT),$@);
@@ -22,13 +22,15 @@ upgrade_db:: dump_db create_db install_db
 
 
 # SQL installation -----------------------------------------------------------
-install_sql:: $(GEN_INSTALL_SQL_FILES)
-
-clean::
-	rm -f $(GEN_INSTALL_SQL_FILES) $(GEN_SQL_FILES)
+install_sql:: $(GEN_SQL_FILES)
 
 %.sql_output: %
 	$(call load_sql_file,$<,$(DB_NAME),$(DB_USER),$(DB_PASSWORD),$(DB_HOST),$(DB_PORT),$@);
+
+# Misc -----------------------------------------------------------------------
+
+clean::
+	rm -f $(GEN_INSTALL_SQL_FILES) $(GEN_SQL_FILES)
 
 
 .PHONY: install_db install_sql create_db upgrade_db clean
