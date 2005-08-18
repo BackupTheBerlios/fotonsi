@@ -2,7 +2,7 @@
 
 # GENERIC RULES ==============================================================
 # Default rule
-all:
+all::
 
 install:: all install_conf
 
