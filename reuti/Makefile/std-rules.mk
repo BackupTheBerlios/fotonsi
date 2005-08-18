@@ -4,7 +4,7 @@
 # Default rule
 all:
 
-install:: install_conf
+install:: all install_conf
 
 # "Compile" files from templates and the vars file
 %: %.in $(GENERATED_VARS_FILE)
@@ -29,4 +29,4 @@ $(APP_CONF_DIR)/$(APP_CONF_FILE): $(APP_CONF_FILE_SOURCE)
 	mkdir -p `dirname $@`
 	cp $< $@
 
-.PHONY: install_conf install
+.PHONY: all install_conf install
