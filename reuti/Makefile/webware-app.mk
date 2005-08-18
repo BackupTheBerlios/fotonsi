@@ -41,3 +41,7 @@ include scf/fos-vars.mk
 
 include scf/std-rules.mk
 include scf/fos-rules.mk
+
+# SQLObject specific
+python/$(APPLICATION_ID)data/fos_$(APPLICATION_ID)_tables.py: $(FOS_SOURCE)
+	 $(FOSC_BIN) $(FOS_SOURCE) sqlobject > $@
