@@ -6,6 +6,10 @@ include scf/std-vars.mk
 MAIN_APACHE_CONF_FILE ?= $(VENDOR)-webware-$(APPLICATION_ID)-$(INSTALLATION_ID).conf
 APP_CONF_FILE         ?= $(APPLICATION_ID).ini
 
+# Python variables
+PYTHON_BIN            ?= python
+PYTHON_DIR            ?= python
+
 # WebWare specific
 WEBWARE_DIR           ?= webware
 WEBWARE_CONTEXT       ?= $(APPLICATION_ID)
@@ -41,6 +45,9 @@ include scf/fos-vars.mk
 
 include scf/std-rules.mk
 include scf/fos-rules.mk
+
+install::
+	if [ -r $(PYTHON_DIR)/setup.py ]; then cd $(PYTHON_DIR) && $(PYTHON_BIN) setup.py install; fi
 
 # SQLObject specific
 python/$(APPLICATION_ID)data/fos_$(APPLICATION_ID)_tables.py: $(FOS_SOURCE)
