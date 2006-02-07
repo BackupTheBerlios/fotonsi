@@ -32,6 +32,7 @@ crear_padre = https://laser.foton.es/twiki/bin/edit/%W/%P?topicparent=%U
 ; twiki. Use %P para indicar dónde poner la ruta del archivo (temporal) 
 ; a abrir
 orden = vim %P
+;orden = gvim -f %P
 
 ; Ponga si desea que el programa inserte automáticamente la firma
 ; para los diarios. Si pone "sí", el programa la insertará al 

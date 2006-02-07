@@ -1,3 +1,11 @@
 
 - ¿Como se crea la contraseña en base 64?
+
 echo -n contraseña | uuencode -m -
+
+
+- ¿No me reconoce diferencias cuando modifico un fichero?
+
+Seguramente estés usando gvim como editor. En el fichero
+de configuración asegúrate de que tienes esta línea:
+«orden = gvim -f %P»
