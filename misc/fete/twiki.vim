@@ -97,5 +97,10 @@ function! TaskDefaults()
     let b:login = input("Login: ", b:login)
 endfunction
 
+
+syn sync minlines=50
+
 vnoremap ;k "tda##<c-r>t##(task: <c-r>=b:proj <c-r>=b:prio <c-r>=b:login)<esc>15<left>
 nnoremap ;k a##(task: <c-r>=b:proj <c-r>=b:prio <c-r>=b:login)<esc>15<left>
+
+set sts=3 sw=3 expandtab
